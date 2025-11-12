@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="순천대학교 멋쟁이사자처럼 - 대학생 IT 창업 동아리">
+    <title>순천대학교 멋쟁이사자처럼</title>
+    <link rel="icon" type="image/png" href="images/logo_og.png">
+    <link rel="apple-touch-icon" href="images/logo_og.png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header & Navigation -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-container">
+                <div class="logo">
+                    <img src="images/ll_logo.png" alt="LIKELION" class="logo-icon">
+                    <span class="logo-text">LIKELION UNIV.</span>
+                    <span class="logo-separator">×</span>
+                    <span class="logo-university">SCNU</span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="#about">소개</a></li>
+                    <li><a href="#activities">활동</a></li>
+                    <li><a href="#team">팀원</a></li>
+                    <li><a href="#recruit">모집</a></li>
+                </ul>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-logo">
+                <img src="images/logo.png" alt="LIKELION SCNU Logo">
+            </div>
+            <h1 class="hero-title">
+                <span class="hero-subtitle">순천대학교</span>
+                멋쟁이사자처럼
+            </h1>
+            <p class="hero-description">
+                국내 54개 대학이 모여 이루어진 국내 최대 규모 IT 창업 동아리입니다.
+            </p>
+            <a href="#recruit" class="cta-button">지원하기</a>
+        </div>
+        <div class="hero-image">
+            <div class="hero-decoration"></div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section about">
+        <div class="container">
+            <h2 class="section-title">About Us</h2>
+            <p class="section-subtitle">멋쟁이사자처럼은 무엇인가요?</p>
+
+            <div class="about-content">
+                <div class="about-text">
+                    <div class="code-window">
+                        <div class="code-header">
+                            <div class="code-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                            <div class="code-title">about_likelion.py</div>
+                        </div>
+                        <div class="code-body">
+                            <pre><code><span class="code-comment"># 멋쟁이사자처럼 순천대학교</span>
+
+<span class="code-keyword">class</span> <span class="code-class">LikeLion</span>:
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(<span class="code-keyword">self</span>):
+        <span class="code-keyword">self</span>.university = <span class="code-string">"순천대학교"</span>
+        <span class="code-keyword">self</span>.mission = <span class="code-string">"<span class="code-highlight">아이디어</span>를 실현하는 IT 창업 동아리"</span>
+        <span class="code-keyword">self</span>.members = [<span class="code-string">"기획자", "프론트엔드", "백엔드", "디자이너"</span>]
+        <span class="code-keyword">self</span>.activities = {
+            <span class="code-string">"정기_세션"</span>: <span class="code-string">"주 1회 <span class="code-highlight">개발</span> 교육"</span>,
+            <span class="code-string">"팀_프로젝트"</span>: <span class="code-string">"중간/최종 <span class="code-highlight">서비스 개발</span>"</span>,
+            <span class="code-string">"스터디"</span>: <span class="code-string">"자율 학습 그룹"</span>,
+            <span class="code-string">"메인_프로젝트"</span>: <span class="code-string">"전국 연합 <span class="code-highlight">아이디어톤</span>과 <span class="code-highlight">해커톤</span>"</span>
+        }
+
+    <span class="code-keyword">def</span> <span class="code-function">grow_together</span>(<span class="code-keyword">self</span>):
+        skills = [<span class="code-string">"코딩", "<span class="code-highlight">협업</span>", "문제해결"</span>]
+        <span class="code-keyword">return</span> <span class="code-string">f"</span>{skills}<span class="code-string"> <span class="code-highlight">역량 향상</span>"</span>
+
+    <span class="code-keyword">def</span> <span class="code-function">deploy_service</span>(<span class="code-keyword">self</span>):
+        <span class="code-keyword">return</span> <span class="code-string">"<span class="code-highlight">기획 → 개발 → 배포</span>까지 완성"</span>
+
+<span class="code-comment"># 전국 최대 규모의 IT 창업 동아리</span>
+likelion = <span class="code-class">LikeLion</span>()
+<span class="code-function">print</span>(likelion.grow_together())
+<span class="code-function">print</span>(likelion.deploy_service())</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Activities Section -->
+    <section id="activities" class="section activities">
+        <div class="container">
+            <h2 class="section-title">Activities</h2>
+            <p class="section-subtitle">우리의 활동을 소개합니다</p>
+
+            <div class="activities-grid">
+                <div class="activity-card">
+                    <div class="activity-image">
+                        <img src="images/session.jpg" alt="세션" onerror="this.parentElement.classList.add('placeholder')">
+                    </div>
+                    <div class="activity-content">
+                        <h3>정기 세션</h3>
+                        <p>매주 진행되는 정기 세션을 통해 웹 개발의 기초부터 심화까지 체계적으로 학습합니다.</p>
+                        <span class="activity-tag">주 1회</span>
+                    </div>
+                </div>
+
+                <div class="activity-card">
+                    <div class="activity-image">
+                        <img src="images/project.jpg" alt="프로젝트" onerror="this.parentElement.classList.add('placeholder')">
+                    </div>
+                    <div class="activity-content">
+                        <h3>팀 프로젝트</h3>
+                        <p>멋쟁이사자처럼 활동 기간동안 아이디어톤과 해커톤을 진행합니다.</p>
+                        <span class="activity-tag">학기별 2회</span>
+                    </div>
+                </div>
+
+                <div class="activity-card">
+                    <div class="activity-image">
+                        <img src="images/study.jpg" alt="스터디" onerror="this.parentElement.classList.add('placeholder')">
+                    </div>
+                    <div class="activity-content">
+                        <h3>자율 스터디</h3>
+                        <p>관심사가 비슷한 팀원들끼리 스터디를 구성하여 원하는 기술을 깊이 있게 학습합니다.</p>
+                        <span class="activity-tag">자율 진행</span>
+                    </div>
+                </div>
+
+                <div class="activity-card">
+                    <div class="activity-image">
+                        <img src="images/networking.jpg" alt="네트워킹" onerror="this.parentElement.classList.add('placeholder')">
+                    </div>
+                    <div class="activity-content">
+                        <h3>네트워킹 데이</h3>
+                        <p>전국 멋쟁이사자처럼 연합 행사 및 해커톤에 참여하여 다른 대학 학생들과 교류합니다.</p>
+                        <span class="activity-tag">학기별 다수</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section id="team" class="section team">
+        <div class="container">
+            <h2 class="section-title">Team</h2>
+            <p class="section-subtitle">함께하는 사람들</p>
+
+            <!-- 기수별 탭 -->
+            <div class="team-tabs">
+                <button class="team-tab active" data-generation="13">13기</button>
+                <button class="team-tab" data-generation="12">12기</button>
+                <button class="team-tab" data-generation="11">11기</button>
+            </div>
+
+            <!-- 13기 팀원 -->
+            <div class="team-content active" data-generation="13">
+                <div class="team-grid">
+                    <div class="member-card">
+                        <div class="member-image placeholder">
+                        </div>
+                        <div class="member-info">
+                            <h3 class="member-name">고재우</h3>
+                            <p class="member-role">대표 / Backend</p>
+                            <p class="member-major">컴퓨터공학과 21학번</p>
+                        </div>
+                    </div>
+
+                    <div class="member-card">
+                        <div class="member-image placeholder">
+                        </div>
+                        <div class="member-info">
+                            <h3 class="member-name">임종탁</h3>
+                            <p class="member-role">운영진 / Backend</p>
+                            <p class="member-major">컴퓨터공학부 23</p>
+                        </div>
+                    </div>
+
+                    <div class="member-card">
+                        <div class="member-image placeholder">
+                        </div>
+                        <div class="member-info">
+                            <h3 class="member-name">나산하</h3>
+                            <p class="member-role">운영진 / PM</p>
+                            <p class="member-major">컴퓨터공학과 20</p>
+                        </div>
+                    </div>
+
+                    <div class="member-card">
+                        <div class="member-image placeholder">
+                        </div>
+                        <div class="member-info">
+                            <h3 class="member-name">김채원</h3>
+                            <p class="member-role">운영진 / Design</p>
+                            <p class="member-major">컴퓨터공학과 21</p>
+                        </div>
+                    </div>
+
+                    <div class="member-card">
+                        <div class="member-image placeholder">
+                        </div>
+                        <div class="member-info">
+                            <h3 class="member-name">박현빈</h3>
+                            <p class="member-role">운영진 / Backend</p>
+                            <p class="member-major">인공지능공학부 24</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 12기 팀원 -->
+            <div class="team-content" data-generation="12">
+                <div class="team-grid">
+                    <div class="member-card">
+                        <div class="member-image placeholder">
+                        </div>
+                        <div class="member-info">
+                            <h3 class="member-name">임종탁</h3>
+                            <p class="member-role">대표 / PM</p>
+                            <p class="member-major">컴퓨터공학과 19</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 11기 팀원 -->
+            <div class="team-content" data-generation="11">
+                <div class="team-grid">
+                    <div class="member-card">
+                        <div class="member-image placeholder">
+                        </div>
+                        <div class="member-info">
+                            <h3 class="member-name">임종탁</h3>
+                            <p class="member-role">대표 / PM</p>
+                            <p class="member-major">컴퓨터공학과 19</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recruit Section -->
+    <section id="recruit" class="section recruit">
+        <div class="container">
+            <h2 class="section-title">Recruit</h2>
+            <p class="section-subtitle">14기 신입 부원을 모집합니다</p>
+
+            <div class="recruit-content">
+                <div class="recruit-info">
+                    <div class="info-card">
+                        <h3>📅 모집 기간</h3>
+                        <p class="info-highlight">2026년 3월 중</p>
+                        <p class="info-detail">서류 접수 및 면접 진행</p>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>👥 모집 대상</h3>
+                        <p class="info-highlight">순천대학교 재학생 누구나</p>
+                        <p class="info-detail">전공 무관, 프로젝트에 열정을 가진 누구나</p>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>💡 지원 분야</h3>
+                        <ul class="recruit-tracks">
+                            <li><strong>Project Manager</strong> - 서비스 기획 및 총괄</li>
+                            <li><strong>Frontend</strong> - 웹, 앱 프론트엔드</li>
+                            <li><strong>Backend</strong> - Node.js, Django, Spring 등</li>
+                            <li><strong>Design</strong> - 웹, 앱 UI/UX 디자인</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>📝 지원 방법</h3>
+                        <ol class="recruit-steps">
+                            <li>구글 폼을 통한 서류 지원</li>
+                            <li>서류 합격자 개별 연락 </li>
+                            <li>면접 진행</li>
+                            <li>최종 합격자 발표</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="recruit-cta">
+                    <div class="cta-box">
+                        <h3>지금 바로 지원하세요!</h3>
+                        <p>여러분의 열정과 도전을 기다립니다</p>
+                        <a href="#" class="apply-button">지원서 작성하기</a>
+                        <p class="cta-note">* 지원 기간 내에만 접수 가능합니다</p>
+                        <p class="cta-note">지원 기간 : 2026년 3월 중</p>
+                    </div>
+
+                    <div class="contact-info">
+                        <h4>문의하기</h4>
+                        <p>📧 이메일: likelionscnu@gmail.com</p>
+                        <p>📱 인스타그램: @likelion_scnu</p>
+                        <p>💬 오픈카톡: [링크]</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <div class="footer-logo-text">
+                        <img src="images/ll_logo.png" alt="LIKELION" class="footer-logo-icon">
+                        <span class="logo-text">LIKELION UNIV.</span>
+                        <span class="logo-separator">×</span>
+                        <span class="logo-university">SCNU</span>
+                    </div>
+                    <p>순천대학교 멋쟁이사자처럼</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-col">
+                        <h4>Links</h4>
+                        <ul>
+                            <li><a href="https://likelion.university/" target="_blank">멋쟁이사자처럼</a></li>
+                            <li><a href="https://www.scnu.ac.kr/SCNU/main.do" target="_blank">순천대학교</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Follow Us</h4>
+                        <ul>
+                            <li><a href="https://www.instagram.com/likelion_scnu/" target="_blank">Instagram</a></li>
+                            <li><a href="https://linktr.ee/likelion_scnu" target="_blank">Linktree</a></li>
+                            <li><a href="https://github.com/LikeLion-SCNU" target="_blank">GitHub</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 LIKELION SUNCHON. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
