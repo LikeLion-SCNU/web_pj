@@ -45,6 +45,7 @@ sunchon-likelion/
 ### 로컬 실행
 1. 웹 브라우저로 `index.html` 파일을 엽니다
 2. 또는 Live Server를 사용하여 로컬 서버로 실행합니다
+3. https://likelionscnu.netlify.app/ 로 접속
 
 ### 콘텐츠 수정
 
@@ -66,57 +67,15 @@ sunchon-likelion/
 #### 모집 기간 수정
 `js/script.js`의 `checkRecruitmentStatus` 함수에서 날짜를 수정합니다:
 ```javascript
-const recruitmentStart = new Date('2025-03-01');
-const recruitmentEnd = new Date('2025-03-15');
+const recruitmentStart = new Date('2026-03-01');
+const recruitmentEnd = new Date('2026-03-15');
 ```
 
 #### 지원서 링크 연결
 `index.html`의 모집 섹션에서 지원 버튼의 링크를 수정합니다:
 ```html
-<a href="https://forms.google.com/your-form" class="apply-button">지원서 작성하기</a>
+<a href="구글폼 제작 후 기입" class="apply-button">지원서 작성하기</a>
 ```
-
-#### 연락처 정보 수정
-`index.html`의 Recruit Section에서 연락처를 수정합니다:
-```html
-<p>📧 이메일: your-email@example.com</p>
-<p>📱 인스타그램: @your_instagram</p>
-<p>💬 오픈카톡: [링크]</p>
-```
-
-### 이미지 추가
-다음 이미지들을 `images/` 폴더에 추가하세요:
-- `logo.png` - 멋쟁이사자처럼 로고
-- `session.jpg` - 세션 활동 사진
-- `project.jpg` - 프로젝트 활동 사진
-- `study.jpg` - 스터디 활동 사진
-- `networking.jpg` - 네트워킹 활동 사진
-- `member-*.jpg` - 팀원 프로필 사진
-
-이미지가 없어도 placeholder로 대체되어 표시됩니다.
-
-## 배포
-
-### GitHub Pages
-1. GitHub 저장소 생성
-2. 코드 업로드
-3. Settings > Pages에서 배포 설정
-
-### Netlify
-1. Netlify에 로그인
-2. "New site from Git" 선택
-3. 저장소 연결 및 배포
-
-### Vercel
-1. Vercel에 로그인
-2. "Import Project" 선택
-3. 저장소 연결 및 배포
-
-## 브라우저 호환성
-- Chrome (최신)
-- Firefox (최신)
-- Safari (최신)
-- Edge (최신)
 
 ## 기술 스택
 - HTML5
@@ -149,5 +108,5 @@ const recruitmentEnd = new Date('2025-03-15');
 
 ## 문의
 순천대학교 멋쟁이사자처럼
-- 이메일: likelion.sunchon@example.com
-- 인스타그램: @likelion_sunchon
+- 이메일: likelionscnu@gmail.com
+- 인스타그램: @likelion_scnu
