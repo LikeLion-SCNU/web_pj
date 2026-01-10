@@ -1,0 +1,9 @@
+version: '3'
+services:
+  web:
+    build: .
+    image: scnu-likelion:latest
+    container_name: scnu-likelion
+    ports:
+      - "8080:80"
+    restart: always
