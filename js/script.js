@@ -167,18 +167,30 @@ function checkRecruitmentStatus() {
     const applyButton = document.querySelector('.apply-button');
 
     // 날짜 비교 (운영진 모집)
-    if (today < recruitmentStart) {
+    // 2026.01.11 기준 무조건 열려야 함.
+    // 디버깅을 위해 콘솔 로그 추가
+    console.log("Today:", today);
+    console.log("Start:", recruitmentStart);
+    console.log("End:", recruitmentEnd);
+
+    if (today < recruitmentStart) { // 현재가 시작일보다 전이면 (아직 안됨)
+        console.log("Status: Scheduled");
         applyButton.textContent = '모집 예정';
         applyButton.style.pointerEvents = 'none';
         applyButton.style.opacity = '0.6';
-    } else if (today > recruitmentEnd) {
+    } else if (today > recruitmentEnd) { // 현재가 마감일보다 후면 (끝남)
+        console.log("Status: Closed");
         applyButton.textContent = '모집 마감';
         applyButton.style.pointerEvents = 'none';
         applyButton.style.opacity = '0.6';
-    } else {
+    } else { // 기간 내 (열림)
+        console.log("Status: Open");
         // 모집 중일 때는 HTML에 적힌 텍스트와 링크를 그대로 유지합니다.
         applyButton.style.pointerEvents = 'auto';
         applyButton.style.opacity = '1';
+        // 혹시 모르니 강제로 텍스트와 링크 주입
+        applyButton.textContent = '운영진 지원서 작성하기';
+        applyButton.href = 'https://forms.gle/Tbji4LX3ovNTB7LM9';
     }
 }
 
@@ -227,7 +239,7 @@ window.addEventListener('load', () => {
 // Prevent Empty Image Alt Text Issues
 // ===================================
 document.querySelectorAll('img').forEach(img => {
-    img.addEventListener('error', function() {
+    img.addEventListener('error', function () {
         this.style.display = 'none';
         if (this.parentElement.classList.contains('activity-image') ||
             this.parentElement.classList.contains('member-image')) {
