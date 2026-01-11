@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +14,7 @@
     <meta property="og:image" content="images/ogtag.png">
 
 </head>
+
 <body>
     <!-- Header & Navigation -->
     <header class="header">
@@ -118,7 +120,8 @@ likelion = <span class="code-class">LikeLion</span>()
             <div class="activities-grid">
                 <div class="activity-card">
                     <div class="activity-image">
-                        <img src="images/session.jpg" alt="세션" onerror="this.parentElement.classList.add('placeholder')">
+                        <img src="images/session.jpg" alt="세션"
+                            onerror="this.parentElement.classList.add('placeholder')">
                     </div>
                     <div class="activity-content">
                         <h3>정기 세션</h3>
@@ -129,7 +132,8 @@ likelion = <span class="code-class">LikeLion</span>()
 
                 <div class="activity-card">
                     <div class="activity-image">
-                        <img src="images/project.jpg" alt="프로젝트" onerror="this.parentElement.classList.add('placeholder')">
+                        <img src="images/project.jpg" alt="프로젝트"
+                            onerror="this.parentElement.classList.add('placeholder')">
                     </div>
                     <div class="activity-content">
                         <h3>팀 프로젝트</h3>
@@ -151,7 +155,8 @@ likelion = <span class="code-class">LikeLion</span>()
 
                 <div class="activity-card">
                     <div class="activity-image">
-                        <img src="images/networking.jpg" alt="네트워킹" onerror="this.parentElement.classList.add('placeholder')">
+                        <img src="images/networking.jpg" alt="네트워킹"
+                            onerror="this.parentElement.classList.add('placeholder')">
                     </div>
                     <div class="activity-content">
                         <h3>네트워킹 데이</h3>
@@ -171,9 +176,24 @@ likelion = <span class="code-class">LikeLion</span>()
 
             <!-- 기수별 탭 -->
             <div class="team-tabs">
-                <button class="team-tab active" data-generation="13">13기</button>
+                <button class="team-tab active" data-generation="14">14기</button>
+                <button class="team-tab" data-generation="13">13기</button>
                 <button class="team-tab" data-generation="12">12기</button>
-                <button class="team-tab" data-generation="11">11기</button>
+            </div>
+
+            <!-- 14기 팀원 -->
+            <div class="team-content" data-generation="14">
+                <div class="team-grid">
+                    <div class="member-card">
+                        <div class="member-image placeholder">
+                        </div>
+                        <div class="member-info">
+                            <h3 class="member-name">박현빈</h3>
+                            <p class="member-role">대표 / Backend</p>
+                            <p class="member-major">인공지능공학부</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- 13기 팀원 -->
@@ -185,7 +205,7 @@ likelion = <span class="code-class">LikeLion</span>()
                         <div class="member-info">
                             <h3 class="member-name">고재우</h3>
                             <p class="member-role">대표 / Backend</p>
-                            <p class="member-major">컴퓨터공학과 21학번</p>
+                            <p class="member-major">컴퓨터공학과</p>
                         </div>
                     </div>
 
@@ -195,7 +215,7 @@ likelion = <span class="code-class">LikeLion</span>()
                         <div class="member-info">
                             <h3 class="member-name">임종탁</h3>
                             <p class="member-role">운영진 / Backend</p>
-                            <p class="member-major">컴퓨터공학부 23</p>
+                            <p class="member-major">컴퓨터공학과</p>
                         </div>
                     </div>
 
@@ -205,7 +225,7 @@ likelion = <span class="code-class">LikeLion</span>()
                         <div class="member-info">
                             <h3 class="member-name">나산하</h3>
                             <p class="member-role">운영진 / PM</p>
-                            <p class="member-major">컴퓨터공학과 20</p>
+                            <p class="member-major">컴퓨터공학과</p>
                         </div>
                     </div>
 
@@ -215,7 +235,7 @@ likelion = <span class="code-class">LikeLion</span>()
                         <div class="member-info">
                             <h3 class="member-name">김채원</h3>
                             <p class="member-role">운영진 / Design</p>
-                            <p class="member-major">컴퓨터공학과 21</p>
+                            <p class="member-major">컴퓨터공학과</p>
                         </div>
                     </div>
 
@@ -225,7 +245,7 @@ likelion = <span class="code-class">LikeLion</span>()
                         <div class="member-info">
                             <h3 class="member-name">박현빈</h3>
                             <p class="member-role">운영진 / Backend</p>
-                            <p class="member-major">인공지능공학부 24</p>
+                            <p class="member-major">인공지능공학부</p>
                         </div>
                     </div>
                 </div>
@@ -240,22 +260,59 @@ likelion = <span class="code-class">LikeLion</span>()
                         <div class="member-info">
                             <h3 class="member-name">임종탁</h3>
                             <p class="member-role">대표 / PM</p>
-                            <p class="member-major">컴퓨터공학과 19</p>
+                            <p class="member-major">컴퓨터공학과</p>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- 11기 팀원 -->
-            <div class="team-content" data-generation="11">
+            <div class="team-content" data-generation="12">
                 <div class="team-grid">
                     <div class="member-card">
                         <div class="member-image placeholder">
                         </div>
                         <div class="member-info">
-                            <h3 class="member-name">임종탁</h3>
-                            <p class="member-role">대표 / PM</p>
-                            <p class="member-major">컴퓨터공학과 19</p>
+                            <h3 class="member-name">나산하</h3>
+                            <p class="member-role">운영진 / Backend</p>
+                            <p class="member-major">컴퓨터공학과</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="team-content" data-generation="12">
+                <div class="team-grid">
+                    <div class="member-card">
+                        <div class="member-image placeholder">
+                        </div>
+                        <div class="member-info">
+                            <h3 class="member-name">고재우</h3>
+                            <p class="member-role">운영진 / Backend</p>
+                            <p class="member-major">컴퓨터공학과</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="team-content" data-generation="12">
+                <div class="team-grid">
+                    <div class="member-card">
+                        <div class="member-image placeholder">
+                        </div>
+                        <div class="member-info">
+                            <h3 class="member-name">류제빈</h3>
+                            <p class="member-role">운영진 / Frontend</p>
+                            <p class="member-major">컴퓨터공학과</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="team-content" data-generation="12">
+                <div class="team-grid">
+                    <div class="member-card">
+                        <div class="member-image placeholder">
+                        </div>
+                        <div class="member-info">
+                            <h3 class="member-name">김채원</h3>
+                            <p class="member-role">운영진 / Design</p>
+                            <p class="member-major">컴퓨터공학과</p>
                         </div>
                     </div>
                 </div>
@@ -317,7 +374,7 @@ likelion = <span class="code-class">LikeLion</span>()
                         <h4>문의하기</h4>
                         <p>📧 이메일: likelionscnu@gmail.com</p>
                         <p>📱 인스타그램: @likelion_scnu</p>
-                        <p>💬 오픈카톡: https://open.kakao.com/o/skAGSC1h    </p>
+                        <p>💬 오픈카톡: https://open.kakao.com/o/skAGSC1h </p>
                     </div>
                 </div>
             </div>
@@ -363,4 +420,5 @@ likelion = <span class="code-class">LikeLion</span>()
 
     <script src="js/script.js"></script>
 </body>
+
 </html>
