@@ -5,5 +5,5 @@ services:
     image: scnu-likelion:latest
     container_name: scnu-likelion
     ports:
-      - "8080:80"
+      - "8888:80"
     restart: always
