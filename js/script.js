@@ -157,13 +157,16 @@ if (footerYear) {
 // ===================================
 // Recruitment Status Check
 // ===================================
+// Recruitment Status Check
 function checkRecruitmentStatus() {
-    const recruitmentStart = new Date('2026-03-01');
-    const recruitmentEnd = new Date('2026-03-15');
+    // 운영진 모집 기간: ~ 2026-01-30
+    const recruitmentStart = new Date('2026-01-01');
+    const recruitmentEnd = new Date('2026-01-31'); // 30일 자정까지가 아니라 31일 00:00 전까지로 넉넉하게
     const today = new Date();
 
     const applyButton = document.querySelector('.apply-button');
 
+    // 날짜 비교 (운영진 모집)
     if (today < recruitmentStart) {
         applyButton.textContent = '모집 예정';
         applyButton.style.pointerEvents = 'none';
@@ -173,8 +176,9 @@ function checkRecruitmentStatus() {
         applyButton.style.pointerEvents = 'none';
         applyButton.style.opacity = '0.6';
     } else {
-        applyButton.textContent = '지원서 작성하기';
-        applyButton.href = '#'; // 실제 지원서 링크로 변경
+        // 모집 중일 때는 HTML에 적힌 텍스트와 링크를 그대로 유지합니다.
+        applyButton.style.pointerEvents = 'auto';
+        applyButton.style.opacity = '1';
     }
 }
 
