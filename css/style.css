@@ -248,7 +248,7 @@ ul {
 
 .hero-logo img {
     width: 420px;
-    height: 330px;
+    height: auto;
     margin: 0 auto;
     /* Bright Orange Color Effect */
     filter:
@@ -1253,8 +1253,8 @@ ul {
 /* Tablet */
 @media (max-width: 968px) {
     .hero-logo img {
-        width: 180\px;
-        height: 180px;
+        width: 180px;
+        height: auto;
     }
 
     .hero-logo {
@@ -1340,7 +1340,7 @@ ul {
 
     .hero-logo img {
         width: 150px;
-        height: 150px;
+        height: auto;
     }
 
     .hero-logo {
@@ -1407,7 +1407,7 @@ ul {
 
     .hero-logo img {
         width: 130px;
-        height: 130px;
+        height: auto;
     }
 
     .hero-logo {
