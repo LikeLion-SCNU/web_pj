@@ -159,16 +159,14 @@ if (footerYear) {
 // ===================================
 // Recruitment Status Check
 function checkRecruitmentStatus() {
-    // 운영진 모집 기간: ~ 2026-01-30
-    const recruitmentStart = new Date('2026-01-01');
-    const recruitmentEnd = new Date('2026-01-31'); // 30일 자정까지가 아니라 31일 00:00 전까지로 넉넉하게
+    // 아기사자 모집 기간: 2026-02-19 ~ 2026-03-06
+    const recruitmentStart = new Date('2026-02-19');
+    const recruitmentEnd = new Date('2026-03-07'); // 3월 7일 00:00 전까지 (즉, 6일 23:59까지)
     const today = new Date();
 
     const applyButton = document.querySelector('.apply-button');
 
-    // 날짜 비교 (운영진 모집)
-    // 2026.01.11 기준 무조건 열려야 함.
-    // 디버깅을 위해 콘솔 로그 추가
+    // 날짜 비교
     console.log("Today:", today);
     console.log("Start:", recruitmentStart);
     console.log("End:", recruitmentEnd);
@@ -188,9 +186,9 @@ function checkRecruitmentStatus() {
         // 모집 중일 때는 HTML에 적힌 텍스트와 링크를 그대로 유지합니다.
         applyButton.style.pointerEvents = 'auto';
         applyButton.style.opacity = '1';
-        // 혹시 모르니 강제로 텍스트와 링크 주입
-        applyButton.textContent = '운영진 지원서 작성하기';
-        applyButton.href = 'https://forms.gle/Tbji4LX3ovNTB7LM9';
+        // 강제로 텍스트와 링크 주입 (안전장치)
+        applyButton.textContent = '아기사자 지원서 작성하기';
+        applyButton.href = 'https://docs.google.com/forms/d/e/1FAIpQLSeXF2Z-dCpGoSQnxft5VOzbQcDrNMuJWqvTsuLsXa07nDJOUQ/viewform?usp=dialog';
     }
 }
 
