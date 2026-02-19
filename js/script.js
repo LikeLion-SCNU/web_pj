@@ -160,8 +160,9 @@ if (footerYear) {
 // Recruitment Status Check
 function checkRecruitmentStatus() {
     // 아기사자 모집 기간: 2026-02-19 ~ 2026-03-06
-    const recruitmentStart = new Date('2026-02-19');
-    const recruitmentEnd = new Date('2026-03-07'); // 3월 7일 00:00 전까지 (즉, 6일 23:59까지)
+    // Date(year, monthIndex, day, hours, minutes, seconds) - Month is 0-indexed (0=Jan, 1=Feb, 2=Mar...)
+    const recruitmentStart = new Date(2026, 1, 19, 0, 0, 0); // 2월 19일 00:00:00
+    const recruitmentEnd = new Date(2026, 2, 6, 23, 59, 59); // 3월 6일 23:59:59
     const today = new Date();
 
     const applyButton = document.querySelector('.apply-button');
