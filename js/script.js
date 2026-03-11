@@ -159,10 +159,10 @@ if (footerYear) {
 // ===================================
 // Recruitment Status Check
 function checkRecruitmentStatus() {
-    // 아기사자 모집 기간: 2026-02-19 ~ 2026-03-06
+    // 아기사자 추가모집 기간: ~ 2026-03-13
     // 안전하게 시작일을 1월 1일로 설정하여 무조건 OPEN 상태가 되도록 함 (마감일만 체크)
     const recruitmentStart = new Date(2026, 0, 1); // 1월 1일
-    const recruitmentEnd = new Date(2026, 2, 6, 23, 59, 59); // 3월 6일 23:59:59
+    const recruitmentEnd = new Date(2026, 2, 13, 23, 59, 59); // 3월 13일 23:59:59
     const today = new Date();
 
     const applyButton = document.querySelector('.apply-button');
