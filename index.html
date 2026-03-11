@@ -17,6 +17,24 @@
 </head>
 
 <body>
+    <!-- Emergency Notice Popup -->
+    <div id="notice-overlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
+        <div style="background:#fff;border-radius:12px;max-width:500px;width:90%;padding:30px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.3);position:relative;">
+            <span style="display:inline-block;background:#e74c3c;color:#fff;padding:6px 16px;border-radius:20px;font-size:14px;font-weight:700;margin-bottom:16px;">긴급 공지</span>
+            <p style="font-size:15px;line-height:1.8;color:#333;margin:0 0 20px 0;word-break:keep-all;">
+                현재 서류 평가가 완료되어 면접 진행 중입니다.<br><br>
+                혹시 지원을 하셨으나 아무 연락을 못 받으신 분이 있다면 아래 연락처로 연락 주시면 감사하겠습니다.<br>
+                <small style="color:#888;">(신청해 주신 모든 분께 연락이 완료된 상태입니다)</small><br><br>
+                구글 폼 오류로 몇몇 분이 신청을 하였지만 집계가 안 되어 공지드립니다.<br>
+                감사합니다.
+            </p>
+            <p style="font-size:18px;font-weight:700;color:#e74c3c;margin:0 0 20px 0;">
+                <i class="fa-solid fa-phone"></i> 010-3200-7298
+            </p>
+            <button onclick="document.getElementById('notice-overlay').style.display='none'" style="background:#FF6B35;color:#fff;border:none;padding:10px 30px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;">확인</button>
+        </div>
+    </div>
+
     <!-- Header & Navigation -->
     <header class="header">
         <nav class="nav">
