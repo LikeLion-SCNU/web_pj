@@ -18,24 +18,26 @@
 
 <body>
     <!-- Emergency Notice Popup -->
-    <div id="notice-overlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);">
-        <div style="background:#1A1A1A;border:1px solid rgba(255,119,16,0.3);border-radius:16px;max-width:480px;width:90%;padding:40px 32px;text-align:center;box-shadow:0 0 40px rgba(255,119,16,0.15),0 8px 32px rgba(0,0,0,0.5);">
-            <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,119,16,0.1);border:1px solid rgba(255,119,16,0.3);padding:8px 20px;border-radius:30px;margin-bottom:24px;">
-                <i class="fa-solid fa-triangle-exclamation" style="color:#FF7710;font-size:14px;"></i>
-                <span style="color:#FF7710;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">NOTICE</span>
+    <div id="notice-overlay" class="notice-overlay">
+        <div class="notice-box">
+            <div class="notice-badge">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>NOTICE</span>
             </div>
-            <p style="font-size:15px;line-height:1.9;color:#B0B0B0;margin:0 0 24px 0;word-break:keep-all;">
-                현재 서류 평가가 완료되어 <span style="color:#fff;font-weight:600;">면접 진행 중</span>입니다.<br><br>
-                혹시 지원을 하셨으나 아무 연락을 못 받으신 분이 있다면<br>아래 연락처로 연락 주시면 감사하겠습니다.<br>
-                <span style="color:#606060;font-size:13px;">(신청해 주신 모든 분께 연락이 완료된 상태입니다)</span><br><br>
-                구글 폼 오류로 몇몇 분이 신청을 하였지만<br>집계가 안 되어 공지드립니다. 감사합니다.
+            <p class="notice-text">
+                현재 서류 평가가 완료되어 <strong>면접 진행 중</strong>입니다.<br><br>
+                혹시 지원을 하셨으나 아무 연락을 못 받으신 분이 있다면
+                아래 연락처로 연락 주시면 감사하겠습니다.<br>
+                <span class="notice-sub">(신청해 주신 모든 분께 연락이 완료된 상태입니다)</span><br><br>
+                구글 폼 오류로 몇몇 분이 신청을 하였지만
+                집계가 안 되어 공지드립니다. 감사합니다.
             </p>
-            <a href="tel:01032007298" style="display:inline-flex;align-items:center;gap:10px;background:rgba(255,119,16,0.1);border:1px solid rgba(255,119,16,0.25);padding:12px 24px;border-radius:10px;margin-bottom:28px;text-decoration:none;">
-                <i class="fa-solid fa-phone" style="color:#FF7710;font-size:16px;"></i>
-                <span style="color:#fff;font-size:18px;font-weight:700;letter-spacing:0.5px;">010-3200-7298</span>
+            <a href="tel:01032007298" class="notice-phone">
+                <i class="fa-solid fa-phone"></i>
+                <span>010-3200-7298</span>
             </a>
             <br>
-            <button onclick="document.getElementById('notice-overlay').style.display='none'" style="background:linear-gradient(135deg,#FF7710,#E66600);color:#fff;border:none;padding:12px 40px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:0.5px;transition:all 0.3s ease;box-shadow:0 4px 15px rgba(255,119,16,0.3);" onmouseover="this.style.boxShadow='0 4px 20px rgba(255,119,16,0.5)'" onmouseout="this.style.boxShadow='0 4px 15px rgba(255,119,16,0.3)'">확인</button>
+            <button onclick="document.getElementById('notice-overlay').style.display='none'" class="notice-btn">확인</button>
         </div>
     </div>
 
