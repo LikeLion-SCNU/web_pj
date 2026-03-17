@@ -1405,6 +1405,72 @@ ul {
     box-shadow: 0 4px 20px rgba(255, 119, 16, 0.5);
 }
 
+/* ===================================
+   Team Section - Toggle & Titles
+   =================================== */
+.team-section-title {
+    color: var(--text-gray);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 30px 0 16px;
+    padding-left: 4px;
+    letter-spacing: 0.5px;
+}
+
+.team-section-title:first-child {
+    margin-top: 0;
+}
+
+.team-members-toggle {
+    margin-top: 40px;
+}
+
+.toggle-members-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-gray);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.toggle-members-btn:hover {
+    background: var(--bg-card-hover);
+    color: var(--primary-color);
+    border-color: var(--border-glow);
+}
+
+.toggle-members-btn i {
+    transition: transform 0.3s ease;
+    font-size: 12px;
+}
+
+.team-members-toggle.expanded .toggle-members-btn i {
+    transform: rotate(180deg);
+}
+
+.team-members-toggle.expanded .toggle-members-btn span::after {
+    content: '';
+}
+
+.team-members-collapsible {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+}
+
+.team-members-toggle.expanded .team-members-collapsible {
+    max-height: 5000px;
+}
+
 /* Mobile */
 @media (max-width: 768px) {
     :root {
