@@ -1427,26 +1427,22 @@ ul {
 }
 
 .toggle-members-btn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
-    width: 100%;
-    padding: 14px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    color: var(--text-gray);
-    font-size: 15px;
-    font-weight: 600;
+    gap: 8px;
+    padding: 0;
+    background: none;
+    border: none;
+    color: var(--text-dark);
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: color 0.3s ease;
+    letter-spacing: 0.5px;
 }
 
 .toggle-members-btn:hover {
-    background: var(--bg-card-hover);
     color: var(--primary-color);
-    border-color: var(--border-glow);
 }
 
 .toggle-members-btn i {
