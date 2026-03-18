@@ -1,5 +1,5 @@
 // ===================================
-// Hero Typing Effect (loop: type → pause → erase → pause → repeat)
+// Hero Typing Effect (loop: type → pause → erase → next)
 // ===================================
 (function() {
     var el = document.getElementById('heroTitle');
@@ -21,41 +21,47 @@
     ];
 
     var phraseIdx = 0;
-    var typeSpeed = 90;
-    var eraseSpeed = 40;
-    var pauseAfterType = 3000;
-    var pauseAfterErase = 500;
+    var typeSpeed = 130;
+    var eraseSpeed = 60;
+    var pauseAfterType = 4000;
+    var pauseAfterErase = 800;
+    var cursor = '<span class="hero-cursor">|</span>';
+
+    function renderLine(l, showLen) {
+        var full = l.text + l.hl + l.after;
+        var show = full.substring(0, showLen);
+        var t1 = l.text.length;
+        var t2 = t1 + l.hl.length;
+        if (show.length <= t1) return show;
+        if (show.length <= t2) return l.text + '<em>' + show.substring(t1) + '</em>';
+        return l.text + '<em>' + l.hl + '</em>' + show.substring(t2);
+    }
+
+    function lineLen(l) { return l.text.length + l.hl.length + l.after.length; }
 
     function buildHTML(lines, charCount) {
         var html = '';
         var remaining = charCount;
+        var lastLineIdx = -1;
         for (var i = 0; i < lines.length; i++) {
-            var l = lines[i];
-            var full = l.text + l.hl + l.after;
+            var len = lineLen(lines[i]);
             if (remaining <= 0) break;
-            var show = full.substring(0, Math.min(remaining, full.length));
-            remaining -= show.length;
-            var t1 = l.text.length;
-            var t2 = t1 + l.hl.length;
-            var rendered = '';
-            if (show.length <= t1) {
-                rendered = show;
-            } else if (show.length <= t2) {
-                rendered = l.text + '<em>' + show.substring(t1) + '</em>';
-            } else {
-                rendered = l.text + '<em>' + l.hl + '</em>' + show.substring(t2);
-            }
-            html += '<span class="hero-line-' + (i+1) + '">' + rendered + '</span>';
+            var show = Math.min(remaining, len);
+            remaining -= show;
+            var content = renderLine(lines[i], show);
+            // Put cursor inside the last visible line span
+            var hasCursor = (remaining <= 0);
+            html += '<span class="hero-line-' + (i+1) + '">' + content + (hasCursor ? cursor : '') + '</span>';
+            lastLineIdx = i;
         }
-        html += '<span class="hero-cursor">|</span>';
+        // If nothing typed yet, just show cursor
+        if (charCount === 0) html = '<span class="hero-line-1">' + cursor + '</span>';
         return html;
     }
 
     function totalChars(lines) {
         var n = 0;
-        for (var i = 0; i < lines.length; i++) {
-            n += lines[i].text.length + lines[i].hl.length + lines[i].after.length;
-        }
+        for (var i = 0; i < lines.length; i++) n += lineLen(lines[i]);
         return n;
     }
 
@@ -70,11 +76,11 @@
             if (count < total) {
                 setTimeout(doType, typeSpeed);
             } else {
-                setTimeout(erasePhrase, pauseAfterType);
+                setTimeout(startErase, pauseAfterType);
             }
         }
 
-        function erasePhrase() {
+        function startErase() {
             var c = total;
             function doErase() {
                 c--;
@@ -92,9 +98,8 @@
         doType();
     }
 
-    // Show cursor initially
-    el.innerHTML = '<span class="hero-cursor">|</span>';
-    setTimeout(typePhrase, 800);
+    el.innerHTML = buildHTML(phrases[0], 0);
+    setTimeout(typePhrase, 1000);
 })();
 
 // ===================================
