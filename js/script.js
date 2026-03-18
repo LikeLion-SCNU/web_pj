@@ -1,4 +1,94 @@
 // ===================================
+// Hero Typing Effect
+// ===================================
+(function() {
+    const titleEl = document.getElementById('heroTitle');
+    const cursorEl = document.getElementById('heroCursor');
+    const descEl = document.getElementById('heroDesc');
+    const actionsEl = document.getElementById('heroActions');
+    if (!titleEl) return;
+
+    // Hide desc and actions initially
+    descEl.style.opacity = '0';
+    descEl.style.transform = 'translateY(10px)';
+    actionsEl.style.opacity = '0';
+    actionsEl.style.transform = 'translateY(10px)';
+
+    const lines = [
+        { text: '생각을 ', highlight: '현실', after: '로,' },
+        { text: '코드로 ', highlight: '세상', after: '을.' }
+    ];
+
+    let lineIdx = 0;
+    let charIdx = 0;
+    let currentLine = '';
+    const speed = 80;
+
+    function getFullLine(line) {
+        return line.text + line.highlight + line.after;
+    }
+
+    function renderTitle() {
+        let html = '';
+        // Completed lines
+        for (let i = 0; i < lineIdx; i++) {
+            const l = lines[i];
+            html += '<span class="hero-line-' + (i+1) + '">' + l.text + '<em>' + l.highlight + '</em>' + l.after + '</span>';
+        }
+        // Current typing line
+        if (lineIdx < lines.length) {
+            const l = lines[lineIdx];
+            const full = getFullLine(l);
+            const typed = full.substring(0, charIdx);
+            // Figure out which part we're in
+            let rendered = '';
+            const t1 = l.text.length;
+            const t2 = t1 + l.highlight.length;
+            if (charIdx <= t1) {
+                rendered = typed;
+            } else if (charIdx <= t2) {
+                rendered = l.text + '<em>' + typed.substring(t1) + '</em>';
+            } else {
+                rendered = l.text + '<em>' + l.highlight + '</em>' + typed.substring(t2);
+            }
+            html += '<span class="hero-line-' + (lineIdx+1) + '">' + rendered + '</span>';
+        }
+        titleEl.innerHTML = html;
+    }
+
+    function type() {
+        if (lineIdx >= lines.length) {
+            // Done typing - hide cursor, show rest
+            cursorEl.style.animation = 'blink 1s step-end infinite';
+            setTimeout(function() {
+                cursorEl.style.opacity = '0';
+                descEl.style.transition = 'all 0.6s ease';
+                descEl.style.opacity = '1';
+                descEl.style.transform = 'translateY(0)';
+                setTimeout(function() {
+                    actionsEl.style.transition = 'all 0.6s ease';
+                    actionsEl.style.opacity = '1';
+                    actionsEl.style.transform = 'translateY(0)';
+                }, 200);
+            }, 500);
+            return;
+        }
+        const full = getFullLine(lines[lineIdx]);
+        if (charIdx <= full.length) {
+            renderTitle();
+            charIdx++;
+            setTimeout(type, speed);
+        } else {
+            lineIdx++;
+            charIdx = 0;
+            setTimeout(type, 300);
+        }
+    }
+
+    setTimeout(type, 600);
+})();
+
+// ===================================
 // Mobile Navigation Toggle
 // ===================================
 const hamburger = document.querySelector('.hamburger');
