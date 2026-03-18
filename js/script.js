@@ -1,91 +1,100 @@
 // ===================================
-// Hero Typing Effect
+// Hero Typing Effect (loop: type → pause → erase → pause → repeat)
 // ===================================
 (function() {
-    const titleEl = document.getElementById('heroTitle');
-    const cursorEl = document.getElementById('heroCursor');
-    const descEl = document.getElementById('heroDesc');
-    const actionsEl = document.getElementById('heroActions');
-    if (!titleEl) return;
+    var el = document.getElementById('heroTitle');
+    if (!el) return;
 
-    // Hide desc and actions initially
-    descEl.style.opacity = '0';
-    descEl.style.transform = 'translateY(10px)';
-    actionsEl.style.opacity = '0';
-    actionsEl.style.transform = 'translateY(10px)';
-
-    const lines = [
-        { text: '생각을 ', highlight: '현실', after: '로,' },
-        { text: '코드로 ', highlight: '세상', after: '을.' }
+    var phrases = [
+        [
+            { text: '생각을 ', hl: '현실', after: '로,' },
+            { text: '코드로 ', hl: '세상', after: '을.' }
+        ],
+        [
+            { text: '아이디어를 ', hl: '서비스', after: '로,' },
+            { text: '열정을 ', hl: '성장', after: '으로.' }
+        ],
+        [
+            { text: '도전을 ', hl: '경험', after: '으로,' },
+            { text: '함께 ', hl: '미래', after: '를.' }
+        ]
     ];
 
-    let lineIdx = 0;
-    let charIdx = 0;
-    let currentLine = '';
-    const speed = 80;
+    var phraseIdx = 0;
+    var typeSpeed = 90;
+    var eraseSpeed = 40;
+    var pauseAfterType = 3000;
+    var pauseAfterErase = 500;
 
-    function getFullLine(line) {
-        return line.text + line.highlight + line.after;
-    }
-
-    function renderTitle() {
-        let html = '';
-        // Completed lines
-        for (let i = 0; i < lineIdx; i++) {
-            const l = lines[i];
-            html += '<span class="hero-line-' + (i+1) + '">' + l.text + '<em>' + l.highlight + '</em>' + l.after + '</span>';
-        }
-        // Current typing line
-        if (lineIdx < lines.length) {
-            const l = lines[lineIdx];
-            const full = getFullLine(l);
-            const typed = full.substring(0, charIdx);
-            // Figure out which part we're in
-            let rendered = '';
-            const t1 = l.text.length;
-            const t2 = t1 + l.highlight.length;
-            if (charIdx <= t1) {
-                rendered = typed;
-            } else if (charIdx <= t2) {
-                rendered = l.text + '<em>' + typed.substring(t1) + '</em>';
+    function buildHTML(lines, charCount) {
+        var html = '';
+        var remaining = charCount;
+        for (var i = 0; i < lines.length; i++) {
+            var l = lines[i];
+            var full = l.text + l.hl + l.after;
+            if (remaining <= 0) break;
+            var show = full.substring(0, Math.min(remaining, full.length));
+            remaining -= show.length;
+            var t1 = l.text.length;
+            var t2 = t1 + l.hl.length;
+            var rendered = '';
+            if (show.length <= t1) {
+                rendered = show;
+            } else if (show.length <= t2) {
+                rendered = l.text + '<em>' + show.substring(t1) + '</em>';
             } else {
-                rendered = l.text + '<em>' + l.highlight + '</em>' + typed.substring(t2);
+                rendered = l.text + '<em>' + l.hl + '</em>' + show.substring(t2);
             }
-            html += '<span class="hero-line-' + (lineIdx+1) + '">' + rendered + '</span>';
+            html += '<span class="hero-line-' + (i+1) + '">' + rendered + '</span>';
         }
-        titleEl.innerHTML = html;
+        html += '<span class="hero-cursor">|</span>';
+        return html;
     }
 
-    function type() {
-        if (lineIdx >= lines.length) {
-            // Done typing - hide cursor, show rest
-            cursorEl.style.animation = 'blink 1s step-end infinite';
-            setTimeout(function() {
-                cursorEl.style.opacity = '0';
-                descEl.style.transition = 'all 0.6s ease';
-                descEl.style.opacity = '1';
-                descEl.style.transform = 'translateY(0)';
-                setTimeout(function() {
-                    actionsEl.style.transition = 'all 0.6s ease';
-                    actionsEl.style.opacity = '1';
-                    actionsEl.style.transform = 'translateY(0)';
-                }, 200);
-            }, 500);
-            return;
+    function totalChars(lines) {
+        var n = 0;
+        for (var i = 0; i < lines.length; i++) {
+            n += lines[i].text.length + lines[i].hl.length + lines[i].after.length;
         }
-        const full = getFullLine(lines[lineIdx]);
-        if (charIdx <= full.length) {
-            renderTitle();
-            charIdx++;
-            setTimeout(type, speed);
-        } else {
-            lineIdx++;
-            charIdx = 0;
-            setTimeout(type, 300);
-        }
+        return n;
     }
 
-    setTimeout(type, 600);
+    function typePhrase() {
+        var lines = phrases[phraseIdx];
+        var total = totalChars(lines);
+        var count = 0;
+
+        function doType() {
+            count++;
+            el.innerHTML = buildHTML(lines, count);
+            if (count < total) {
+                setTimeout(doType, typeSpeed);
+            } else {
+                setTimeout(erasePhrase, pauseAfterType);
+            }
+        }
+
+        function erasePhrase() {
+            var c = total;
+            function doErase() {
+                c--;
+                el.innerHTML = buildHTML(lines, c);
+                if (c > 0) {
+                    setTimeout(doErase, eraseSpeed);
+                } else {
+                    phraseIdx = (phraseIdx + 1) % phrases.length;
+                    setTimeout(typePhrase, pauseAfterErase);
+                }
+            }
+            doErase();
+        }
+
+        doType();
+    }
+
+    // Show cursor initially
+    el.innerHTML = '<span class="hero-cursor">|</span>';
+    setTimeout(typePhrase, 800);
 })();
 
 // ===================================

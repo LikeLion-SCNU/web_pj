@@ -281,14 +281,11 @@ ul {
 }
 
 .hero-cursor {
-    display: inline-block;
+    display: inline;
     color: var(--primary-color);
-    font-size: clamp(2.8rem, 7vw, 5.5rem);
     font-weight: 200;
-    animation: blink 0.7s step-end infinite;
-    vertical-align: baseline;
-    line-height: 1;
-    margin-left: -4px;
+    animation: blink 0.8s step-end infinite;
+    margin-left: 2px;
 }
 
 @keyframes blink {
@@ -357,26 +354,6 @@ ul {
     box-shadow: 0 8px 40px rgba(255, 119, 16, 0.2);
 }
 
-/* Hero 3D Logo */
-.hero-3d-logo {
-    position: absolute;
-    right: 8%;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 2;
-    animation: logo3dFloat 6s ease-in-out infinite;
-}
-
-.hero-3d-logo img {
-    width: 380px;
-    height: auto;
-    filter: drop-shadow(0 20px 60px rgba(255, 119, 16, 0.25)) drop-shadow(0 0 100px rgba(255, 119, 16, 0.1));
-}
-
-@keyframes logo3dFloat {
-    0%, 100% { transform: translateY(-50%); }
-    50% { transform: translateY(calc(-50% - 20px)); }
-}
 
 .scroll-arrow {
     position: absolute;
@@ -1287,10 +1264,6 @@ ul {
     .hero {
         padding: 0 6%;
         align-items: center;
-    }
-
-    .hero-3d-logo {
-        display: none;
     }
 
     .hero-label {
