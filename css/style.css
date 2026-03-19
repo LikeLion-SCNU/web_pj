@@ -307,7 +307,7 @@ ul {
 
 .hero-logo-3d {
     position: absolute;
-    right: 8%;
+    right: 11%;
     top: 50%;
     transform: translateY(-50%);
     z-index: 2;
@@ -316,7 +316,7 @@ ul {
 }
 
 .hero-logo-3d img {
-    width: 420px;
+    width: 520px;
     height: auto;
     filter: drop-shadow(0 20px 60px rgba(255, 119, 16, 0.3));
 }
