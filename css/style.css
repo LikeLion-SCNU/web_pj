@@ -215,21 +215,33 @@ ul {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    background: linear-gradient(135deg, #1a0800 0%, #000 30%, #000 60%, #1a0a00 100%);
+    background: linear-gradient(160deg, #0d0502 0%, #0a0400 25%, #050200 50%, #0a0300 75%, #120600 100%);
     position: relative;
     overflow: hidden;
     padding: 0 10%;
 }
 
-.hero-overlay {
+.hero::before {
+    content: '';
     position: absolute;
-    top: -30%;
-    right: -10%;
-    width: 70%;
-    height: 160%;
-    background: radial-gradient(ellipse at center, rgba(255, 119, 16, 0.15) 0%, rgba(255, 80, 0, 0.05) 40%, transparent 70%);
+    top: -20%;
+    right: -5%;
+    width: 60%;
+    height: 140%;
+    background: radial-gradient(ellipse at center, rgba(255, 119, 16, 0.2) 0%, rgba(255, 80, 0, 0.08) 35%, transparent 65%);
     pointer-events: none;
     animation: float 12s ease-in-out infinite;
+}
+
+.hero-overlay {
+    position: absolute;
+    bottom: -30%;
+    left: -10%;
+    width: 50%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, rgba(255, 100, 0, 0.1) 0%, transparent 60%);
+    pointer-events: none;
+    animation: float 15s ease-in-out infinite reverse;
 }
 
 .hero-content {
