@@ -1626,21 +1626,7 @@ ul {
     }
 
     .hero-logo-3d {
-        position: absolute;
-        right: 5%;
-        top: auto;
-        bottom: 15%;
-        transform: none;
-        opacity: 0.3;
-    }
-
-    .hero-logo-3d img {
-        width: 200px;
-    }
-
-    @keyframes logoFloat {
-        0%, 100% { transform: translateX(0); }
-        50% { transform: translateY(-15px) translateX(3px); }
+        display: none;
     }
 
     .hero-label {
