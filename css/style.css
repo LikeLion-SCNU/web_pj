@@ -307,8 +307,8 @@ ul {
 
 .hero-logo-3d {
     position: absolute;
-    right: 15%;
-    top: 50%;
+    right: 18%;
+    top: 45%;
     transform: translateY(-50%);
     z-index: 2;
     animation: logoFloat 6s ease-in-out infinite;
