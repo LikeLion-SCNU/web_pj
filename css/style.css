@@ -1682,6 +1682,7 @@ ul {
         align-items: center;
         border-radius: 10px;
         padding: 12px;
+        text-align: left;
     }
 
     .member-card:hover {
