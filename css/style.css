@@ -1331,6 +1331,10 @@ ul {
         gap: 40px;
     }
 
+    .recruit-cta {
+        order: -1;
+    }
+
     .footer-content {
         flex-direction: column;
         gap: 40px;
