@@ -72,6 +72,16 @@
         const trackPath = TRACK_PATHS[mission.track] || 'design';
         const pblLink = `${PBL_BASE}/${trackPath}`;
 
+        const startDate = mission.start_date ? new Date(mission.start_date) : null;
+        const endDate = mission.end_date ? new Date(mission.end_date) : null;
+        const now = new Date();
+        const isOpen = (!startDate || now >= startDate) && (!endDate || now <= endDate);
+        const isClosed = endDate && now > endDate;
+        const isUpcoming = startDate && now < startDate;
+        const dateStr = startDate && endDate
+          ? `${startDate.getMonth()+1}/${startDate.getDate()}(${['일','월','화','수','목','금','토'][startDate.getDay()]}) ~ ${endDate.getMonth()+1}/${endDate.getDate()}(${['일','월','화','수','목','금','토'][endDate.getDay()]})`
+          : '';
+
         document.getElementById('missionDetail').innerHTML = `
           <a href="missions.html" style="font-size:.85rem;color:#888;text-decoration:none;">&larr; 미션 목록으로</a>
           <div style="display:flex;align-items:center;gap:16px;margin-top:12px;flex-wrap:wrap;">
@@ -84,6 +94,15 @@
           </div>
           <h2 style="font-size:1.3rem;font-weight:700;color:#fff;margin-top:8px;">${escapeHTML(mission.title)}</h2>
           <p style="color:#888;margin-top:8px;">${escapeHTML(mission.description || '')}</p>
+          ${dateStr ? `
+            <div style="margin-top:12px;padding:12px 16px;background:#1a1a1a;border-radius:8px;border-left:3px solid ${isClosed ? '#f87171' : isUpcoming ? '#888' : '#4ade80'};">
+              <span style="font-size:.85rem;color:${isClosed ? '#f87171' : isUpcoming ? '#888' : '#4ade80'};font-weight:600;">
+                <i class="fa-regular fa-calendar"></i>
+                ${isClosed ? '마감됨' : isUpcoming ? '예정' : '진행중'}
+              </span>
+              <span style="font-size:.85rem;color:#888;margin-left:12px;">${dateStr}</span>
+            </div>
+          ` : ''}
 
           ${mission.checklist && mission.checklist.length > 0 ? `
             <div class="pbl-card" style="padding:20px;margin-top:16px;">
@@ -108,14 +127,24 @@
           </div>
         `;
 
-        // 제출 폼 설정
-        document.getElementById('missionIdField').value = missionId;
-        const track = mission.submission_type === 'github' ? (user?.track || 'backend')
-                    : mission.submission_type === 'figma' ? 'design'
-                    : mission.submission_type === 'deploy' ? 'frontend'
-                    : (user?.track || 'planning');
-        renderSubmitFields(track, document.getElementById('dynamicFields'));
-        document.getElementById('submitSection').style.display = 'block';
+        // 제출 폼 설정 (기간 내만 표시)
+        if (isOpen) {
+          document.getElementById('missionIdField').value = missionId;
+          const track = mission.submission_type === 'github' ? (user?.track || 'backend')
+                      : mission.submission_type === 'figma' ? 'design'
+                      : mission.submission_type === 'deploy' ? 'frontend'
+                      : (user?.track || 'planning');
+          renderSubmitFields(track, document.getElementById('dynamicFields'));
+          document.getElementById('submitSection').style.display = 'block';
+        } else {
+          document.getElementById('submitSection').innerHTML = `
+            <div style="text-align:center;padding:24px;color:#888;">
+              <i class="fa-solid fa-lock" style="font-size:24px;margin-bottom:8px;"></i>
+              <p>${isClosed ? '제출 기한이 마감되었습니다.' : '아직 제출 기간이 아닙니다.'}</p>
+            </div>
+          `;
+          document.getElementById('submitSection').style.display = 'block';
+        }
 
         // 이전 제출 내역
         const submissions = mission.submissions || [];

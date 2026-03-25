@@ -96,16 +96,32 @@ async function loadMissions(container) {
       container.innerHTML = '<p class="text-muted text-center">등록된 미션이 없습니다.</p>';
       return;
     }
-    container.innerHTML = missions.map(m => `
-      <div class="pbl-card mission-card" onclick="location.href='/pages/submit.html?id=${m.id}'">
-        <div class="mission-number">Mission ${String(m.number).padStart(2, '0')}</div>
-        <div class="mission-title">${escapeHTML(m.title)}</div>
-        <div class="mission-meta">
-          <span>${m.estimated_hours ? m.estimated_hours + '시간' : '-'}</span>
-          <span class="badge badge-${m.my_status || 'none'}">${statusLabel(m.my_status)}</span>
+    container.innerHTML = missions.map(m => {
+      const ps = m.period_status || 'open';
+      const startDate = m.start_date ? new Date(m.start_date) : null;
+      const endDate = m.end_date ? new Date(m.end_date) : null;
+      const dateStr = startDate && endDate
+        ? `${startDate.getMonth()+1}/${startDate.getDate()} ~ ${endDate.getMonth()+1}/${endDate.getDate()}`
+        : '';
+      const periodLabel = ps === 'upcoming' ? '예정' : ps === 'closed' ? '마감' : '진행중';
+      const periodColor = ps === 'upcoming' ? '#888' : ps === 'closed' ? '#f87171' : '#4ade80';
+      const cardOpacity = ps === 'closed' ? 'opacity:.6;' : '';
+
+      return `
+        <div class="pbl-card mission-card" style="${cardOpacity}" onclick="location.href='/pages/submit.html?id=${m.id}'">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="mission-number">Mission ${String(m.number).padStart(2, '0')}</div>
+            <span style="font-size:.75rem;color:${periodColor};font-weight:600;">${periodLabel}</span>
+          </div>
+          <div class="mission-title">${escapeHTML(m.title)}</div>
+          <div style="font-size:.8rem;color:#888;margin-top:4px;">${dateStr}</div>
+          <div class="mission-meta">
+            <span>${m.estimated_hours ? m.estimated_hours + '시간' : '-'}</span>
+            <span class="badge badge-${m.my_status || 'none'}">${statusLabel(m.my_status)}</span>
+          </div>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   } catch (err) {
     container.innerHTML = `<p class="text-muted">${escapeHTML(err.message)}</p>`;
   }

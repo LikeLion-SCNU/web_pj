@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -20,6 +22,14 @@ def list_missions(db: Session = Depends(get_db), user: User = Depends(get_curren
             .order_by(Submission.attempt.desc())
             .first()
         )
+        now = datetime.utcnow()
+        if m.start_date and now < m.start_date:
+            period_status = "upcoming"
+        elif m.end_date and now > m.end_date:
+            period_status = "closed"
+        else:
+            period_status = "open"
+
         result.append({
             "id": m.id,
             "track": m.track,
@@ -28,6 +38,9 @@ def list_missions(db: Session = Depends(get_db), user: User = Depends(get_curren
             "description": m.description,
             "submission_type": m.submission_type,
             "estimated_hours": m.estimated_hours,
+            "start_date": m.start_date.isoformat() if m.start_date else None,
+            "end_date": m.end_date.isoformat() if m.end_date else None,
+            "period_status": period_status,
             "my_status": sub.status if sub else None,
             "my_attempt": sub.attempt if sub else 0,
         })
@@ -56,6 +69,8 @@ def get_mission(mission_id: int, db: Session = Depends(get_db), user: User = Dep
         "checklist": mission.checklist,
         "submission_type": mission.submission_type,
         "estimated_hours": mission.estimated_hours,
+        "start_date": mission.start_date.isoformat() if mission.start_date else None,
+        "end_date": mission.end_date.isoformat() if mission.end_date else None,
         "submissions": [
             {
                 "id": s.id,

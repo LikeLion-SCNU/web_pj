@@ -1,10 +1,28 @@
 """미션 초기 데이터를 DB에 시드하는 스크립트"""
 import json
 import os
+from datetime import datetime
 
 from database import engine, SessionLocal, Base
 from models import Mission, User
 from auth import hash_password
+
+# 주차별 스케줄 (시험기간 제외)
+# 미션 번호 → (시작일, 종료일)
+MISSION_SCHEDULE = {
+    1:  ("2026-03-30", "2026-04-03"),
+    2:  ("2026-04-06", "2026-04-10"),
+    # 중간고사: 04/13 ~ 04/24
+    3:  ("2026-04-27", "2026-05-01"),
+    4:  ("2026-05-04", "2026-05-08"),
+    5:  ("2026-05-11", "2026-05-15"),
+    6:  ("2026-05-18", "2026-05-22"),
+    7:  ("2026-05-25", "2026-05-29"),
+    8:  ("2026-06-01", "2026-06-05"),
+    # 기말고사: 06/08 ~ 06/19
+    9:  ("2026-06-22", "2026-06-26"),
+    10: ("2026-06-29", "2026-07-03"),
+}
 
 
 def seed_missions(db):
@@ -21,6 +39,10 @@ def seed_missions(db):
         missions = json.load(f)
 
     for m in missions:
+        schedule = MISSION_SCHEDULE.get(m["number"])
+        start_date = datetime.strptime(schedule[0], "%Y-%m-%d") if schedule else None
+        end_date = datetime.strptime(schedule[1], "%Y-%m-%d").replace(hour=23, minute=59, second=59) if schedule else None
+
         mission = Mission(
             track=m["track"],
             number=m["number"],
@@ -29,11 +51,13 @@ def seed_missions(db):
             checklist=m.get("checklist", []),
             submission_type=m.get("submission_type", "github"),
             estimated_hours=m.get("estimated_hours", 20),
+            start_date=start_date,
+            end_date=end_date,
         )
         db.add(mission)
 
     db.commit()
-    print(f"{len(missions)}개 미션이 시드되었습니다.")
+    print(f"{len(missions)}개 미션이 시드되었습니다. (주차별 기한 포함)")
 
 
 def seed_admin(db):
@@ -41,7 +65,6 @@ def seed_admin(db):
         print("관리자 계정이 이미 존재합니다. 건너뜁니다.")
         return
 
-    import os
     admin_pw = os.getenv("ADMIN_PASSWORD", "")
     if not admin_pw:
         import secrets
