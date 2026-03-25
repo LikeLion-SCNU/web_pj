@@ -43,12 +43,20 @@ def create_submission(
 
     screenshot_path = None
     if screenshot:
-        ext = os.path.splitext(screenshot.filename)[1] if screenshot.filename else ".png"
+        ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp"}
+        ext = os.path.splitext(screenshot.filename)[1].lower() if screenshot.filename else ""
+        if ext not in ALLOWED_EXTENSIONS:
+            raise HTTPException(400, f"허용된 이미지 형식: {', '.join(ALLOWED_EXTENSIONS)}")
+
+        contents = screenshot.file.read()
+        if len(contents) > 5 * 1024 * 1024:  # 5MB
+            raise HTTPException(400, "스크린샷 파일은 5MB 이하여야 합니다")
+
         filename = f"{uuid.uuid4().hex}{ext}"
         filepath = os.path.join(UPLOAD_DIR, filename)
         os.makedirs(UPLOAD_DIR, exist_ok=True)
         with open(filepath, "wb") as f:
-            f.write(screenshot.file.read())
+            f.write(contents)
         screenshot_path = f"/uploads/{filename}"
 
     submission = Submission(
