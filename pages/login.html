@@ -161,7 +161,14 @@
           body: JSON.stringify(data),
         });
         const result = await res.json();
-        if (!res.ok) throw new Error(result.detail || '회원가입 실패');
+        if (!res.ok) {
+          if (res.status === 409) {
+            showToast('error', '이미 가입된 이메일입니다. 로그인 탭에서 로그인하거나, 인증이 안 됐다면 로그인 후 인증 코드를 재전송하세요.');
+          } else {
+            showToast('error', result.detail || '회원가입 실패');
+          }
+          return;
+        }
 
         // Show verify step
         document.getElementById('verifyEmail').value = data.email;
@@ -171,7 +178,7 @@
         document.getElementById('tab-verify').style.display = 'block';
         document.querySelector('.tabs').style.display = 'none';
       } catch (err) {
-        alert(err.message);
+        showToast('error', err.message || '네트워크 오류');
       }
     }
 
@@ -185,20 +192,23 @@
           body: JSON.stringify({ email: form.email.value, code: form.code.value }),
         });
         const result = await res.json();
-        if (!res.ok) throw new Error(result.detail || '인증 실패');
+        if (!res.ok) {
+          showToast('error', result.detail || '인증 실패');
+          return;
+        }
 
         // Show waiting step
         document.getElementById('tab-verify').style.display = 'none';
         document.getElementById('tab-waiting').style.display = 'block';
       } catch (err) {
-        alert(err.message);
+        showToast('error', err.message || '네트워크 오류');
       }
     }
 
     async function handleResendCode(e) {
       e.preventDefault();
       if (!registerEmail || !registerPassword) {
-        alert('회원가입 정보가 없습니다. 다시 시도해주세요.');
+        showToast('error', '회원가입 정보가 없습니다. 페이지를 새로고침 후 다시 시도해주세요.');
         return;
       }
       try {
@@ -208,10 +218,13 @@
           body: JSON.stringify({ email: registerEmail, password: registerPassword }),
         });
         const result = await res.json();
-        if (!res.ok) throw new Error(result.detail || '재전송 실패');
-        alert('인증 코드가 재전송되었습니다.');
+        if (!res.ok) {
+          showToast('error', result.detail || '재전송 실패');
+          return;
+        }
+        showToast('success', '인증 코드가 재전송되었습니다.');
       } catch (err) {
-        alert(err.message);
+        showToast('error', err.message || '네트워크 오류');
       }
     }
   </script>
