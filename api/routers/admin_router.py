@@ -66,6 +66,10 @@ def approve_user(user_id: int, db: Session = Depends(get_db), admin: User = Depe
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(404, "사용자를 찾을 수 없습니다")
+    if user.approved:
+        raise HTTPException(400, "이미 승인된 사용자입니다")
+    if not user.email_verified:
+        raise HTTPException(400, "이메일 인증이 완료되지 않은 사용자입니다")
 
     user.approved = True
     db.commit()
@@ -79,11 +83,15 @@ def reject_user(user_id: int, db: Session = Depends(get_db), admin: User = Depen
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(404, "사용자를 찾을 수 없습니다")
+    if user.approved:
+        raise HTTPException(400, "이미 승인된 사용자는 거절할 수 없습니다")
 
-    send_approval_notification(user.email, user.name, approved=False)
+    email, name = user.email, user.name
     db.delete(user)
     db.commit()
-    return {"message": f"{user.name}님의 가입을 거절했습니다."}
+
+    send_approval_notification(email, name, approved=False)
+    return {"message": f"{name}님의 가입을 거절했습니다."}
 
 
 @router.get("/submissions")

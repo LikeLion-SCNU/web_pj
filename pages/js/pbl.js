@@ -16,11 +16,17 @@ async function fetchAPI(endpoint, options = {}) {
   if (res.status === 401) {
     localStorage.removeItem('pbl_token');
     localStorage.removeItem('pbl_user');
-    window.location.href = 'login.html';
-    throw new Error('Unauthorized');
+    window.location.href = '/pages/login.html';
+    throw new Error('인증이 만료되었습니다');
   }
+
+  const contentType = res.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    throw new Error('서버 응답 오류 (API가 실행 중인지 확인하세요)');
+  }
+
   const data = await res.json();
-  if (!res.ok) throw new Error(data.message || 'API Error');
+  if (!res.ok) throw new Error(data.detail || data.message || 'API 오류');
   return data;
 }
 
@@ -40,24 +46,24 @@ function isAdmin() {
 
 function requireAuth() {
   if (!isLoggedIn()) {
-    window.location.href = 'login.html';
+    window.location.href = '/pages/login.html';
   }
 }
 
 function requireAdmin() {
   requireAuth();
   if (!isAdmin()) {
-    window.location.href = 'missions.html';
+    window.location.href = '/pages/missions.html';
   }
 }
 
 function logout() {
   localStorage.removeItem('pbl_token');
   localStorage.removeItem('pbl_user');
-  window.location.href = 'login.html';
+  window.location.href = '/pages/login.html';
 }
 
-// ---- Login / Register ----
+// ---- Login ----
 async function handleLogin(e) {
   e.preventDefault();
   const form = e.target;
@@ -68,58 +74,38 @@ async function handleLogin(e) {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
-    localStorage.setItem('pbl_token', data.token);
-    localStorage.setItem('pbl_user', JSON.stringify(data.user));
+    // Backend returns { access_token, token_type }
+    localStorage.setItem('pbl_token', data.access_token);
+
+    // Fetch user info with the token
+    const user = await fetchAPI('/auth/me');
+    localStorage.setItem('pbl_user', JSON.stringify(user));
+
     showToast('success', '로그인 성공!');
-    setTimeout(() => window.location.href = 'missions.html', 500);
+    setTimeout(() => window.location.href = '/pages/missions.html', 500);
   } catch (err) {
     showToast('error', err.message || '로그인 실패');
   }
 }
 
-async function handleRegister(e) {
-  e.preventDefault();
-  const form = e.target;
-  const payload = {
-    email: form.querySelector('[name="email"]').value.trim(),
-    password: form.querySelector('[name="password"]').value,
-    name: form.querySelector('[name="name"]').value.trim(),
-    track: form.querySelector('[name="track"]').value,
-    team: parseInt(form.querySelector('[name="team"]').value, 10),
-  };
-  try {
-    const data = await fetchAPI('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    });
-    localStorage.setItem('pbl_token', data.token);
-    localStorage.setItem('pbl_user', JSON.stringify(data.user));
-    showToast('success', '회원가입 성공!');
-    setTimeout(() => window.location.href = 'missions.html', 500);
-  } catch (err) {
-    showToast('error', err.message || '회원가입 실패');
-  }
-}
-
 // ---- Missions ----
 async function loadMissions(container) {
-  const user = getUser();
-  if (!user) return;
   try {
-    const data = await fetchAPI(`/missions?track=${user.track}`);
-    const missions = data.missions || [];
-    container.innerHTML = missions.length === 0
-      ? '<p class="text-muted text-center">등록된 미션이 없습니다.</p>'
-      : missions.map(m => `
-        <div class="pbl-card mission-card" onclick="location.href='submit.html?id=${m.id}'">
-          <div class="mission-number">Mission ${String(m.number).padStart(2, '0')}</div>
-          <div class="mission-title">${escapeHTML(m.title)}</div>
-          <div class="mission-meta">
-            <span>${m.estimated_time || '-'}</span>
-            <span class="badge badge-${m.my_status || 'pending'}">${statusLabel(m.my_status)}</span>
-          </div>
+    const missions = await fetchAPI('/missions');
+    if (!Array.isArray(missions) || missions.length === 0) {
+      container.innerHTML = '<p class="text-muted text-center">등록된 미션이 없습니다.</p>';
+      return;
+    }
+    container.innerHTML = missions.map(m => `
+      <div class="pbl-card mission-card" onclick="location.href='/pages/submit.html?id=${m.id}'">
+        <div class="mission-number">Mission ${String(m.number).padStart(2, '0')}</div>
+        <div class="mission-title">${escapeHTML(m.title)}</div>
+        <div class="mission-meta">
+          <span>${m.estimated_hours ? m.estimated_hours + '시간' : '-'}</span>
+          <span class="badge badge-${m.my_status || 'none'}">${statusLabel(m.my_status)}</span>
         </div>
-      `).join('');
+      </div>
+    `).join('');
   } catch (err) {
     container.innerHTML = `<p class="text-muted">${escapeHTML(err.message)}</p>`;
   }
@@ -130,26 +116,30 @@ async function loadMissionDetail(missionId) {
   return fetchAPI(`/missions/${missionId}`);
 }
 
-async function submitAssignment(missionId, formEl) {
-  const fd = new FormData(formEl);
-  return fetchAPI(`/missions/${missionId}/submit`, {
+async function submitAssignment(formData) {
+  const token = localStorage.getItem('pbl_token');
+  const res = await fetch(`${API_BASE}/submissions`, {
     method: 'POST',
-    body: fd,
+    headers: { 'Authorization': `Bearer ${token}` },
+    body: formData,
   });
-}
-
-async function loadMySubmissions(missionId) {
-  return fetchAPI(`/missions/${missionId}/my-submissions`);
+  const contentType = res.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    throw new Error('서버 응답 오류');
+  }
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.detail || 'API 오류');
+  return data;
 }
 
 // ---- My Page ----
 async function loadAllMySubmissions() {
-  return fetchAPI('/my/submissions');
+  return fetchAPI('/submissions/my');
 }
 
 // ---- Admin Dashboard ----
 async function loadAdminStats() {
-  return fetchAPI('/admin/stats');
+  return fetchAPI('/admin/dashboard');
 }
 
 async function loadAdminSubmissions(params = {}) {
@@ -157,14 +147,10 @@ async function loadAdminSubmissions(params = {}) {
   return fetchAPI(`/admin/submissions?${qs}`);
 }
 
-async function adminApprove(submissionId) {
-  return fetchAPI(`/admin/submissions/${submissionId}/approve`, { method: 'POST' });
-}
-
-async function adminReject(submissionId, reason) {
-  return fetchAPI(`/admin/submissions/${submissionId}/reject`, {
-    method: 'POST',
-    body: JSON.stringify({ reason }),
+async function adminReviewSubmission(submissionId, approved, comment) {
+  return fetchAPI(`/admin/submissions/${submissionId}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ approved, comment }),
   });
 }
 
@@ -176,8 +162,8 @@ function escapeHTML(str) {
 }
 
 function statusLabel(status) {
-  const map = { passed: '합격', rejected: '반려', pending: '대기', reviewing: '검토중' };
-  return map[status] || '대기';
+  const map = { passed: '합격', rejected: '반려', pending: '대기', reviewing: '검토중', none: '미제출' };
+  return map[status] || '미제출';
 }
 
 function showToast(type, message) {
@@ -191,7 +177,7 @@ function showToast(type, message) {
   el.className = `toast toast-${type}`;
   el.textContent = message;
   container.appendChild(el);
-  setTimeout(() => el.remove(), 3000);
+  setTimeout(() => el.remove(), 4000);
 }
 
 // ---- Tab switching ----
@@ -203,9 +189,15 @@ function initTabs() {
       group.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       const container = group.parentElement;
-      container.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      container.querySelectorAll('.tab-panel').forEach(p => {
+        p.classList.remove('active');
+        p.style.display = '';
+      });
       const panel = container.querySelector(`#${target}`);
-      if (panel) panel.classList.add('active');
+      if (panel) {
+        panel.classList.add('active');
+        panel.style.display = 'block';
+      }
     });
   });
 }
@@ -226,20 +218,19 @@ function updateNav() {
   if (!authArea) return;
   if (user) {
     authArea.innerHTML = `
-      <span style="font-size:.85rem;color:var(--text-muted)">${escapeHTML(user.name)}</span>
+      <span style="font-size:.85rem;color:#888">${escapeHTML(user.name)}</span>
       <button class="btn btn-sm btn-outline" onclick="logout()">로그아웃</button>
     `;
-    // Show admin link
     if (user.role === 'admin') {
       const menu = document.querySelector('.pbl-nav-menu');
       if (menu && !menu.querySelector('.admin-link')) {
         const li = document.createElement('li');
-        li.innerHTML = '<a href="admin/dashboard.html" class="admin-link">운영진</a>';
+        li.innerHTML = '<a href="/pages/admin/dashboard.html" class="admin-link">운영진</a>';
         menu.appendChild(li);
       }
     }
   } else {
-    authArea.innerHTML = '<a href="login.html" class="btn btn-sm btn-primary">로그인</a>';
+    authArea.innerHTML = '<a href="/pages/login.html" class="btn btn-sm btn-primary">로그인</a>';
   }
 }
 
@@ -255,10 +246,12 @@ function initFileUpload() {
       e.preventDefault();
       area.style.borderColor = '';
       input.files = e.dataTransfer.files;
-      area.querySelector('p').textContent = e.dataTransfer.files[0]?.name || '파일 선택';
+      const p = area.querySelector('p');
+      if (p) p.textContent = e.dataTransfer.files[0]?.name || '파일 선택';
     });
     input.addEventListener('change', () => {
-      area.querySelector('p').textContent = input.files[0]?.name || '파일 선택';
+      const p = area.querySelector('p');
+      if (p) p.textContent = input.files[0]?.name || '파일 선택';
     });
   });
 }
@@ -277,12 +270,12 @@ function renderSubmitFields(track, container) {
     frontend: `
       <div class="form-group"><label class="form-label">GitHub URL</label>
       <input type="url" name="github_url" class="form-input" placeholder="https://github.com/..." required></div>
-      <div class="form-group"><label class="form-label">배포 URL</label>
+      <div class="form-group"><label class="form-label">배포 URL (선택)</label>
       <input type="url" name="deploy_url" class="form-input" placeholder="https://..."></div>`,
     backend: `
       <div class="form-group"><label class="form-label">GitHub URL</label>
       <input type="url" name="github_url" class="form-input" placeholder="https://github.com/..." required></div>
-      <div class="form-group"><label class="form-label">배포 URL</label>
+      <div class="form-group"><label class="form-label">배포 URL (선택)</label>
       <input type="url" name="deploy_url" class="form-input" placeholder="https://..."></div>`,
     design: `
       <div class="form-group"><label class="form-label">Figma URL</label>

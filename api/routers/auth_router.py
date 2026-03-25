@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -9,6 +11,9 @@ from schemas import UserRegister, UserLogin, UserResponse, Token, EmailVerify
 from services.email_service import generate_verification_code, send_verification_email
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
+
+VERIFY_CODE_EXPIRE_MINUTES = 15
+MAX_VERIFY_ATTEMPTS = 5
 
 
 @router.post("/register", status_code=201)
@@ -31,12 +36,16 @@ def register(data: UserRegister, db: Session = Depends(get_db)):
         email_verified=False,
         approved=False,
         verification_code=code,
+        verification_attempts=0,
+        verification_expires_at=datetime.utcnow() + timedelta(minutes=VERIFY_CODE_EXPIRE_MINUTES),
     )
     db.add(user)
     db.commit()
     db.refresh(user)
 
-    send_verification_email(data.email, data.name, code)
+    success = send_verification_email(data.email, data.name, code)
+    if not success:
+        return {"message": "계정이 생성되었지만 이메일 발송에 실패했습니다. 인증 코드 재전송을 시도해주세요."}
 
     return {"message": "인증 코드가 이메일로 전송되었습니다. 이메일을 확인해주세요."}
 
@@ -50,11 +59,22 @@ def verify_email(data: EmailVerify, db: Session = Depends(get_db)):
     if user.email_verified:
         return {"message": "이미 이메일 인증이 완료되었습니다. 운영진 승인을 기다려주세요."}
 
+    if user.verification_attempts >= MAX_VERIFY_ATTEMPTS:
+        raise HTTPException(429, "인증 시도 횟수를 초과했습니다. 인증 코드를 재전송해주세요.")
+
+    if user.verification_expires_at and datetime.utcnow() > user.verification_expires_at:
+        raise HTTPException(400, "인증 코드가 만료되었습니다. 인증 코드를 재전송해주세요.")
+
     if user.verification_code != data.code:
-        raise HTTPException(400, "인증 코드가 올바르지 않습니다")
+        user.verification_attempts += 1
+        db.commit()
+        remaining = MAX_VERIFY_ATTEMPTS - user.verification_attempts
+        raise HTTPException(400, f"인증 코드가 올바르지 않습니다. (남은 시도: {remaining}회)")
 
     user.email_verified = True
     user.verification_code = None
+    user.verification_attempts = 0
+    user.verification_expires_at = None
     db.commit()
 
     return {"message": "이메일 인증이 완료되었습니다. 운영진의 승인을 기다려주세요."}
@@ -62,7 +82,6 @@ def verify_email(data: EmailVerify, db: Session = Depends(get_db)):
 
 @router.post("/resend-code")
 def resend_code(data: UserLogin, db: Session = Depends(get_db)):
-    """이메일로 인증 코드 재전송 (비밀번호 확인 후)"""
     user = db.query(User).filter(User.email == data.email).first()
     if not user or not verify_password(data.password, user.password_hash):
         raise HTTPException(401, "이메일 또는 비밀번호가 올바르지 않습니다")
@@ -72,6 +91,8 @@ def resend_code(data: UserLogin, db: Session = Depends(get_db)):
 
     code = generate_verification_code()
     user.verification_code = code
+    user.verification_attempts = 0
+    user.verification_expires_at = datetime.utcnow() + timedelta(minutes=VERIFY_CODE_EXPIRE_MINUTES)
     db.commit()
 
     send_verification_email(user.email, user.name, code)

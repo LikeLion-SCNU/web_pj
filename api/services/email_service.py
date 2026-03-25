@@ -1,4 +1,4 @@
-import random
+import secrets
 import smtplib
 import string
 from email.mime.multipart import MIMEMultipart
@@ -8,7 +8,7 @@ from config import SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD
 
 
 def generate_verification_code() -> str:
-    return "".join(random.choices(string.digits, k=6))
+    return "".join(secrets.choice(string.digits) for _ in range(6))
 
 
 def send_verification_email(to_email: str, name: str, code: str) -> bool:
@@ -17,7 +17,7 @@ def send_verification_email(to_email: str, name: str, code: str) -> bool:
         return True
 
     msg = MIMEMultipart("alternative")
-    msg["Subject"] = f"[멋쟁이사자처럼 순천대] 이메일 인증 코드: {code}"
+    msg["Subject"] = "[멋쟁이사자처럼 순천대] 이메일 인증을 완료해주세요"
     msg["From"] = f"멋쟁이사자처럼 순천대 <{SMTP_USER}>"
     msg["To"] = to_email
 
