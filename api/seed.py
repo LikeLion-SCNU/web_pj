@@ -49,9 +49,11 @@ def seed_admin(db):
         print(f"[!] ADMIN_PASSWORD 미설정. 임시 비밀번호: {admin_pw}")
         print("[!] .env에 ADMIN_PASSWORD를 설정하세요.")
 
+    admin_email = os.getenv("ADMIN_EMAIL", "sunchon.univ@likelion.org")
+
     admin = User(
         name="운영진",
-        email="admin@likelion.org",
+        email=admin_email,
         password_hash=hash_password(admin_pw),
         track="backend",
         role="admin",
@@ -61,7 +63,7 @@ def seed_admin(db):
     )
     db.add(admin)
     db.commit()
-    print("관리자 계정이 생성되었습니다. (admin@likelion.org)")
+    print(f"관리자 계정이 생성되었습니다. ({admin_email})")
 
 
 def run_seed():
