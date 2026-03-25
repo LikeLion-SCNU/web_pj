@@ -65,7 +65,7 @@
         <option value="pending">대기</option>
         <option value="reviewing">검토중</option>
       </select>
-      <button class="btn btn-primary btn-sm" onclick="applyFilters()">필터 적용</button>
+      <button class="btn btn-primary btn-sm" id="filterBtn">필터 적용</button>
     </div>
 
     <!-- Table -->
@@ -93,7 +93,7 @@
     <div class="modal">
       <div class="modal-header">
         <h3 id="modalTitle">제출 상세</h3>
-        <button class="modal-close" onclick="closeModal('detailModal')">&times;</button>
+        <button class="modal-close" id="modalCloseBtn">&times;</button>
       </div>
       <div class="modal-body" id="modalBody"></div>
       <div class="modal-footer" id="modalFooter"></div>
@@ -103,6 +103,10 @@
   <script src="../js/pbl.js?v=2"></script>
   <script>
     requireAdmin();
+
+    // 이벤트 바인딩 (CSP 호환)
+    document.getElementById('filterBtn').addEventListener('click', () => applyFilters());
+    document.getElementById('modalCloseBtn').addEventListener('click', () => closeModal('detailModal'));
 
     const TRACK_LABELS = {planning:'기획', design:'디자인', frontend:'프론트엔드', backend:'백엔드'};
 
@@ -190,16 +194,20 @@
           tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">데이터 없음</td></tr>';
           return;
         }
-        tbody.innerHTML = list.map(s => `
-          <tr class="clickable" onclick="showDetail(${JSON.stringify(s).replace(/"/g, '&quot;')})">
+        tbody.innerHTML = list.map((s, i) => `
+          <tr class="clickable" data-idx="${i}">
             <td>${escapeHTML(s.user_name)}</td>
             <td>${escapeHTML(s.track)}</td>
-            <td>${s.team}팀</td>
+            <td>${s.team || '-'}</td>
             <td>미션 ${s.mission_number}</td>
             <td><span class="badge badge-${s.status}">${statusLabel(s.status)}</span></td>
-            <td>${new Date(s.created_at).toLocaleDateString('ko-KR')}</td>
+            <td>${new Date(s.submitted_at).toLocaleDateString('ko-KR')}</td>
           </tr>
         `).join('');
+        // 행 클릭 이벤트 바인딩
+        tbody.querySelectorAll('tr[data-idx]').forEach(tr => {
+          tr.addEventListener('click', () => showDetail(list[parseInt(tr.dataset.idx)]));
+        });
       } catch (err) {
         tbody.innerHTML = `<tr><td colspan="6" class="text-muted">${escapeHTML(err.message)}</td></tr>`;
       }
@@ -234,29 +242,31 @@
       const footer = document.getElementById('modalFooter');
       if (s.status === 'pending' || s.status === 'reviewing') {
         footer.innerHTML = `
-          <button class="btn btn-success btn-sm" onclick="handleApprove(${s.id})">합격 처리</button>
-          <button class="btn btn-danger btn-sm" onclick="handleReject(${s.id})">반려 처리</button>
+          <button class="btn btn-success btn-sm" id="modalApproveBtn">합격 처리</button>
+          <button class="btn btn-danger btn-sm" id="modalRejectBtn">반려 처리</button>
         `;
+        document.getElementById('modalApproveBtn').addEventListener('click', () => handleSubmissionApprove(s.id));
+        document.getElementById('modalRejectBtn').addEventListener('click', () => handleSubmissionReject(s.id));
       } else {
         footer.innerHTML = '';
       }
       openModal('detailModal');
     }
 
-    async function handleApprove(id) {
+    async function handleSubmissionApprove(id) {
       try {
-        await adminApprove(id);
+        await adminReviewSubmission(id, true, '합격');
         showToast('success', '합격 처리 완료');
         closeModal('detailModal');
         applyFilters();
       } catch (err) { showToast('error', err.message); }
     }
 
-    async function handleReject(id) {
+    async function handleSubmissionReject(id) {
       const reason = prompt('반려 사유를 입력하세요:');
       if (reason === null) return;
       try {
-        await adminReject(id, reason);
+        await adminReviewSubmission(id, false, reason);
         showToast('success', '반려 처리 완료');
         closeModal('detailModal');
         applyFilters();
