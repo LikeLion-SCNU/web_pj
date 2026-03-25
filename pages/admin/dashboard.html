@@ -109,8 +109,7 @@
     // Load pending users
     async function loadPendingUsers() {
       try {
-        const res = await fetchAPI('/api/admin/pending-users');
-        const users = await res.json();
+        const users = await fetchAPI('/admin/pending-users');
         const section = document.getElementById('pendingUsersSection');
         const list = document.getElementById('pendingUsersList');
         document.getElementById('pendingUserCount').textContent = users.length;
@@ -142,8 +141,7 @@
     async function approveUser(userId, name) {
       if (!confirm(`${name}님의 가입을 승인하시겠습니까?`)) return;
       try {
-        const res = await fetchAPI(`/api/admin/users/${userId}/approve`, { method: 'PATCH' });
-        if (!res.ok) throw new Error('승인 실패');
+        await fetchAPI(`/admin/users/${userId}/approve`, { method: 'PATCH' });
         alert(`${name}님이 승인되었습니다. 이메일로 알림이 전송됩니다.`);
         loadPendingUsers();
       } catch (err) { alert(err.message); }
@@ -152,8 +150,7 @@
     async function rejectUser(userId, name) {
       if (!confirm(`${name}님의 가입을 거절하시겠습니까? 계정이 삭제됩니다.`)) return;
       try {
-        const res = await fetchAPI(`/api/admin/users/${userId}/reject`, { method: 'PATCH' });
-        if (!res.ok) throw new Error('거절 실패');
+        await fetchAPI(`/admin/users/${userId}/reject`, { method: 'PATCH' });
         alert(`${name}님의 가입이 거절되었습니다.`);
         loadPendingUsers();
       } catch (err) { alert(err.message); }
