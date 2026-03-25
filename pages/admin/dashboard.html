@@ -119,7 +119,9 @@
           return;
         }
         section.style.display = 'block';
-        list.innerHTML = users.map(u => `
+        list.innerHTML = users.map(u => {
+          const safeName = escapeHTML(u.name).replace(/'/g, "\\'").replace(/\(/g, "&#40;").replace(/\)/g, "&#41;");
+          return `
           <div class="card" style="padding:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
             <div>
               <strong style="color:#fff;">${escapeHTML(u.name)}</strong>
@@ -128,11 +130,12 @@
               <span style="color:#888; font-size:13px;">${escapeHTML(u.email)} · ${TRACK_LABELS[u.track] || u.track} · ${u.team ? u.team + '팀' : '미정'}</span>
             </div>
             <div style="display:flex; gap:8px;">
-              <button class="btn btn-primary btn-sm" onclick="approveUser(${u.id}, '${escapeHTML(u.name)}')">승인</button>
-              <button class="btn btn-outline btn-sm" style="color:#ff4444; border-color:#ff4444;" onclick="rejectUser(${u.id}, '${escapeHTML(u.name)}')">거절</button>
+              <button class="btn btn-primary btn-sm" data-uid="${u.id}" data-name="${escapeHTML(u.name)}" onclick="approveUser(this.dataset.uid, this.dataset.name)">승인</button>
+              <button class="btn btn-outline btn-sm" style="color:#ff4444; border-color:#ff4444;" data-uid="${u.id}" data-name="${escapeHTML(u.name)}" onclick="rejectUser(this.dataset.uid, this.dataset.name)">거절</button>
             </div>
           </div>
-        `).join('');
+          `;
+        }).join('');
       } catch (err) {
         console.error('Pending users load error:', err);
       }
