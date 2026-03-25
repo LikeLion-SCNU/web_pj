@@ -91,10 +91,12 @@
                 <i class="fa-solid fa-clipboard-check"></i> 체크리스트
               </h3>
               <ul style="list-style:none;padding:0;margin:0;">
-                ${mission.checklist.map(c => `
-                  <li style="padding:8px 0;border-bottom:1px solid #222;color:#ccc;font-size:.9rem;">
-                    <i class="fa-regular fa-square" style="color:#555;margin-right:8px;"></i>
-                    ${escapeHTML(c)}
+                ${mission.checklist.map((c, i) => `
+                  <li style="padding:8px 0;border-bottom:1px solid #222;color:#ccc;font-size:.9rem;cursor:pointer;" onclick="this.classList.toggle('checked')">
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                      <input type="checkbox" style="accent-color:#FF7710;width:18px;height:18px;cursor:pointer;">
+                      <span>${escapeHTML(c)}</span>
+                    </label>
                   </li>
                 `).join('')}
               </ul>
