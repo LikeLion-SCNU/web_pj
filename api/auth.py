@@ -42,6 +42,10 @@ def get_current_user(
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="사용자를 찾을 수 없습니다")
+
+    if not user.email_verified or (not user.approved and user.role != "admin"):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="계정이 비활성화되었습니다")
+
     return user
 
 
