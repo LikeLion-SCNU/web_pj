@@ -6,6 +6,7 @@ from auth import require_admin
 from database import get_db
 from models import User, Mission, Submission, Review
 from schemas import AdminReviewUpdate
+from services.email_service import send_approval_notification
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
@@ -35,6 +36,54 @@ def dashboard(db: Session = Depends(get_db), admin: User = Depends(require_admin
         "pending_count": pending,
         "track_stats": [{"track": t, "count": c} for t, c in track_stats],
     }
+
+
+@router.get("/pending-users")
+def pending_users(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    """이메일 인증 완료 + 승인 대기 중인 사용자 목록"""
+    users = (
+        db.query(User)
+        .filter(User.email_verified == True, User.approved == False, User.role == "baby_lion")
+        .order_by(User.created_at.desc())
+        .all()
+    )
+    return [
+        {
+            "id": u.id,
+            "name": u.name,
+            "email": u.email,
+            "track": u.track,
+            "team": u.team,
+            "generation": u.generation,
+            "created_at": u.created_at.isoformat(),
+        }
+        for u in users
+    ]
+
+
+@router.patch("/users/{user_id}/approve")
+def approve_user(user_id: int, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(404, "사용자를 찾을 수 없습니다")
+
+    user.approved = True
+    db.commit()
+
+    send_approval_notification(user.email, user.name, approved=True)
+    return {"message": f"{user.name}님의 가입을 승인했습니다."}
+
+
+@router.patch("/users/{user_id}/reject")
+def reject_user(user_id: int, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(404, "사용자를 찾을 수 없습니다")
+
+    send_approval_notification(user.email, user.name, approved=False)
+    db.delete(user)
+    db.commit()
+    return {"message": f"{user.name}님의 가입을 거절했습니다."}
 
 
 @router.get("/submissions")

@@ -55,6 +55,9 @@ def seed_admin(db):
         password_hash=hash_password(admin_pw),
         track="backend",
         role="admin",
+        email_verified=True,
+        approved=True,
+        generation=14,
     )
     db.add(admin)
     db.commit()

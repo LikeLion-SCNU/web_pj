@@ -11,3 +11,10 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 ALGORITHM = "HS256"
 MAX_SUBMISSIONS_PER_MISSION = 2
 UPLOAD_DIR = "/app/uploads"
+
+# SMTP (Gmail App Password)
+SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
+SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
+SMTP_USER = os.getenv("SMTP_USER", "sunchon.univ@likelion.org")
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
+CURRENT_GENERATION = int(os.getenv("CURRENT_GENERATION", "14"))

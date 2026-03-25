@@ -11,6 +11,12 @@ class UserRegister(BaseModel):
     password: str = Field(..., min_length=8)
     track: str  # planning, design, frontend, backend
     team: Optional[int] = None
+    generation: Optional[int] = None  # 기수 (없으면 현재 기수)
+
+
+class EmailVerify(BaseModel):
+    email: EmailStr
+    code: str
 
 
 class UserLogin(BaseModel):
@@ -24,7 +30,10 @@ class UserResponse(BaseModel):
     email: str
     track: str
     team: Optional[int]
+    generation: int
     role: str
+    email_verified: bool
+    approved: bool
     created_at: datetime
 
     class Config:

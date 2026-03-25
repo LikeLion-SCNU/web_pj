@@ -17,7 +17,11 @@ class User(Base):
     password_hash = Column(String(255), nullable=False)
     track = Column(String(20), nullable=False)  # planning, design, frontend, backend
     team = Column(Integer, nullable=True)  # 1~5팀
+    generation = Column(Integer, default=14)  # 기수 (14기, 15기...)
     role = Column(String(20), default="baby_lion")  # baby_lion, admin
+    email_verified = Column(Boolean, default=False)
+    approved = Column(Boolean, default=False)
+    verification_code = Column(String(6), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     submissions = relationship("Submission", back_populates="user")
