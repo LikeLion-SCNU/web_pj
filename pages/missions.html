@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>미션 목록 - SCNU LIKELION PBL</title>
+  <link rel="icon" type="image/png" href="../images/logo_og.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="css/pbl.css">
+</head>
+<body>
+
+  <header class="pbl-header">
+    <nav class="pbl-nav">
+      <a href="../index.html" class="pbl-logo">
+        <img src="../images/ll_logo.webp" alt="LIKELION">
+        <span>LIKELION</span>
+        <span class="accent">PBL</span>
+      </a>
+      <ul class="pbl-nav-menu">
+        <li><a href="missions.html" class="active">미션</a></li>
+        <li><a href="my.html">내 현황</a></li>
+      </ul>
+      <div class="pbl-nav-actions"></div>
+      <button class="pbl-hamburger"><span></span><span></span><span></span></button>
+    </nav>
+  </header>
+
+  <main class="pbl-main">
+    <h1 class="pbl-page-title">내 미션</h1>
+    <p class="pbl-page-subtitle" id="trackLabel"></p>
+
+    <div id="missionGrid" class="pbl-card-grid">
+      <div class="text-center text-muted"><span class="spinner"></span></div>
+    </div>
+  </main>
+
+  <script src="js/pbl.js"></script>
+  <script>
+    requireAuth();
+    const user = getUser();
+    const trackNames = { planning: '기획', design: '디자인', frontend: '프론트엔드', backend: '백엔드' };
+    document.getElementById('trackLabel').textContent = `${trackNames[user?.track] || ''} 트랙 미션 목록`;
+    loadMissions(document.getElementById('missionGrid'));
+  </script>
+</body>
+</html>

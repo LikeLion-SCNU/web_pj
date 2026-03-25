@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그인 - SCNU LIKELION PBL</title>
+  <link rel="icon" type="image/png" href="../images/logo_og.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="css/pbl.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="pbl-header">
+    <nav class="pbl-nav">
+      <a href="../index.html" class="pbl-logo">
+        <img src="../images/ll_logo.webp" alt="LIKELION">
+        <span>LIKELION</span>
+        <span class="accent">PBL</span>
+      </a>
+      <ul class="pbl-nav-menu">
+        <li><a href="missions.html">미션</a></li>
+        <li><a href="my.html">내 현황</a></li>
+      </ul>
+      <div class="pbl-nav-actions"></div>
+      <button class="pbl-hamburger"><span></span><span></span><span></span></button>
+    </nav>
+  </header>
+
+  <main class="pbl-main">
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="tab-login">로그인</button>
+          <button class="tab-btn" data-tab="tab-register">회원가입</button>
+        </div>
+
+        <!-- Login -->
+        <div id="tab-login" class="tab-panel active">
+          <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+              <label class="form-label">이메일</label>
+              <input type="email" name="email" class="form-input" placeholder="example@scnu.ac.kr" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">비밀번호</label>
+              <input type="password" name="password" class="form-input" placeholder="비밀번호" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">로그인</button>
+          </form>
+        </div>
+
+        <!-- Register -->
+        <div id="tab-register" class="tab-panel">
+          <form id="registerForm" onsubmit="handleRegister(event)">
+            <div class="form-group">
+              <label class="form-label">이메일</label>
+              <input type="email" name="email" class="form-input" placeholder="example@scnu.ac.kr" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">비밀번호</label>
+              <input type="password" name="password" class="form-input" placeholder="8자 이상" minlength="8" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">이름</label>
+              <input type="text" name="name" class="form-input" placeholder="홍길동" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">트랙</label>
+              <select name="track" class="form-select" required>
+                <option value="">트랙 선택</option>
+                <option value="planning">기획</option>
+                <option value="design">디자인</option>
+                <option value="frontend">프론트엔드</option>
+                <option value="backend">백엔드</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">팀</label>
+              <select name="team" class="form-select" required>
+                <option value="">팀 선택</option>
+                <option value="1">1팀</option>
+                <option value="2">2팀</option>
+                <option value="3">3팀</option>
+                <option value="4">4팀</option>
+                <option value="5">5팀</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">회원가입</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/pbl.js"></script>
+</body>
+</html>

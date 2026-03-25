@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>운영진 대시보드 - SCNU LIKELION PBL</title>
+  <link rel="icon" type="image/png" href="../../images/logo_og.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="../css/pbl.css">
+</head>
+<body>
+
+  <header class="pbl-header">
+    <nav class="pbl-nav">
+      <a href="../../index.html" class="pbl-logo">
+        <img src="../../images/ll_logo.webp" alt="LIKELION">
+        <span>LIKELION</span>
+        <span class="accent">PBL</span>
+      </a>
+      <ul class="pbl-nav-menu">
+        <li><a href="../missions.html">미션</a></li>
+        <li><a href="../my.html">내 현황</a></li>
+        <li><a href="dashboard.html" class="active">운영진</a></li>
+      </ul>
+      <div class="pbl-nav-actions"></div>
+      <button class="pbl-hamburger"><span></span><span></span><span></span></button>
+    </nav>
+  </header>
+
+  <main class="pbl-main">
+    <h1 class="pbl-page-title">운영진 대시보드</h1>
+
+    <!-- Stats -->
+    <div id="statsGrid" class="stats-grid">
+      <div class="stat-card"><div class="stat-value" id="statTotal">-</div><div class="stat-label">총 인원</div></div>
+      <div class="stat-card"><div class="stat-value" id="statSubmissions">-</div><div class="stat-label">총 제출</div></div>
+      <div class="stat-card"><div class="stat-value" id="statPassed">-</div><div class="stat-label">합격</div></div>
+      <div class="stat-card"><div class="stat-value" id="statRejected">-</div><div class="stat-label">반려</div></div>
+      <div class="stat-card"><div class="stat-value" id="statPending">-</div><div class="stat-label">대기</div></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+      <select id="filterTrack" class="form-select">
+        <option value="">전체 트랙</option>
+        <option value="planning">기획</option>
+        <option value="design">디자인</option>
+        <option value="frontend">프론트엔드</option>
+        <option value="backend">백엔드</option>
+      </select>
+      <input id="filterMission" type="number" class="form-input" placeholder="미션 번호" min="1" style="width:120px">
+      <select id="filterStatus" class="form-select">
+        <option value="">전체 상태</option>
+        <option value="passed">합격</option>
+        <option value="rejected">반려</option>
+        <option value="pending">대기</option>
+        <option value="reviewing">검토중</option>
+      </select>
+      <button class="btn btn-primary btn-sm" onclick="applyFilters()">필터 적용</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <table class="pbl-table">
+        <thead>
+          <tr>
+            <th>이름</th>
+            <th>트랙</th>
+            <th>팀</th>
+            <th>미션</th>
+            <th>상태</th>
+            <th>제출일</th>
+          </tr>
+        </thead>
+        <tbody id="submissionTable">
+          <tr><td colspan="6" class="text-center text-muted"><span class="spinner"></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Detail Modal -->
+  <div class="modal-overlay" id="detailModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">제출 상세</h3>
+        <button class="modal-close" onclick="closeModal('detailModal')">&times;</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer" id="modalFooter"></div>
+    </div>
+  </div>
+
+  <script src="../js/pbl.js"></script>
+  <script>
+    requireAdmin();
+
+    // Load stats
+    (async () => {
+      try {
+        const stats = await loadAdminStats();
+        const s = stats.stats || stats;
+        document.getElementById('statTotal').textContent = s.total_users ?? '-';
+        document.getElementById('statSubmissions').textContent = s.total_submissions ?? '-';
+        document.getElementById('statPassed').textContent = s.passed ?? '-';
+        document.getElementById('statRejected').textContent = s.rejected ?? '-';
+        document.getElementById('statPending').textContent = s.pending ?? '-';
+      } catch {}
+    })();
+
+    // Load submissions
+    async function loadTable(params = {}) {
+      const tbody = document.getElementById('submissionTable');
+      tbody.innerHTML = '<tr><td colspan="6" class="text-center"><span class="spinner"></span></td></tr>';
+      try {
+        const data = await loadAdminSubmissions(params);
+        const list = data.submissions || [];
+        if (list.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">데이터 없음</td></tr>';
+          return;
+        }
+        tbody.innerHTML = list.map(s => `
+          <tr class="clickable" onclick="showDetail(${JSON.stringify(s).replace(/"/g, '&quot;')})">
+            <td>${escapeHTML(s.user_name)}</td>
+            <td>${escapeHTML(s.track)}</td>
+            <td>${s.team}팀</td>
+            <td>미션 ${s.mission_number}</td>
+            <td><span class="badge badge-${s.status}">${statusLabel(s.status)}</span></td>
+            <td>${new Date(s.created_at).toLocaleDateString('ko-KR')}</td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-muted">${escapeHTML(err.message)}</td></tr>`;
+      }
+    }
+    loadTable();
+
+    function applyFilters() {
+      const params = {};
+      const track = document.getElementById('filterTrack').value;
+      const mission = document.getElementById('filterMission').value;
+      const status = document.getElementById('filterStatus').value;
+      if (track) params.track = track;
+      if (mission) params.mission_number = mission;
+      if (status) params.status = status;
+      loadTable(params);
+    }
+
+    function showDetail(s) {
+      document.getElementById('modalTitle').textContent = `${s.user_name} - 미션 ${s.mission_number}`;
+      document.getElementById('modalBody').innerHTML = `
+        <div style="margin-bottom:1rem">
+          <span class="badge badge-${s.status}">${statusLabel(s.status)}</span>
+          <span class="text-muted" style="margin-left:.5rem;font-size:.8rem">${new Date(s.created_at).toLocaleString('ko-KR')}</span>
+        </div>
+        ${s.github_url ? `<p><strong>GitHub:</strong> <a href="${escapeHTML(s.github_url)}" target="_blank">${escapeHTML(s.github_url)}</a></p>` : ''}
+        ${s.deploy_url ? `<p><strong>배포:</strong> <a href="${escapeHTML(s.deploy_url)}" target="_blank">${escapeHTML(s.deploy_url)}</a></p>` : ''}
+        ${s.figma_url ? `<p><strong>Figma:</strong> <a href="${escapeHTML(s.figma_url)}" target="_blank">${escapeHTML(s.figma_url)}</a></p>` : ''}
+        ${s.description ? `<p><strong>설명:</strong> ${escapeHTML(s.description)}</p>` : ''}
+        ${s.ai_score != null ? `<p><strong>AI 점수:</strong> ${s.ai_score}/100</p>` : ''}
+        ${s.ai_feedback ? `<div class="feedback-box"><strong>AI 피드백</strong><br>${escapeHTML(s.ai_feedback)}</div>` : ''}
+      `;
+      const footer = document.getElementById('modalFooter');
+      if (s.status === 'pending' || s.status === 'reviewing') {
+        footer.innerHTML = `
+          <button class="btn btn-success btn-sm" onclick="handleApprove(${s.id})">합격 처리</button>
+          <button class="btn btn-danger btn-sm" onclick="handleReject(${s.id})">반려 처리</button>
+        `;
+      } else {
+        footer.innerHTML = '';
+      }
+      openModal('detailModal');
+    }
+
+    async function handleApprove(id) {
+      try {
+        await adminApprove(id);
+        showToast('success', '합격 처리 완료');
+        closeModal('detailModal');
+        applyFilters();
+      } catch (err) { showToast('error', err.message); }
+    }
+
+    async function handleReject(id) {
+      const reason = prompt('반려 사유를 입력하세요:');
+      if (reason === null) return;
+      try {
+        await adminReject(id, reason);
+        showToast('success', '반려 처리 완료');
+        closeModal('detailModal');
+        applyFilters();
+      } catch (err) { showToast('error', err.message); }
+    }
+  </script>
+</body>
+</html>
