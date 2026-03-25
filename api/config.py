@@ -7,7 +7,7 @@ DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://likelion:password@db:5432
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24시간
 ALGORITHM = "HS256"
 MAX_SUBMISSIONS_PER_MISSION = 2
 UPLOAD_DIR = "/app/uploads"
