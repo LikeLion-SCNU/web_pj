@@ -13,12 +13,6 @@ async function fetchAPI(endpoint, options = {}) {
     headers['Content-Type'] = 'application/json';
   }
   const res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
-  if (res.status === 401) {
-    localStorage.removeItem('pbl_token');
-    localStorage.removeItem('pbl_user');
-    window.location.href = '/pages/login';
-    throw new Error('인증이 만료되었습니다');
-  }
 
   const contentType = res.headers.get('content-type') || '';
   if (!contentType.includes('application/json')) {
@@ -26,6 +20,14 @@ async function fetchAPI(endpoint, options = {}) {
   }
 
   const data = await res.json();
+
+  if (res.status === 401 && !endpoint.startsWith('/auth/')) {
+    localStorage.removeItem('pbl_token');
+    localStorage.removeItem('pbl_user');
+    window.location.href = '/pages/login';
+    throw new Error('인증이 만료되었습니다');
+  }
+
   if (!res.ok) throw new Error(data.detail || data.message || 'API 오류');
   return data;
 }
