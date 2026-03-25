@@ -119,9 +119,7 @@
           return;
         }
         section.style.display = 'block';
-        list.innerHTML = users.map(u => {
-          const safeName = escapeHTML(u.name).replace(/'/g, "\\'").replace(/\(/g, "&#40;").replace(/\)/g, "&#41;");
-          return `
+        list.innerHTML = users.map(u => `
           <div class="card" style="padding:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
             <div>
               <strong style="color:#fff;">${escapeHTML(u.name)}</strong>
@@ -130,33 +128,40 @@
               <span style="color:#888; font-size:13px;">${escapeHTML(u.email)} · ${TRACK_LABELS[u.track] || u.track} · ${u.team ? u.team + '팀' : '미정'}</span>
             </div>
             <div style="display:flex; gap:8px;">
-              <button class="btn btn-primary btn-sm" data-uid="${u.id}" data-name="${escapeHTML(u.name)}" onclick="approveUser(this.dataset.uid, this.dataset.name)">승인</button>
-              <button class="btn btn-outline btn-sm" style="color:#ff4444; border-color:#ff4444;" data-uid="${u.id}" data-name="${escapeHTML(u.name)}" onclick="rejectUser(this.dataset.uid, this.dataset.name)">거절</button>
+              <button class="btn btn-primary btn-sm btn-approve" data-uid="${u.id}" data-name="${escapeHTML(u.name)}">승인</button>
+              <button class="btn btn-outline btn-sm btn-reject" style="color:#ff4444; border-color:#ff4444;" data-uid="${u.id}" data-name="${escapeHTML(u.name)}">거절</button>
             </div>
           </div>
-          `;
-        }).join('');
+        `).join('');
+
+        // 이벤트 바인딩 (CSP 호환)
+        list.querySelectorAll('.btn-approve').forEach(btn => {
+          btn.addEventListener('click', () => handleApprove(btn.dataset.uid, btn.dataset.name));
+        });
+        list.querySelectorAll('.btn-reject').forEach(btn => {
+          btn.addEventListener('click', () => handleReject(btn.dataset.uid, btn.dataset.name));
+        });
       } catch (err) {
         console.error('Pending users load error:', err);
       }
     }
 
-    async function approveUser(userId, name) {
-      if (!confirm(`${name}님의 가입을 승인하시겠습니까?`)) return;
+    async function handleApprove(userId, name) {
+      if (!confirm(name + '님의 가입을 승인하시겠습니까?')) return;
       try {
-        await fetchAPI(`/admin/users/${userId}/approve`, { method: 'PATCH' });
-        alert(`${name}님이 승인되었습니다. 이메일로 알림이 전송됩니다.`);
+        await fetchAPI('/admin/users/' + userId + '/approve', { method: 'PATCH' });
+        showToast('success', name + '님이 승인되었습니다.');
         loadPendingUsers();
-      } catch (err) { alert(err.message); }
+      } catch (err) { showToast('error', err.message); }
     }
 
-    async function rejectUser(userId, name) {
-      if (!confirm(`${name}님의 가입을 거절하시겠습니까? 계정이 삭제됩니다.`)) return;
+    async function handleReject(userId, name) {
+      if (!confirm(name + '님의 가입을 거절하시겠습니까? 계정이 삭제됩니다.')) return;
       try {
-        await fetchAPI(`/admin/users/${userId}/reject`, { method: 'PATCH' });
-        alert(`${name}님의 가입이 거절되었습니다.`);
+        await fetchAPI('/admin/users/' + userId + '/reject', { method: 'PATCH' });
+        showToast('success', name + '님의 가입이 거절되었습니다.');
         loadPendingUsers();
-      } catch (err) { alert(err.message); }
+      } catch (err) { showToast('error', err.message); }
     }
 
     loadPendingUsers();
