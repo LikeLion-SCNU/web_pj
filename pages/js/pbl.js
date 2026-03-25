@@ -100,30 +100,61 @@ async function loadMissions(container) {
     }
     container.innerHTML = missions.map(m => {
       const ps = m.period_status || 'open';
+      const ms = m.my_status;
       const startDate = m.start_date ? new Date(m.start_date) : null;
       const endDate = m.end_date ? new Date(m.end_date) : null;
       const dateStr = startDate && endDate
         ? `${startDate.getMonth()+1}/${startDate.getDate()} ~ ${endDate.getMonth()+1}/${endDate.getDate()}`
         : '';
-      const periodLabel = ps === 'upcoming' ? '예정' : ps === 'closed' ? '마감' : '진행중';
-      const periodColor = ps === 'upcoming' ? '#888' : ps === 'closed' ? '#f87171' : '#4ade80';
-      const cardOpacity = ps === 'closed' ? 'opacity:.6;' : '';
+
+      // 카드 상태 결정
+      let cardClass = 'mission-card-upcoming'; // 기본: 예정
+      let statusIcon = '🔒';
+      let statusText = '예정';
+
+      if (ms === 'passed') {
+        cardClass = 'mission-card-passed';
+        statusIcon = '✅';
+        statusText = '완료';
+      } else if (ps === 'closed' && !ms) {
+        cardClass = 'mission-card-missed';
+        statusIcon = '❌';
+        statusText = '미제출';
+      } else if (ps === 'closed' && ms === 'rejected') {
+        cardClass = 'mission-card-missed';
+        statusIcon = '❌';
+        statusText = '반려(마감)';
+      } else if (ps === 'open') {
+        cardClass = 'mission-card-active';
+        statusIcon = '🔥';
+        statusText = '진행중';
+      } else if (ps === 'closed' && ms) {
+        cardClass = 'mission-card-closed';
+        statusIcon = '⏰';
+        statusText = statusLabel(ms);
+      }
 
       return `
-        <div class="pbl-card mission-card" style="${cardOpacity}" onclick="location.href='/pages/submit?id=${m.id}'">
+        <div class="pbl-card mission-card ${cardClass}" data-href="/pages/submit?id=${m.id}">
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <div class="mission-number">Mission ${String(m.number).padStart(2, '0')}</div>
-            <span style="font-size:.75rem;color:${periodColor};font-weight:600;">${periodLabel}</span>
+            <span class="mission-status-badge">${statusIcon} ${statusText}</span>
           </div>
           <div class="mission-title">${escapeHTML(m.title)}</div>
           <div style="font-size:.8rem;color:#888;margin-top:4px;">${dateStr}</div>
           <div class="mission-meta">
             <span>${m.estimated_hours ? m.estimated_hours + '시간' : '-'}</span>
-            <span class="badge badge-${m.my_status || 'none'}">${statusLabel(m.my_status)}</span>
+            ${m.my_attempt > 0 ? `<span style="font-size:.75rem;color:#888;">${m.my_attempt}회 제출</span>` : ''}
           </div>
         </div>
       `;
     }).join('');
+
+    // 카드 클릭 이벤트 (CSP 호환)
+    container.querySelectorAll('.mission-card[data-href]').forEach(card => {
+      card.addEventListener('click', () => location.href = card.dataset.href);
+      card.style.cursor = 'pointer';
+    });
   } catch (err) {
     container.innerHTML = `<p class="text-muted">${escapeHTML(err.message)}</p>`;
   }

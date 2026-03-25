@@ -7,7 +7,7 @@
   <link rel="icon" type="image/png" href="../../images/logo_og.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-  <link rel="stylesheet" href="../css/pbl.css?v=2">
+  <link rel="stylesheet" href="../css/pbl.css?v=3">
 </head>
 <body>
 
@@ -46,6 +46,37 @@
       <div class="stat-card"><div class="stat-value" id="statPassed">-</div><div class="stat-label">합격</div></div>
       <div class="stat-card"><div class="stat-value" id="statRejected">-</div><div class="stat-label">반려</div></div>
       <div class="stat-card"><div class="stat-value" id="statPending">-</div><div class="stat-label">대기</div></div>
+    </div>
+
+    <!-- Warnings -->
+    <div id="warningsSection" style="display:none;"></div>
+
+    <!-- Progress Matrix -->
+    <div style="margin-bottom:32px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h2 style="font-size:1.2rem;font-weight:700;color:#fff;">과제 현황</h2>
+        <select id="matrixTrackFilter" class="form-select" style="width:auto;">
+          <option value="">전체 트랙</option>
+          <option value="planning">기획</option>
+          <option value="design">디자인</option>
+          <option value="frontend">프론트엔드</option>
+          <option value="backend">백엔드</option>
+        </select>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="progress-matrix" id="progressMatrix">
+          <thead><tr><th>이름</th><th>트랙</th><th>팀</th></tr></thead>
+          <tbody><tr><td colspan="3" style="text-align:center;color:#888;">로딩중...</td></tr></tbody>
+        </table>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:16px;flex-wrap:wrap;font-size:.75rem;color:#888;">
+        <span><span class="progress-cell progress-cell-passed" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></span> 합격</span>
+        <span><span class="progress-cell progress-cell-pending" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></span> 대기</span>
+        <span><span class="progress-cell progress-cell-reviewing" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></span> 검토중</span>
+        <span><span class="progress-cell progress-cell-rejected" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></span> 반려</span>
+        <span><span class="progress-cell progress-cell-missed" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></span> 미제출(마감)</span>
+        <span><span class="progress-cell progress-cell-none" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></span> 미진행</span>
+      </div>
     </div>
 
     <!-- Filters -->
@@ -100,7 +131,7 @@
     </div>
   </div>
 
-  <script src="../js/pbl.js?v=2"></script>
+  <script src="../js/pbl.js?v=3"></script>
   <script>
     requireAdmin();
 
@@ -169,6 +200,60 @@
     }
 
     loadPendingUsers();
+
+    // Load warnings
+    async function loadWarnings() {
+      try {
+        const warnings = await fetchAPI('/admin/warnings');
+        const section = document.getElementById('warningsSection');
+        if (warnings.length === 0) { section.style.display = 'none'; return; }
+        section.style.display = 'block';
+        section.innerHTML = `
+          <div class="warning-alert">
+            <h3>⚠️ 미제출 경고 (2회 이상 미제출: ${warnings.length}명)</h3>
+            ${warnings.map(w => `
+              <div class="warning-alert-item">
+                <strong>${escapeHTML(w.name)}</strong>
+                <span style="color:#888;margin-left:8px;">${TRACK_LABELS[w.track] || w.track} · ${w.team ? w.team + '팀' : ''}</span>
+                <span style="color:#f87171;margin-left:8px;">미제출 ${w.missed_count}회 (미션 ${w.missed_missions.join(', ')})</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } catch (err) { console.error('Warnings error:', err); }
+    }
+    loadWarnings();
+
+    // Load progress matrix
+    async function loadMatrix(track) {
+      try {
+        const qs = track ? '?track=' + track : '';
+        const data = await fetchAPI('/admin/progress-matrix' + qs);
+        const table = document.getElementById('progressMatrix');
+        const maxMissions = 10;
+        let headerHtml = '<tr><th>이름</th><th>트랙</th><th>팀</th>';
+        for (let i = 1; i <= maxMissions; i++) headerHtml += '<th>M' + i + '</th>';
+        headerHtml += '</tr>';
+        table.querySelector('thead').innerHTML = headerHtml;
+
+        if (data.length === 0) {
+          table.querySelector('tbody').innerHTML = '<tr><td colspan="' + (maxMissions + 3) + '" style="text-align:center;color:#888;">데이터 없음</td></tr>';
+          return;
+        }
+        table.querySelector('tbody').innerHTML = data.map(u => {
+          let cells = '<td>' + escapeHTML(u.name) + '</td><td>' + (TRACK_LABELS[u.track] || u.track) + '</td><td>' + (u.team || '-') + '</td>';
+          for (let i = 0; i < maxMissions; i++) {
+            const ms = u.missions[i];
+            const st = ms ? ms.status : 'upcoming';
+            const cls = st === 'passed' ? 'passed' : st === 'pending' ? 'pending' : st === 'reviewing' ? 'reviewing' : st === 'rejected' ? 'rejected' : st === 'missed' ? 'missed' : 'none';
+            cells += '<td><span class="progress-cell progress-cell-' + cls + '" title="미션 ' + (i + 1) + ': ' + st + '"></span></td>';
+          }
+          return '<tr>' + cells + '</tr>';
+        }).join('');
+      } catch (err) { console.error('Matrix error:', err); }
+    }
+    loadMatrix('');
+    document.getElementById('matrixTrackFilter').addEventListener('change', function() { loadMatrix(this.value); });
 
     // Load stats
     (async () => {

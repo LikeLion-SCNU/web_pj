@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -163,3 +165,92 @@ def review_submission(
 
     db.commit()
     return {"status": sub.status}
+
+
+@router.get("/progress-matrix")
+def progress_matrix(
+    track: str = Query(None),
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    """전체 사용자 과제 현황 매트릭스"""
+    user_q = db.query(User).filter(User.role == "baby_lion", User.approved == True)
+    if track:
+        user_q = user_q.filter(User.track == track)
+    users = user_q.order_by(User.track, User.team, User.name).all()
+
+    now = datetime.utcnow()
+    result = []
+
+    for u in users:
+        missions = db.query(Mission).filter(Mission.track == u.track).order_by(Mission.number).all()
+        mission_statuses = []
+        missed_count = 0
+
+        for m in missions:
+            sub = (
+                db.query(Submission)
+                .filter(Submission.user_id == u.id, Submission.mission_id == m.id)
+                .order_by(Submission.attempt.desc())
+                .first()
+            )
+            if sub:
+                status = sub.status
+            elif m.end_date and now > m.end_date:
+                status = "missed"
+                missed_count += 1
+            elif m.start_date and now >= m.start_date:
+                status = "open"
+            else:
+                status = "upcoming"
+
+            mission_statuses.append({
+                "number": m.number,
+                "status": status,
+            })
+
+        result.append({
+            "user_id": u.id,
+            "name": u.name,
+            "track": u.track,
+            "team": u.team,
+            "generation": u.generation,
+            "missions": mission_statuses,
+            "missed_count": missed_count,
+        })
+
+    return result
+
+
+@router.get("/warnings")
+def get_warnings(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    """2회 이상 미제출 사용자 경고 목록"""
+    now = datetime.utcnow()
+    users = db.query(User).filter(User.role == "baby_lion", User.approved == True).all()
+    warnings = []
+
+    for u in users:
+        missions = db.query(Mission).filter(
+            Mission.track == u.track, Mission.end_date < now
+        ).all()
+
+        missed = []
+        for m in missions:
+            has_sub = db.query(Submission).filter(
+                Submission.user_id == u.id, Submission.mission_id == m.id
+            ).count()
+            if not has_sub:
+                missed.append(m.number)
+
+        if len(missed) >= 2:
+            warnings.append({
+                "user_id": u.id,
+                "name": u.name,
+                "email": u.email,
+                "track": u.track,
+                "team": u.team,
+                "missed_missions": missed,
+                "missed_count": len(missed),
+            })
+
+    return sorted(warnings, key=lambda w: -w["missed_count"])

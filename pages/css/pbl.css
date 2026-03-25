@@ -382,3 +382,78 @@ img { max-width: 100%; display: block; }
 .toast-success { background: var(--success); }
 .toast-error   { background: var(--error); }
 @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* ---- Mission Card States ---- */
+.mission-status-badge {
+  font-size: .75rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* 예정: 어둡고 비활성 */
+.mission-card-upcoming {
+  opacity: .5;
+  border-color: #333 !important;
+}
+.mission-card-upcoming .mission-status-badge { color: #888; }
+
+/* 진행중: 오렌지 글로우 활성화 */
+.mission-card-active {
+  border-color: #FF7710 !important;
+  box-shadow: 0 0 20px rgba(255, 119, 16, 0.15), 0 0 40px rgba(255, 119, 16, 0.05);
+  animation: activeGlow 3s ease-in-out infinite;
+}
+.mission-card-active .mission-status-badge { color: #FF7710; }
+@keyframes activeGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(255, 119, 16, 0.15); }
+  50% { box-shadow: 0 0 30px rgba(255, 119, 16, 0.25), 0 0 60px rgba(255, 119, 16, 0.1); }
+}
+
+/* 완료: 초록 체크 */
+.mission-card-passed {
+  border-color: #4ade80 !important;
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.05), transparent) !important;
+}
+.mission-card-passed .mission-status-badge { color: #4ade80; }
+
+/* 미제출 마감: 빨간색 경고 */
+.mission-card-missed {
+  border-color: #f87171 !important;
+  background: linear-gradient(135deg, rgba(248, 113, 113, 0.08), transparent) !important;
+}
+.mission-card-missed .mission-status-badge { color: #f87171; }
+
+/* 마감 (제출했지만 대기/검토 중) */
+.mission-card-closed {
+  opacity: .7;
+  border-color: #555 !important;
+}
+.mission-card-closed .mission-status-badge { color: #888; }
+
+/* ---- Admin: User Progress Matrix ---- */
+.progress-matrix { width: 100%; border-collapse: collapse; margin-top: 16px; }
+.progress-matrix th, .progress-matrix td {
+  padding: 8px 6px; text-align: center; font-size: .75rem;
+  border-bottom: 1px solid #222;
+}
+.progress-matrix th { color: #888; font-weight: 600; position: sticky; top: 0; background: #0d0d0d; }
+.progress-matrix td:first-child { text-align: left; font-weight: 500; color: #ccc; font-size: .8rem; }
+.progress-cell { width: 28px; height: 28px; border-radius: 4px; display: inline-block; }
+.progress-cell-passed { background: #4ade80; }
+.progress-cell-pending { background: #FF7710; }
+.progress-cell-reviewing { background: #facc15; }
+.progress-cell-rejected { background: #f87171; }
+.progress-cell-missed { background: #f8717140; border: 1px solid #f87171; }
+.progress-cell-none { background: #333; }
+
+/* ---- Admin: Warning Alert ---- */
+.warning-alert {
+  background: linear-gradient(135deg, rgba(248, 113, 113, 0.1), transparent);
+  border: 1px solid #f87171;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+.warning-alert h3 { color: #f87171; font-size: 1rem; margin-bottom: 8px; }
+.warning-alert-item { padding: 6px 0; font-size: .85rem; color: #ccc; border-bottom: 1px solid #222; }
