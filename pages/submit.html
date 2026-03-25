@@ -51,9 +51,7 @@
     const missionId = params.get('id');
     if (!missionId) location.href = 'missions';
 
-    // PBL 사이트 미션 링크 매핑
-    const PBL_BASE = 'https://likelion-pbl-five.vercel.app';
-    const TRACK_PATHS = { planning: 'design', design: 'design', frontend: 'react', backend: 'springboot' };
+    // PBL 링크는 DB에서 가져옴
 
     (async () => {
       let user = getUser();
@@ -69,8 +67,7 @@
         const mission = await loadMissionDetail(missionId);
 
         // 미션 상세 표시
-        const trackPath = TRACK_PATHS[mission.track] || 'design';
-        const pblLink = `${PBL_BASE}/${trackPath}`;
+        const pblLink = mission.pbl_link || 'https://likelion-pbl-five.vercel.app';
 
         const startDate = mission.start_date ? new Date(mission.start_date) : null;
         const endDate = mission.end_date ? new Date(mission.end_date) : null;

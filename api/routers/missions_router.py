@@ -38,6 +38,7 @@ def list_missions(db: Session = Depends(get_db), user: User = Depends(get_curren
             "description": m.description,
             "submission_type": m.submission_type,
             "estimated_hours": m.estimated_hours,
+            "pbl_link": m.pbl_link,
             "start_date": m.start_date.isoformat() if m.start_date else None,
             "end_date": m.end_date.isoformat() if m.end_date else None,
             "period_status": period_status,
@@ -69,6 +70,7 @@ def get_mission(mission_id: int, db: Session = Depends(get_db), user: User = Dep
         "checklist": mission.checklist,
         "submission_type": mission.submission_type,
         "estimated_hours": mission.estimated_hours,
+        "pbl_link": mission.pbl_link,
         "start_date": mission.start_date.isoformat() if mission.start_date else None,
         "end_date": mission.end_date.isoformat() if mission.end_date else None,
         "submissions": [

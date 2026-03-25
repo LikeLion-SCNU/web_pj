@@ -40,6 +40,7 @@ class Mission(Base):
     checklist = Column(JSON, nullable=False)  # AI 검사 기준
     submission_type = Column(String(20), nullable=False)  # github, figma, deploy, mixed
     estimated_hours = Column(Integer, default=20)
+    pbl_link = Column(String(500), nullable=True)
     start_date = Column(DateTime, nullable=True)
     end_date = Column(DateTime, nullable=True)
 

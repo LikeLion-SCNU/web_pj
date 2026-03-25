@@ -51,6 +51,7 @@ def seed_missions(db):
             checklist=m.get("checklist", []),
             submission_type=m.get("submission_type", "github"),
             estimated_hours=m.get("estimated_hours", 20),
+            pbl_link=m.get("pbl_link"),
             start_date=start_date,
             end_date=end_date,
         )
