@@ -13,14 +13,14 @@
 
   <header class="pbl-header">
     <nav class="pbl-nav">
-      <a href="../index.html" class="pbl-logo">
+      <a href="/" class="pbl-logo">
         <img src="../images/ll_logo.webp" alt="LIKELION">
         <span>LIKELION</span>
         <span class="accent">PBL</span>
       </a>
       <ul class="pbl-nav-menu">
-        <li><a href="missions.html">미션</a></li>
-        <li><a href="my.html">내 현황</a></li>
+        <li><a href="missions">미션</a></li>
+        <li><a href="my">내 현황</a></li>
       </ul>
       <div class="pbl-nav-actions"></div>
       <button class="pbl-hamburger"><span></span><span></span><span></span></button>
@@ -49,7 +49,7 @@
     requireAuth();
     const params = new URLSearchParams(location.search);
     const missionId = params.get('id');
-    if (!missionId) location.href = 'missions.html';
+    if (!missionId) location.href = 'missions';
 
     // PBL 사이트 미션 링크 매핑
     const PBL_BASE = 'https://likelion-pbl-five.vercel.app';
@@ -83,7 +83,7 @@
           : '';
 
         document.getElementById('missionDetail').innerHTML = `
-          <a href="missions.html" style="font-size:.85rem;color:#888;text-decoration:none;">&larr; 미션 목록으로</a>
+          <a href="missions" style="font-size:.85rem;color:#888;text-decoration:none;">&larr; 미션 목록으로</a>
           <div style="display:flex;align-items:center;gap:16px;margin-top:12px;flex-wrap:wrap;">
             <h1 style="font-size:1.8rem;font-weight:800;color:#fff;margin:0;">
               Mission ${String(mission.number).padStart(2, '0')}

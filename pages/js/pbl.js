@@ -16,7 +16,7 @@ async function fetchAPI(endpoint, options = {}) {
   if (res.status === 401) {
     localStorage.removeItem('pbl_token');
     localStorage.removeItem('pbl_user');
-    window.location.href = '/pages/login.html';
+    window.location.href = '/pages/login';
     throw new Error('인증이 만료되었습니다');
   }
 
@@ -46,21 +46,21 @@ function isAdmin() {
 
 function requireAuth() {
   if (!isLoggedIn()) {
-    window.location.href = '/pages/login.html';
+    window.location.href = '/pages/login';
   }
 }
 
 function requireAdmin() {
   requireAuth();
   if (!isAdmin()) {
-    window.location.href = '/pages/missions.html';
+    window.location.href = '/pages/missions';
   }
 }
 
 function logout() {
   localStorage.removeItem('pbl_token');
   localStorage.removeItem('pbl_user');
-  window.location.href = '/pages/login.html';
+  window.location.href = '/pages/login';
 }
 
 // ---- Login ----
@@ -82,7 +82,7 @@ async function handleLogin(e) {
     localStorage.setItem('pbl_user', JSON.stringify(user));
 
     showToast('success', '로그인 성공!');
-    setTimeout(() => window.location.href = '/pages/missions.html', 500);
+    setTimeout(() => window.location.href = '/pages/missions', 500);
   } catch (err) {
     showToast('error', err.message || '로그인 실패');
   }
@@ -108,7 +108,7 @@ async function loadMissions(container) {
       const cardOpacity = ps === 'closed' ? 'opacity:.6;' : '';
 
       return `
-        <div class="pbl-card mission-card" style="${cardOpacity}" onclick="location.href='/pages/submit.html?id=${m.id}'">
+        <div class="pbl-card mission-card" style="${cardOpacity}" onclick="location.href='/pages/submit?id=${m.id}'">
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <div class="mission-number">Mission ${String(m.number).padStart(2, '0')}</div>
             <span style="font-size:.75rem;color:${periodColor};font-weight:600;">${periodLabel}</span>
@@ -241,12 +241,12 @@ function updateNav() {
       const menu = document.querySelector('.pbl-nav-menu');
       if (menu && !menu.querySelector('.admin-link')) {
         const li = document.createElement('li');
-        li.innerHTML = '<a href="/pages/admin/dashboard.html" class="admin-link">운영진</a>';
+        li.innerHTML = '<a href="/pages/admin/dashboard" class="admin-link">운영진</a>';
         menu.appendChild(li);
       }
     }
   } else {
-    authArea.innerHTML = '<a href="/pages/login.html" class="btn btn-sm btn-primary">로그인</a>';
+    authArea.innerHTML = '<a href="/pages/login" class="btn btn-sm btn-primary">로그인</a>';
   }
 }
 
