@@ -20,8 +20,10 @@
     .mission-desc code { background:#1a1a2e; padding:2px 6px; border-radius:4px; font-size:.85em; color:#a78bfa; }
     .mission-desc pre { background:#1a1a2e; padding:12px 16px; border-radius:8px; overflow-x:auto; margin:8px 0; }
     .mission-desc pre code { background:none; padding:0; }
-    .mission-desc a { color:#818cf8; text-decoration:underline; }
-    .mission-desc a:hover { color:#a78bfa; }
+    .mission-desc a { display:inline-flex; align-items:center; gap:6px; padding:8px 16px; background:linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff; text-decoration:none; border-radius:8px; font-size:.85rem; font-weight:600; transition:all .2s; margin:4px 4px 4px 0; }
+    .mission-desc a:hover { background:linear-gradient(135deg,#4338ca,#6d28d9); transform:translateY(-1px); box-shadow:0 4px 12px rgba(79,70,229,.4); }
+    .mission-desc a::before { content:"🔗"; font-size:.8em; }
+    .mission-desc li > a, .mission-desc p > a { display:inline-flex; }
     .mission-desc strong { color:#fff; }
     .mission-desc blockquote { border-left:3px solid #818cf8; padding-left:12px; color:#999; margin:8px 0; }
     .mission-desc hr { border:none; border-top:1px solid #333; margin:12px 0; }

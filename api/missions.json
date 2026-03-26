@@ -1,1 +1,665 @@
-[{"track":"planning","number":0,"title":"Git/GitHub 협업 가이드","description":"## Git/GitHub & PM 기초 세팅\n\n### 참고 VOD (필수 시청)\n\n**1) PM 기초 (챕터 1 / 5강 / 38분)**\n강의: https://likelion.net/courses/technology/next-PM\n- Product Manager vs Project Manager (8:16)\n- 서비스 기획자 vs Product Manager (10:32)\n- Product Owner vs Product Manager (8:44)\n- IT 서비스의 탄생 - 기획/디자인/개발 프로세스 (13:07)\n- UI/UX에 대한 이해 (9:58)\n\n**2) PM이 주로 사용하는 툴 (챕터 5 / 2강 / 17분)**\n- Figma (10:27)\n- Jira (7:01)\n\n**3) Git & GitHub (11강 / 1시간 31분)**\n프론트엔드 강의에서 시청: https://likelion.net/courses/technology/next-frontend\n(챕터 5. Git & Github)\n- Git & Github의 등장과 역할 (4:52)\n- Git 설치 및 세팅하기 (윈도우 7:55 / 맥 9:17)\n- Git 동작 흐름과 구성 요소 (4:02)\n- 로컬 Git 저장소 생성 (13:31 + 15:12)\n- Github에 소스 반영 (4:41 + 4:16)\n- Github으로 협업하기 (7:48 + 11:19)\n- Git GUI 활용하기 (8:42)\n\n### 과제 진행 순서\n\n#### Step 1: PM 강의 시청\n1. PM 강의 챕터 1, 5를 시청하세요\n2. PM이란 무엇인지, 어떤 역할인지 이해하기\n3. Figma, Jira 등 PM이 사용하는 도구 파악하기\n\n#### Step 2: Git 설치 & GitHub 레포 생성\n1. Git & GitHub 강의(프론트 챕터 5)를 시청하면서 따라하기\n2. Git 설치 (Windows: git-scm.com / Mac: 터미널에서 git --version)\n3. 설치 후 터미널에서 설정:\n```\ngit config --global user.name \"내 이름\"\ngit config --global user.email \"내 이메일\"\n```\n4. GitHub에서 새 레포지토리 생성:\n   - Repository name: `likelion-pbl-planning`\n   - **Public** 선택\n   - ✅ Add a README file 체크\n   - Create repository\n\n#### Step 3: README에 기획 소개 작성 & 커밋\n1. GitHub 웹에서 README.md → Edit(연필 아이콘) 클릭\n2. 아래 내용 작성 (Markdown 형식):\n```markdown\n# 멋쟁이사자처럼 PBL - 기획 트랙\n\n## 자기소개\n- 이름: (본인 이름)\n- 파트: 기획 (Product Manager)\n- 관심 분야: (예: 교육, 헬스케어, 커뮤니티)\n\n## PM 강의를 듣고 배운 점\n- (챕터 1에서 인상 깊었던 내용 2~3줄)\n\n## 이번 학기 목표\n- (자유 작성)\n```\n3. **Commit changes** 클릭\n4. 2~3번 더 수정 → 매번 Commit (최소 3회 커밋)\n\n#### Step 4: 브랜치 & PR\n1. 브랜치 드롭다운 → 새 이름 입력 (예: `feature/intro`) → **Create branch**\n2. 새 브랜치에서 파일 수정 → Commit\n3. 상단 **Compare & pull request** → PR 생성\n\n### 제출\nGitHub 레포지토리 URL을 제출하세요. (예: https://github.com/내아이디/likelion-pbl-planning)","checklist":["GitHub 레포지토리를 생성했는가","README.md 파일을 작성하고 커밋했는가","최소 3회 이상 커밋 기록이 있는가","브랜치를 생성하고 PR(Pull Request)을 만들었는가"],"submission_type":"github","estimated_hours":2,"pbl_link":"https://likelion.net/courses/technology/next-PM"},{"track":"design","number":0,"title":"Git/GitHub & Figma 협업 가이드","description":"## Git/GitHub & Figma 개발환경 세팅\n\n### 참고 VOD (필수 시청)\n\n**1) Figma 기초 (챕터 1 / 6강 / 47분)**\n강의: https://likelion.net/courses/technology/next_figma\n- Figma 소개 (6:36)\n- Figma 인터페이스 기본 (4:28)\n- 아트보드와 도형 그리기 (12:11)\n- 색상과 스타일 적용 (7:08)\n- 텍스트 추가 및 스타일링 (7:05)\n- Figma로 실습 1 (9:29)\n\n**2) Git & GitHub (11강 / 1시간 31분)**\n프론트엔드 강의에서 시청: https://likelion.net/courses/technology/next-frontend\n(챕터 5. Git & Github)\n- Git & Github의 등장과 역할 (4:52)\n- Git 설치 및 세팅하기 (윈도우 7:55 / 맥 9:17)\n- Git 동작 흐름과 구성 요소 (4:02)\n- 로컬 Git 저장소 생성 (13:31 + 15:12)\n- Github에 소스 반영 (4:41 + 4:16)\n- Github으로 협업하기 (7:48 + 11:19)\n- Git GUI 활용하기 (8:42)\n\n### 과제 진행 순서\n\n#### Step 1: Figma 세팅\n1. figma.com 가입 (무료, 구글 계정 연동 가능)\n2. Figma 강의 챕터 1을 시청하면서 따라하기\n3. 새 Design File 생성 → 파일 이름: `LIKELION PBL - [내 이름]`\n4. 간단한 자기소개 카드 만들어보기 (프레임 + 도형 + 텍스트)\n5. 공유 링크 생성: 오른쪽 상단 **Share** → **Copy link**\n   - ⚠️ \"Anyone with the link\" → **can view** 설정 필수!\n\n#### Step 2: Git 설치 & GitHub 레포 생성\n1. Git & GitHub 강의(프론트 챕터 5)를 시청하면서 따라하기\n2. Git 설치 (Windows: git-scm.com / Mac: 터미널에서 git --version)\n3. 설치 후 터미널에서 설정:\n```\ngit config --global user.name \"내 이름\"\ngit config --global user.email \"내 이메일\"\n```\n4. GitHub에서 새 레포지토리 생성:\n   - Repository name: `likelion-pbl-design`\n   - **Public** 선택 (AI 검사용)\n   - ✅ Add a README file 체크\n   - Create repository\n\n#### Step 3: README 작성 & 커밋\n1. GitHub 웹에서 README.md → Edit(연필 아이콘) 클릭\n2. 아래 내용 작성:\n```markdown\n# 멋쟁이사자처럼 PBL - 디자인 트랙\n\n## 자기소개\n- 이름: (본인 이름)\n- 파트: 디자인\n- Figma: (Figma 공유 링크)\n\n## 학습 목표\n- Figma 기본 사용법 익히기\n- 사용자 중심 디자인 경험\n```\n3. **Commit changes** 클릭\n4. 2~3번 더 수정 → 매번 Commit (최소 3회 커밋)\n\n#### Step 4: 브랜치 & PR\n1. 브랜치 드롭다운 → 새 이름 입력 (예: `feature/intro`) → **Create branch**\n2. 새 브랜치에서 파일 수정 → Commit\n3. 상단 **Compare & pull request** → PR 생성\n\n### 제출\n- GitHub URL: 레포지토리 주소\n- Figma URL: 공유 링크 (⚠️ 공유 설정 확인!)","checklist":["GitHub 레포지토리를 생성했는가","README.md에 프로젝트 소개를 작성했는가","Figma 팀 프로젝트를 생성했는가","Figma 공유 링크가 정상 동작하는가"],"submission_type":"mixed","estimated_hours":2,"pbl_link":"https://likelion.net/courses/technology/next_figma"},{"track":"frontend","number":0,"title":"Git/GitHub & 개발환경 세팅","description":"## Git/GitHub & 개발환경 세팅\n\n### 참고 VOD (필수 시청)\n멋쟁이사자처럼 강의: https://likelion.net/courses/technology/next-frontend\n- **챕터 4. 개발 환경 세팅** (2강 / 15분)\n  1. VS Code (10:40)\n  2. Codepen, Replit (4:33)\n- **챕터 5. Git & Github** (11강 / 1시간 31분)\n  1. Git & Github의 등장과 역할 (4:52)\n  2. Git 설치 및 세팅하기-윈도우 (7:55)\n  3. Git 설치 및 세팅하기-맥 (9:17)\n  4. Git 동작 흐름과 구성 요소 (4:02)\n  5. 로컬 Git 저장소 생성 (1) (13:31)\n  6. 로컬 Git 저장소 생성 (2) (15:12)\n  7. Github에 소스 반영 (1) (4:41)\n  8. Github에 소스 반영 (2) (4:16)\n  9. Github으로 협업하기 (1) (7:48)\n  10. Github으로 협업하기 (2) (11:19)\n  11. Git GUI 활용하기 (8:42)\n\n### 과제 진행 순서\n\n#### Step 1: 개발 환경 설치\n- VS Code 설치: https://code.visualstudio.com\n- 확장 프로그램 설치: **Live Server**, **Prettier**\n  (VS Code 왼쪽 사이드바 → 확장 아이콘 → 검색 → Install)\n\n#### Step 2: Git 설치\n- Windows: https://git-scm.com/download/win\n- Mac: 터미널에서 `git --version` 입력 (없으면 자동 설치 안내)\n- 설치 후 터미널에서 설정:\n```\ngit config --global user.name \"내 이름\"\ngit config --global user.email \"내 이메일\"\n```\n\n#### Step 3: GitHub 레포지토리 생성\n1. github.com 로그인\n2. 오른쪽 상단 **+** → **New repository**\n3. Repository name: `likelion-pbl` (자유)\n4. **Public** 선택 (⚠️ AI 검사를 위해 공개 필수!)\n5. ✅ Add a README file 체크\n6. **Create repository** 클릭\n\n#### Step 4: 클론 & 커밋 & 푸시\n1. 레포지토리 페이지 → **<> Code** 버튼 → HTTPS URL 복사\n2. VS Code 터미널:\n```\ngit clone [복사한 URL]\ncd likelion-pbl\n```\n3. README.md 열어서 자기소개 작성 → 저장\n4. 커밋 & 푸시:\n```\ngit add .\ngit commit -m \"첫 번째 커밋: 자기소개 추가\"\ngit push\n```\n5. 파일 수정 → add → commit → push를 **최소 3번** 반복\n\n#### Step 5: 브랜치 & PR (Pull Request)\n1. 새 브랜치 생성:\n```\ngit checkout -b feature/my-page\n```\n2. 파일 수정 후:\n```\ngit add .\ngit commit -m \"내 페이지 추가\"\ngit push origin feature/my-page\n```\n3. GitHub 웹에서 **Compare & pull request** 클릭\n4. PR 제목/설명 작성 → **Create pull request**\n\n### 제출\nGitHub 레포지토리 URL을 제출하세요. (예: https://github.com/내아이디/likelion-pbl)","checklist":["GitHub 레포지토리를 생성했는가","VS Code에서 클론하고 커밋/푸시했는가","최소 3회 이상 커밋 기록이 있는가","브랜치를 생성하고 PR을 만들었는가","Live Server 확장 프로그램을 설치했는가"],"submission_type":"github","estimated_hours":2,"pbl_link":"https://likelion.net/courses/technology/next-frontend"},{"track":"backend","number":0,"title":"Git/GitHub & 개발환경 세팅","description":"## Git/GitHub & 개발환경 세팅\n\n### 참고 VOD (필수 시청)\n멋쟁이사자처럼 강의: https://likelion.net/courses/technology/next-backendj\n- **챕터 3. Java 개발 환경 세팅** (3강 / 7분)\n  1. Java SDK 설치 (1:59)\n  2. Java SDK(Windows) 설정 (1:57)\n  3. IntelliJ 설치 (3:56)\n- **챕터 4. Git & Github** (11강 / 1시간 31분)\n  1. Git & Github의 등장과 역할 (4:52)\n  2. Git 설치 및 세팅하기-윈도우 (7:55)\n  3. Git 설치 및 세팅하기-맥 (9:17)\n  4. Git 동작 흐름과 구성 요소 (4:02)\n  5. 로컬 Git 저장소 생성 (1) (13:31)\n  6. 로컬 Git 저장소 생성 (2) (15:12)\n  7. Github에 소스 반영 (1) (4:41)\n  8. Github에 소스 반영 (2) (4:16)\n  9. Github으로 협업하기 (1) (7:48)\n  10. Github으로 협업하기 (2) (11:19)\n  11. Git GUI 활용하기 (8:42)\n\n### 과제 진행 순서\n\n#### Step 1: Java & IntelliJ 설치\n- Java 17 다운로드: https://adoptium.net\n- IntelliJ IDEA Community 다운로드: https://www.jetbrains.com/idea/download\n- (강의 챕터 3 시청하면서 따라하기)\n\n#### Step 2: Git 설치\n- Windows: https://git-scm.com/download/win\n- Mac: 터미널에서 `git --version` 입력\n- 설치 후 터미널에서 설정:\n```\ngit config --global user.name \"내 이름\"\ngit config --global user.email \"내 이메일\"\n```\n\n#### Step 3: GitHub 레포지토리 생성\n1. github.com 로그인\n2. 오른쪽 상단 **+** → **New repository**\n3. Repository name: `likelion-pbl` (자유)\n4. **Public** 선택 (⚠️ AI 검사를 위해 공개 필수!)\n5. ✅ Add a README file 체크\n6. **Create repository** 클릭\n\n#### Step 4: IntelliJ에서 클론 & 커밋 & 푸시\n1. IntelliJ → **Get from VCS** → GitHub 레포 URL 붙여넣기 → **Clone**\n2. src 폴더에 Main.java 생성:\n```java\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, LikeLion!\");\n    }\n}\n```\n3. IntelliJ 상단 → **Git** → **Commit** (Ctrl+K)\n   - 파일 체크 → 메시지 입력 → **Commit and Push**\n4. 이 과정을 **최소 3번** 반복 (파일 수정 → Commit and Push)\n\n#### Step 5: 브랜치 & PR (Pull Request)\n1. IntelliJ 하단 → Git → 현재 브랜치 클릭 → **New Branch** → `feature/hello`\n2. 코드 수정 후 **Commit and Push**\n3. GitHub 웹에서 **Compare & pull request** 클릭\n4. PR 제목/설명 작성 → **Create pull request**\n\n### 제출\nGitHub 레포지토리 URL을 제출하세요. (예: https://github.com/내아이디/likelion-pbl)","checklist":["GitHub 레포지토리를 생성했는가","IntelliJ에서 프로젝트를 생성하고 푸시했는가","최소 3회 이상 커밋 기록이 있는가","브랜치를 생성하고 PR을 만들었는가","Java 17 이상이 설치되었는가"],"submission_type":"github","estimated_hours":2,"pbl_link":"https://likelion.net/courses/technology/next-backendj"},{"track":"planning","number":1,"title":"IT 서비스 협업 구조 이해","description":"기획/디자인/프론트/백엔드 역할 구분 및 신규 서비스 주제 선정","checklist":["서비스 주제 및 한 줄 소개가 명확한가","문제 정의(현황/원인/해결안)가 논리적인가","타겟 사용자 페르소나가 구체적인가(이름,나이,직업,페인포인트,니즈)","As-Is/To-Be가 명확히 대비되는가"],"submission_type":"mixed","estimated_hours":4,"pbl_link":"https://likelion-pbl-five.vercel.app/design/2f044860a4f481e1a985c48dcf850399"},{"track":"planning","number":2,"title":"사용자 시나리오 작성","description":"서비스 사용 시나리오를 텍스트로 구성","checklist":["4~6단계 이상의 시나리오가 작성되었는가","각 단계에 상황 설명과 사용자 행동이 포함되는가","서비스 진입부터 목표 달성까지 흐름이 자연스러운가","예외 상황이 고려되었는가"],"submission_type":"mixed","estimated_hours":3,"pbl_link":"https://likelion-pbl-five.vercel.app/design/2f044860a4f4817c9d2ee5fe4bdbaf1a"},{"track":"planning","number":3,"title":"IA(정보 구조) 제작","description":"서비스의 전체 화면과 기능을 체계적으로 정리","checklist":["3단계 이상의 계층 구조로 되어있는가","화면(페이지) 수가 10개 이상인가","각 노드에 화면 이름과 핵심 기능이 표기되었는가","메뉴 그룹핑이 사용자 동선을 고려했는가"],"submission_type":"mixed","estimated_hours":4,"pbl_link":"https://likelion-pbl-five.vercel.app/design/2f044860a4f4814082dce3e329232d90"},{"track":"planning","number":4,"title":"사용자 플로우 설계","description":"핵심 시나리오의 사용자 행동 경로를 시각화","checklist":["핵심 시나리오 1~2개에 대한 플로우가 작성되었는가","시작점과 종료점이 명확한가","분기점(판단)이 포함되었는가","예외 처리 흐름이 포함되었는가"],"submission_type":"mixed","estimated_hours":4,"pbl_link":"https://likelion-pbl-five.vercel.app/design/2f044860a4f481ccb0a9f0df191f2558"},{"track":"planning","number":5,"title":"기능 명세서 작성","description":"화면별 기능을 개발자가 이해할 수 있도록 상세 기술","checklist":["최소 5개 화면에 대한 기능 명세가 있는가","각 UI 요소의 Trigger와 Action이 명확한가","예외/제한 사항이 기재되었는가","화면-기능 매핑이 되어있는가"],"submission_type":"mixed","estimated_hours":5,"pbl_link":"https://likelion-pbl-five.vercel.app/design/2f044860a4f481e28731d0db8a993fab"},{"track":"planning","number":6,"title":"와이어프레임 리뷰 & 피드백","description":"디자이너가 제작한 와이어프레임을 기획 관점에서 리뷰하고 피드백 정리","checklist":["와이어프레임의 정보 구조가 IA와 일치하는가","사용자 플로우대로 화면 이동이 가능한가","기능 명세서의 요구사항이 반영되었는가","누락된 화면이나 예외 상황이 없는가"],"submission_type":"mixed","estimated_hours":3,"pbl_link":"https://likelion-pbl-five.vercel.app/design/2f044860a4f4810ab343fcd153cec06d"},{"track":"planning","number":7,"title":"서비스 기획서 통합 정리","description":"1~6주차 산출물을 하나의 기획서로 통합 정리","checklist":["문제 정의~와이어프레임 피드백까지 일관성이 있는가","전체 기획서가 개발팀에 전달 가능한 수준인가","목차와 구조가 체계적인가","핵심 의사결정 근거가 기록되어 있는가"],"submission_type":"mixed","estimated_hours":4,"pbl_link":"https://likelion-pbl-five.vercel.app/design/2f044860a4f481e28731d0db8a993fab"},{"track":"planning","number":8,"title":"UX 테스트 설계 & 실행","description":"서비스 프로토타입을 대상으로 사용자 테스트 진행","checklist":["테스트 목표와 시나리오가 명확한가","최소 3명에게 테스트를 진행했는가","태스크 완료율/시간이 측정되었는가","사용자 행동 관찰 결과가 정리되었는가"],"submission_type":"mixed","estimated_hours":5,"pbl_link":"https://likelion-pbl-five.vercel.app/design/2f044860a4f481b2b527cb2998d88199"},{"track":"planning","number":9,"title":"테스트 결과 분석 & 개선안 도출","description":"UX 테스트 결과를 분석하고 개선 포인트 정리","checklist":["테스트 결과 보고서가 작성되었는가","인사이트와 개선점이 도출되었는가","Before/After 개선안이 있는가","개선 우선순위가 정해졌는가"],"submission_type":"mixed","estimated_hours":4,"pbl_link":"https://likelion-pbl-five.vercel.app/design/2f044860a4f481b2b527cb2998d88199"},{"track":"planning","number":10,"title":"개발 협업을 위한 최종 정리","description":"개발팀에 전달할 최종 기획 패키지 정리 및 발표","checklist":["최종 기획서/명세서가 정리되었는가","개발 우선순위가 정해졌는가","MVP 범위가 명확한가","프레젠테이션이 준비되었는가"],"submission_type":"mixed","estimated_hours":5,"pbl_link":"https://likelion-pbl-five.vercel.app/design/2f044860a4f481929b68daf2eb32f25f"},{"track":"design","number":1,"title":"Figma 입문 & 시나리오 보드","description":"Figma 기본기를 익히고 사용자 시나리오를 시각적으로 구성","checklist":["Figma에서 프레임과 도형을 활용했는가","6~8컷 이상의 시나리오가 구성되었는가","각 장면에 상황 설명 텍스트가 포함되었는가","화살표로 흐름이 연결되었는가"],"submission_type":"figma","estimated_hours":4,"pbl_link":"https://likelion-pbl-five.vercel.app/design/2f044860a4f4817c9d2ee5fe4bdbaf1a"},{"track":"design","number":2,"title":"IA(정보 구조) 다이어그램","description":"서비스의 정보 구조를 트리 형태로 시각화","checklist":["트리 구조로 되어있는가","3단계 이상의 계층인가","화면 10개 이상인가","각 노드에 화면명과 기능이 표기되었는가"],"submission_type":"figma","estimated_hours":3,"pbl_link":"https://likelion-pbl-five.vercel.app/design/2f044860a4f4814082dce3e329232d90"},{"track":"design","number":3,"title":"사용자 플로우 다이어그램","description":"핵심 시나리오의 User Flow를 Figma에서 제작","checklist":["핵심 시나리오 1~2개의 플로우가 있는가","표준 기호(타원,직사각형,마름모)를 사용했는가","예외 처리 흐름이 포함되었는가","IA와 정합성이 맞는가"],"submission_type":"figma","estimated_hours":3,"pbl_link":"https://likelion-pbl-five.vercel.app/design/2f044860a4f481ccb0a9f0df191f2558"},{"track":"design","number":4,"title":"컴포넌트 & Auto Layout","description":"재사용 가능한 UI 컴포넌트 라이브러리 제작","checklist":["버튼 컴포넌트에 Auto Layout이 적용되었는가","3개 이상의 Variant가 있는 컴포넌트가 2종 이상인가","로컬 스타일(Color,Typography)이 등록되었는가","네이밍 규칙이 일관적인가"],"submission_type":"figma","estimated_hours":5,"pbl_link":"https://likelion-pbl-five.vercel.app/design/2f044860a4f48112a7c5f9bd85c491b4"},{"track":"design","number":5,"title":"와이어프레임 제작","description":"서비스 핵심 화면을 Mid-Fi 와이어프레임으로 제작","checklist":["10화면 이상 제작되었는가","흑백+회색만 사용했는가","정보 위계가 텍스트 크기/굵기로 표현되었는가","화면 간 플로우가 연결되었는가"],"submission_type":"figma","estimated_hours":6,"pbl_link":"https://likelion-pbl-five.vercel.app/design/2f044860a4f4810ab343fcd153cec06d"},{"track":"design","number":6,"title":"기능 명세서 작성","description":"와이어프레임 기반 상세 기능 명세서","checklist":["화면 ID가 부여되었는가","각 UI 요소의 동작이 Trigger/Action으로 기술되었는가","예외/제한 사항이 기재되었는가","개발자가 읽고 구현 가능한 수준인가"],"submission_type":"mixed","estimated_hours":4,"pbl_link":"https://likelion-pbl-five.vercel.app/design/2f044860a4f481e28731d0db8a993fab"},{"track":"design","number":7,"title":"디자인 시스템 기초","description":"컬러, 타이포그래피, 간격 등 디자인 토큰 정의","checklist":["컬러 팔레트(Primary,Neutral,Semantic)가 정의되었는가","타이포그래피 체계(Heading,Body,Caption)가 있는가","4px 배수 간격 시스템이 적용되었는가","Figma 스타일/변수로 등록되었는가"],"submission_type":"figma","estimated_hours":5,"pbl_link":"https://likelion-pbl-five.vercel.app/design/2f044860a4f481ab9cbbe80c0d3375d7"},{"track":"design","number":8,"title":"High-Fi UI 디자인","description":"디자인 시스템 적용한 완성도 높은 UI","checklist":["핵심 화면 10장 이상이 High-Fi로 완성되었는가","디자인 시스템 토큰이 일관되게 적용되었는가","상태별 화면(기본,로딩,에러,빈상태)이 있는가","접근성 기준(명도 대비,터치 영역)을 충족하는가"],"submission_type":"figma","estimated_hours":8,"pbl_link":"https://likelion-pbl-five.vercel.app/design/2f044860a4f481b2b527cb2998d88199"},{"track":"design","number":9,"title":"UX 테스트 & 개선","description":"사용자 테스트 진행 후 디자인 개선","checklist":["최소 3명에게 테스트를 진행했는가","Before/After 비교가 있는가","개선 근거가 논리적인가","테스트 결과 보고서가 작성되었는가"],"submission_type":"mixed","estimated_hours":5,"pbl_link":"https://likelion-pbl-five.vercel.app/design/2f044860a4f481b2b527cb2998d88199"},{"track":"design","number":10,"title":"개발 핸드오프 정리","description":"개발팀에 전달할 최종 디자인 패키지 정리","checklist":["레이어/프레임 네이밍이 정리되었는가","에셋에 Export 설정이 완료되었는가","디자인 주석(동적 요소,예외)이 달려있는가","디자인 토큰이 Dev Mode에서 확인 가능한가"],"submission_type":"figma","estimated_hours":4,"pbl_link":"https://likelion-pbl-five.vercel.app/design/2f044860a4f481929b68daf2eb32f25f"},{"track":"frontend","number":1,"title":"HTML/CSS 기초","description":"아기사자 자기소개 정적 웹페이지 만들기","checklist":["index.html + style.css 파일이 분리되었는가","시맨틱 HTML 태그를 사용했는가","Flexbox를 활용한 레이아웃인가","프로필 이미지,이름,파트,한줄소개가 포함되었는가","인라인 스타일이 없는가"],"submission_type":"github","estimated_hours":4,"pbl_link":"https://likelion-pbl-five.vercel.app/react/2f044860a4f4819890dfced14fd7097b"},{"track":"frontend","number":2,"title":"CSS 레이아웃 & 반응형","description":"아기사자 명단 대시보드를 반응형으로 제작","checklist":["Grid 레이아웃이 적용되었는가","모바일/태블릿/데스크톱 반응형이 동작하는가","Media Query가 사용되었는가","여러 명의 카드가 그리드로 배치되는가"],"submission_type":"github","estimated_hours":5,"pbl_link":"https://likelion-pbl-five.vercel.app/react/2f044860a4f481fe943ef27144a26fd7"},{"track":"frontend","number":3,"title":"JavaScript 기초","description":"명단 추가/삭제가 가능한 인터랙티브 대시보드","checklist":["DOM 조작으로 요소를 동적 생성하는가","이벤트 리스너가 addEventListener로 등록되었는가","추가/삭제 기능이 동작하는가","인라인 이벤트 핸들러가 없는가"],"submission_type":"github","estimated_hours":6,"pbl_link":"https://likelion-pbl-five.vercel.app/react/2f044860a4f481fa8a52eec6ae08b4d9"},{"track":"frontend","number":4,"title":"JS 비동기와 데이터","description":"외부 API 데이터를 불러와 명단 갱신","checklist":["fetch API를 사용했는가","async/await 문법을 사용했는가","로딩/에러 상태가 표시되는가","필터/검색 기능이 동작하는가"],"submission_type":"github","estimated_hours":6,"pbl_link":"https://likelion-pbl-five.vercel.app/react/2f044860a4f481ebacbdd5cdbf060f6e"},{"track":"frontend","number":5,"title":"React 시작하기","description":"대시보드 UI를 React 컴포넌트로 재구성","checklist":["함수형 컴포넌트로 작성되었는가","Props로 데이터가 전달되는가","컴포넌트가 적절히 분리되었는가","map을 활용한 리스트 렌더링이 있는가"],"submission_type":"github","estimated_hours":7,"pbl_link":"https://likelion-pbl-five.vercel.app/react/2f044860a4f48140a95dc73343b00434"},{"track":"frontend","number":6,"title":"상태와 Effect","description":"useState/useEffect를 활용한 동적 기능","checklist":["useState로 상태 관리가 되는가","useEffect로 데이터 로딩이 구현되었는가","폼 입력이 상태로 관리되는가","추가/삭제가 실제로 동작하는가"],"submission_type":"github","estimated_hours":8,"pbl_link":"https://likelion-pbl-five.vercel.app/react/2f044860a4f4819089c9f2230641f701"},{"track":"frontend","number":7,"title":"React Router","description":"목록/상세 페이지 SPA 라우팅","checklist":["React Router v6을 사용했는가","목록→상세 페이지 이동이 되는가","URL 파라미터로 상세 데이터를 표시하는가","뒤로가기/앞으로가기가 동작하는가"],"submission_type":"github","estimated_hours":5,"pbl_link":"https://likelion-pbl-five.vercel.app/react/2f044860a4f481ddac76e92fdef2fee2"},{"track":"frontend","number":8,"title":"TypeScript 기초","description":"기존 프로젝트를 TypeScript로 마이그레이션","checklist":[".tsx/.ts 파일로 변환되었는가","컴포넌트 Props에 타입이 지정되었는가","any 타입이 최소화되었는가","tsc 빌드가 에러 없이 통과하는가"],"submission_type":"github","estimated_hours":6,"pbl_link":"https://likelion-pbl-five.vercel.app/react/2f044860a4f481c0b69bce5e8eebfadb"},{"track":"frontend","number":9,"title":"Supabase 연동","description":"실제 DB 연동 명단 관리 앱","checklist":["Supabase 테이블이 생성되었는가","CRUD 기능이 DB와 연동되는가","로그인/회원가입이 구현되었는가","환경변수로 API 키가 관리되는가"],"submission_type":"deploy","estimated_hours":8,"pbl_link":"https://likelion-pbl-five.vercel.app/react/2f044860a4f4817f8622f527d0fe5e10"},{"track":"frontend","number":10,"title":"최종 서비스 완성 & 배포","description":"Vercel 배포 + 코드 정리 + 동료 리뷰","checklist":["Vercel/Netlify에 배포되었는가","빌드 에러가 없는가","콘솔에 불필요한 로그가 없는가","README가 작성되었는가"],"submission_type":"deploy","estimated_hours":4,"pbl_link":"https://likelion-pbl-five.vercel.app/react/2f044860a4f4813c8187dc6a1d0082d9"},{"track":"backend","number":1,"title":"Java 핵심 문법 & 흐름","description":"콘솔 기반 아기사자 명단 관리 프로그램","checklist":["Scanner로 입력을 받는가","배열에 이름이 저장되는가","5 미만 입력 시 재입력을 요청하는가","최종 명단이 출력되는가"],"submission_type":"github","estimated_hours":4,"pbl_link":"https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481878cbdd66f54b19ce9"},{"track":"backend","number":2,"title":"객체지향 I - 클래스와 캡슐화","description":"클래스 기반으로 리팩토링된 명단 관리","checklist":["Member 클래스에 private 필드가 있는가","getter/setter가 구현되었는가","생성자에서 유효성 검증이 있는가","main에 로직이 직접 작성되지 않았는가"],"submission_type":"github","estimated_hours":5,"pbl_link":"https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481869998cc607120d4c4"},{"track":"backend","number":3,"title":"객체지향 II - 상속/다형성/추상화","description":"파트별 멤버 계층 구조 구현","checklist":["추상 클래스 또는 인터페이스가 사용되었는가","상속 구조가 적절한가","다형성으로 조건문이 최소화되었는가","instanceof 대신 다형성을 활용했는가"],"submission_type":"github","estimated_hours":6,"pbl_link":"https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481638d0cf4aad3314d98"},{"track":"backend","number":4,"title":"Java Collections & 설계 확장","description":"List, Map을 활용한 멤버 관리 확장","checklist":["ArrayList가 사용되었는가","Map으로 파트별 그룹핑이 되는가","제네릭이 사용되었는가","이름 검색 기능이 있는가"],"submission_type":"github","estimated_hours":5,"pbl_link":"https://likelion-pbl-five.vercel.app/springboot/2f044860a4f48151a4cac98414514b2b"},{"track":"backend","number":5,"title":"자바로 배우는 IoC/DI","description":"순수 Java로 DI 패턴 구현","checklist":["Repository 인터페이스가 정의되었는가","두 개 이상의 구현체가 있는가","생성자 주입이 사용되었는가","AppConfig 클래스가 있는가"],"submission_type":"github","estimated_hours":5,"pbl_link":"https://likelion-pbl-five.vercel.app/springboot/2f044860a4f48110b935cf9dc900b42b"},{"track":"backend","number":6,"title":"Spring Boot 전환","description":"Spring Boot 기반으로 전환","checklist":["Spring Boot 프로젝트가 생성되었는가","@Service/@Repository 어노테이션이 사용되었는가","생성자 주입이 적용되었는가","GET /hello API가 동작하는가"],"submission_type":"github","estimated_hours":5,"pbl_link":"https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481cfb0fad0418e9c04a5"},{"track":"backend","number":7,"title":"REST API 설계(CRUD)","description":"아기사자 CRUD REST API 구현","checklist":["POST/GET/PUT/DELETE API가 구현되었는가","DTO가 Entity와 분리되었는가","적절한 HTTP 상태 코드를 반환하는가","RESTful URL 설계인가"],"submission_type":"github","estimated_hours":6,"pbl_link":"https://likelion-pbl-five.vercel.app/springboot/2f044860a4f4818ea0e6ebeb22ef09ad"},{"track":"backend","number":8,"title":"JPA 기초 & 영속성 컨텍스트","description":"JPA + DB 연동 API","checklist":["@Entity 어노테이션이 사용되었는가","JpaRepository를 상속했는가","application.properties에 DB 설정이 있는가","CRUD가 DB에 반영되는가"],"submission_type":"github","estimated_hours":7,"pbl_link":"https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481fb9dd3ea247d83d657"},{"track":"backend","number":9,"title":"연관관계 & 트랜잭션","description":"Team-Member 1:N 관계 매핑","checklist":["@ManyToOne/@OneToMany가 사용되었는가","@Transactional이 적용되었는가","팀별 멤버 조회 API가 있는가","외래키가 올바르게 생성되는가"],"submission_type":"github","estimated_hours":5,"pbl_link":"https://likelion-pbl-five.vercel.app/springboot/2f044860a4f48108b793f72c8a7146e7"},{"track":"backend","number":10,"title":"미니 프로젝트: 예외 처리 & FE 연동","description":"전역 예외 처리 + 프론트엔드 연동","checklist":["@RestControllerAdvice가 사용되었는가","커스텀 예외 클래스가 있는가","통일된 에러 응답 형식인가","프론트엔드에서 API 호출이 동작하는가"],"submission_type":"github","estimated_hours":7,"pbl_link":"https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481e6a824ca2a9f06099b"}]
+[
+  {
+    "track": "planning",
+    "number": 0,
+    "title": "Git/GitHub 협업 가이드",
+    "description": "## Git/GitHub & PM 기초 세팅\n\n### 참고 VOD (필수 시청)\n\n**1) PM 기초 (챕터 1 / 5강 / 38분)**\n강의: https://likelion.net/courses/technology/next-PM\n- Product Manager vs Project Manager (8:16)\n- 서비스 기획자 vs Product Manager (10:32)\n- Product Owner vs Product Manager (8:44)\n- IT 서비스의 탄생 - 기획/디자인/개발 프로세스 (13:07)\n- UI/UX에 대한 이해 (9:58)\n\n**2) PM이 주로 사용하는 툴 (챕터 5 / 2강 / 17분)**\n- Figma (10:27)\n- Jira (7:01)\n\n**3) Git & GitHub (챕터 5 / 11강 / 1시간 31분)**\n프론트엔드 강의에서 시청: https://likelion.net/courses/technology/next-frontend\n- **챕터 5. Git & Github**\n  1. Git & Github의 등장과 역할 (4:52)\n  2. Git 설치 및 세팅하기-윈도우 (7:55)\n  3. Git 설치 및 세팅하기-맥 (9:17)\n  4. Git 동작 흐름과 구성 요소 (4:02)\n  5. 로컬 Git 저장소 생성 (1) (13:31)\n  6. 로컬 Git 저장소 생성 (2) (15:12)\n  7. Github에 소스 반영 (1) (4:41)\n  8. Github에 소스 반영 (2) (4:16)\n  9. Github으로 협업하기 (1) (7:48)\n  10. Github으로 협업하기 (2) (11:19)\n  11. Git GUI 활용하기 (8:42)\n\n### 과제 진행 순서\n\n#### Step 1: PM 강의 시청\n1. PM 강의 챕터 1, 5를 시청하세요\n2. PM이란 무엇인지, 어떤 역할인지 이해하기\n3. Figma, Jira 등 PM이 사용하는 도구 파악하기\n\n#### Step 2: Git 설치 & GitHub 레포 생성\n1. Git & GitHub 강의(프론트 챕터 5)를 시청하면서 따라하기\n2. Git 설치 (Windows: git-scm.com / Mac: 터미널에서 git --version)\n3. 설치 후 터미널에서 설정:\n```\ngit config --global user.name \"내 이름\"\ngit config --global user.email \"내 이메일\"\n```\n4. GitHub에서 새 레포지토리 생성:\n   - Repository name: `likelion-pbl-planning`\n   - **Public** 선택\n   - ✅ Add a README file 체크\n   - Create repository\n\n#### Step 3: README에 기획 소개 작성 & 커밋\n1. GitHub 웹에서 README.md → Edit(연필 아이콘) 클릭\n2. 아래 내용 작성 (Markdown 형식):\n```markdown\n# 멋쟁이사자처럼 PBL - 기획 트랙\n\n## 자기소개\n- 이름: (본인 이름)\n- 파트: 기획 (Product Manager)\n- 관심 분야: (예: 교육, 헬스케어, 커뮤니티)\n\n## PM 강의를 듣고 배운 점\n- (챕터 1에서 인상 깊었던 내용 2~3줄)\n\n## 이번 학기 목표\n- (자유 작성)\n```\n3. **Commit changes** 클릭\n4. 2~3번 더 수정 → 매번 Commit (최소 3회 커밋)\n\n#### Step 4: 브랜치 & PR\n1. 브랜치 드롭다운 → 새 이름 입력 (예: `feature/intro`) → **Create branch**\n2. 새 브랜치에서 파일 수정 → Commit\n3. 상단 **Compare & pull request** → PR 생성\n\n### 제출\nGitHub 레포지토리 URL을 제출하세요. (예: https://github.com/내아이디/likelion-pbl-planning)",
+    "checklist": [
+      "GitHub 레포지토리를 생성했는가",
+      "README.md 파일을 작성하고 커밋했는가",
+      "최소 3회 이상 커밋 기록이 있는가",
+      "브랜치를 생성하고 PR(Pull Request)을 만들었는가"
+    ],
+    "submission_type": "github",
+    "estimated_hours": 2,
+    "pbl_link": "https://likelion.net/courses/technology/next-PM"
+  },
+  {
+    "track": "design",
+    "number": 0,
+    "title": "Git/GitHub & Figma 협업 가이드",
+    "description": "## Git/GitHub & Figma 개발환경 세팅\n\n### 참고 VOD (필수 시청)\n\n**1) Figma 기초 (챕터 1 / 6강 / 47분)**\n강의: https://likelion.net/courses/technology/next_figma\n- Figma 소개 (6:36)\n- Figma 인터페이스 기본 (4:28)\n- 아트보드와 도형 그리기 (12:11)\n- 색상과 스타일 적용 (7:08)\n- 텍스트 추가 및 스타일링 (7:05)\n- Figma로 실습 1 (9:29)\n\n**2) Git & GitHub (챕터 5 / 11강 / 1시간 31분)**\n프론트엔드 강의에서 시청: https://likelion.net/courses/technology/next-frontend\n- **챕터 5. Git & Github**\n  1. Git & Github의 등장과 역할 (4:52)\n  2. Git 설치 및 세팅하기-윈도우 (7:55)\n  3. Git 설치 및 세팅하기-맥 (9:17)\n  4. Git 동작 흐름과 구성 요소 (4:02)\n  5. 로컬 Git 저장소 생성 (1) (13:31)\n  6. 로컬 Git 저장소 생성 (2) (15:12)\n  7. Github에 소스 반영 (1) (4:41)\n  8. Github에 소스 반영 (2) (4:16)\n  9. Github으로 협업하기 (1) (7:48)\n  10. Github으로 협업하기 (2) (11:19)\n  11. Git GUI 활용하기 (8:42)\n\n### 과제 진행 순서\n\n#### Step 1: Figma 세팅\n1. figma.com 가입 (무료, 구글 계정 연동 가능)\n2. Figma 강의 챕터 1을 시청하면서 따라하기\n3. 새 Design File 생성 → 파일 이름: `LIKELION PBL - [내 이름]`\n4. 간단한 자기소개 카드 만들어보기 (프레임 + 도형 + 텍스트)\n5. 공유 링크 생성: 오른쪽 상단 **Share** → **Copy link**\n   - ⚠️ \"Anyone with the link\" → **can view** 설정 필수!\n\n#### Step 2: Git 설치 & GitHub 레포 생성\n1. Git & GitHub 강의(프론트 챕터 5)를 시청하면서 따라하기\n2. Git 설치 (Windows: git-scm.com / Mac: 터미널에서 git --version)\n3. 설치 후 터미널에서 설정:\n```\ngit config --global user.name \"내 이름\"\ngit config --global user.email \"내 이메일\"\n```\n4. GitHub에서 새 레포지토리 생성:\n   - Repository name: `likelion-pbl-design`\n   - **Public** 선택 (AI 검사용)\n   - ✅ Add a README file 체크\n   - Create repository\n\n#### Step 3: README 작성 & 커밋\n1. GitHub 웹에서 README.md → Edit(연필 아이콘) 클릭\n2. 아래 내용 작성:\n```markdown\n# 멋쟁이사자처럼 PBL - 디자인 트랙\n\n## 자기소개\n- 이름: (본인 이름)\n- 파트: 디자인\n- Figma: (Figma 공유 링크)\n\n## 학습 목표\n- Figma 기본 사용법 익히기\n- 사용자 중심 디자인 경험\n```\n3. **Commit changes** 클릭\n4. 2~3번 더 수정 → 매번 Commit (최소 3회 커밋)\n\n#### Step 4: 브랜치 & PR\n1. 브랜치 드롭다운 → 새 이름 입력 (예: `feature/intro`) → **Create branch**\n2. 새 브랜치에서 파일 수정 → Commit\n3. 상단 **Compare & pull request** → PR 생성\n\n### 제출\n- GitHub URL: 레포지토리 주소\n- Figma URL: 공유 링크 (⚠️ 공유 설정 확인!)",
+    "checklist": [
+      "GitHub 레포지토리를 생성했는가",
+      "README.md에 프로젝트 소개를 작성했는가",
+      "Figma 팀 프로젝트를 생성했는가",
+      "Figma 공유 링크가 정상 동작하는가"
+    ],
+    "submission_type": "mixed",
+    "estimated_hours": 2,
+    "pbl_link": "https://likelion.net/courses/technology/next_figma"
+  },
+  {
+    "track": "frontend",
+    "number": 0,
+    "title": "Git/GitHub & 개발환경 세팅",
+    "description": "## Git/GitHub & 개발환경 세팅\n\n### 참고 VOD (필수 시청)\n멋쟁이사자처럼 강의: https://likelion.net/courses/technology/next-frontend\n- **챕터 4. 개발 환경 세팅** (2강 / 15분)\n  1. VS Code (10:40)\n  2. Codepen, Replit (4:33)\n- **챕터 5. Git & Github** (11강 / 1시간 31분)\n  1. Git & Github의 등장과 역할 (4:52)\n  2. Git 설치 및 세팅하기-윈도우 (7:55)\n  3. Git 설치 및 세팅하기-맥 (9:17)\n  4. Git 동작 흐름과 구성 요소 (4:02)\n  5. 로컬 Git 저장소 생성 (1) (13:31)\n  6. 로컬 Git 저장소 생성 (2) (15:12)\n  7. Github에 소스 반영 (1) (4:41)\n  8. Github에 소스 반영 (2) (4:16)\n  9. Github으로 협업하기 (1) (7:48)\n  10. Github으로 협업하기 (2) (11:19)\n  11. Git GUI 활용하기 (8:42)\n\n### 과제 진행 순서\n\n#### Step 1: 개발 환경 설치\n- VS Code 설치: https://code.visualstudio.com\n- 확장 프로그램 설치: **Live Server**, **Prettier**\n  (VS Code 왼쪽 사이드바 → 확장 아이콘 → 검색 → Install)\n\n#### Step 2: Git 설치\n- Windows: https://git-scm.com/download/win\n- Mac: 터미널에서 `git --version` 입력 (없으면 자동 설치 안내)\n- 설치 후 터미널에서 설정:\n```\ngit config --global user.name \"내 이름\"\ngit config --global user.email \"내 이메일\"\n```\n\n#### Step 3: GitHub 레포지토리 생성\n1. github.com 로그인\n2. 오른쪽 상단 **+** → **New repository**\n3. Repository name: `likelion-pbl` (자유)\n4. **Public** 선택 (⚠️ AI 검사를 위해 공개 필수!)\n5. ✅ Add a README file 체크\n6. **Create repository** 클릭\n\n#### Step 4: 클론 & 커밋 & 푸시\n1. 레포지토리 페이지 → **<> Code** 버튼 → HTTPS URL 복사\n2. VS Code 터미널:\n```\ngit clone [복사한 URL]\ncd likelion-pbl\n```\n3. README.md 열어서 자기소개 작성 → 저장\n4. 커밋 & 푸시:\n```\ngit add .\ngit commit -m \"첫 번째 커밋: 자기소개 추가\"\ngit push\n```\n5. 파일 수정 → add → commit → push를 **최소 3번** 반복\n\n#### Step 5: 브랜치 & PR (Pull Request)\n1. 새 브랜치 생성:\n```\ngit checkout -b feature/my-page\n```\n2. 파일 수정 후:\n```\ngit add .\ngit commit -m \"내 페이지 추가\"\ngit push origin feature/my-page\n```\n3. GitHub 웹에서 **Compare & pull request** 클릭\n4. PR 제목/설명 작성 → **Create pull request**\n\n### 제출\nGitHub 레포지토리 URL을 제출하세요. (예: https://github.com/내아이디/likelion-pbl)",
+    "checklist": [
+      "GitHub 레포지토리를 생성했는가",
+      "VS Code에서 클론하고 커밋/푸시했는가",
+      "최소 3회 이상 커밋 기록이 있는가",
+      "브랜치를 생성하고 PR을 만들었는가",
+      "Live Server 확장 프로그램을 설치했는가"
+    ],
+    "submission_type": "github",
+    "estimated_hours": 2,
+    "pbl_link": "https://likelion.net/courses/technology/next-frontend"
+  },
+  {
+    "track": "backend",
+    "number": 0,
+    "title": "Git/GitHub & 개발환경 세팅",
+    "description": "## Git/GitHub & 개발환경 세팅\n\n### 참고 VOD (필수 시청)\n멋쟁이사자처럼 강의: https://likelion.net/courses/technology/next-backendj\n- **챕터 3. Java 개발 환경 세팅** (3강 / 7분)\n  1. Java SDK 설치 (1:59)\n  2. Java SDK(Windows) 설정 (1:57)\n  3. IntelliJ 설치 (3:56)\n- **챕터 4. Git & Github** (11강 / 1시간 31분)\n  1. Git & Github의 등장과 역할 (4:52)\n  2. Git 설치 및 세팅하기-윈도우 (7:55)\n  3. Git 설치 및 세팅하기-맥 (9:17)\n  4. Git 동작 흐름과 구성 요소 (4:02)\n  5. 로컬 Git 저장소 생성 (1) (13:31)\n  6. 로컬 Git 저장소 생성 (2) (15:12)\n  7. Github에 소스 반영 (1) (4:41)\n  8. Github에 소스 반영 (2) (4:16)\n  9. Github으로 협업하기 (1) (7:48)\n  10. Github으로 협업하기 (2) (11:19)\n  11. Git GUI 활용하기 (8:42)\n\n### 과제 진행 순서\n\n#### Step 1: Java & IntelliJ 설치\n- Java 17 다운로드: https://adoptium.net\n- IntelliJ IDEA Community 다운로드: https://www.jetbrains.com/idea/download\n- (강의 챕터 3 시청하면서 따라하기)\n\n#### Step 2: Git 설치\n- Windows: https://git-scm.com/download/win\n- Mac: 터미널에서 `git --version` 입력\n- 설치 후 터미널에서 설정:\n```\ngit config --global user.name \"내 이름\"\ngit config --global user.email \"내 이메일\"\n```\n\n#### Step 3: GitHub 레포지토리 생성\n1. github.com 로그인\n2. 오른쪽 상단 **+** → **New repository**\n3. Repository name: `likelion-pbl` (자유)\n4. **Public** 선택 (⚠️ AI 검사를 위해 공개 필수!)\n5. ✅ Add a README file 체크\n6. **Create repository** 클릭\n\n#### Step 4: IntelliJ에서 클론 & 커밋 & 푸시\n1. IntelliJ → **Get from VCS** → GitHub 레포 URL 붙여넣기 → **Clone**\n2. src 폴더에 Main.java 생성:\n```java\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, LikeLion!\");\n    }\n}\n```\n3. IntelliJ 상단 → **Git** → **Commit** (Ctrl+K)\n   - 파일 체크 → 메시지 입력 → **Commit and Push**\n4. 이 과정을 **최소 3번** 반복 (파일 수정 → Commit and Push)\n\n#### Step 5: 브랜치 & PR (Pull Request)\n1. IntelliJ 하단 → Git → 현재 브랜치 클릭 → **New Branch** → `feature/hello`\n2. 코드 수정 후 **Commit and Push**\n3. GitHub 웹에서 **Compare & pull request** 클릭\n4. PR 제목/설명 작성 → **Create pull request**\n\n### 제출\nGitHub 레포지토리 URL을 제출하세요. (예: https://github.com/내아이디/likelion-pbl)",
+    "checklist": [
+      "GitHub 레포지토리를 생성했는가",
+      "IntelliJ에서 프로젝트를 생성하고 푸시했는가",
+      "최소 3회 이상 커밋 기록이 있는가",
+      "브랜치를 생성하고 PR을 만들었는가",
+      "Java 17 이상이 설치되었는가"
+    ],
+    "submission_type": "github",
+    "estimated_hours": 2,
+    "pbl_link": "https://likelion.net/courses/technology/next-backendj"
+  },
+  {
+    "track": "planning",
+    "number": 1,
+    "title": "IT 서비스 협업 구조 이해",
+    "description": "기획/디자인/프론트/백엔드 역할 구분 및 신규 서비스 주제 선정",
+    "checklist": [
+      "서비스 주제 및 한 줄 소개가 명확한가",
+      "문제 정의(현황/원인/해결안)가 논리적인가",
+      "타겟 사용자 페르소나가 구체적인가(이름,나이,직업,페인포인트,니즈)",
+      "As-Is/To-Be가 명확히 대비되는가"
+    ],
+    "submission_type": "mixed",
+    "estimated_hours": 4,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481e1a985c48dcf850399"
+  },
+  {
+    "track": "planning",
+    "number": 2,
+    "title": "사용자 시나리오 작성",
+    "description": "서비스 사용 시나리오를 텍스트로 구성",
+    "checklist": [
+      "4~6단계 이상의 시나리오가 작성되었는가",
+      "각 단계에 상황 설명과 사용자 행동이 포함되는가",
+      "서비스 진입부터 목표 달성까지 흐름이 자연스러운가",
+      "예외 상황이 고려되었는가"
+    ],
+    "submission_type": "mixed",
+    "estimated_hours": 3,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4817c9d2ee5fe4bdbaf1a"
+  },
+  {
+    "track": "planning",
+    "number": 3,
+    "title": "IA(정보 구조) 제작",
+    "description": "서비스의 전체 화면과 기능을 체계적으로 정리",
+    "checklist": [
+      "3단계 이상의 계층 구조로 되어있는가",
+      "화면(페이지) 수가 10개 이상인가",
+      "각 노드에 화면 이름과 핵심 기능이 표기되었는가",
+      "메뉴 그룹핑이 사용자 동선을 고려했는가"
+    ],
+    "submission_type": "mixed",
+    "estimated_hours": 4,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4814082dce3e329232d90"
+  },
+  {
+    "track": "planning",
+    "number": 4,
+    "title": "사용자 플로우 설계",
+    "description": "핵심 시나리오의 사용자 행동 경로를 시각화",
+    "checklist": [
+      "핵심 시나리오 1~2개에 대한 플로우가 작성되었는가",
+      "시작점과 종료점이 명확한가",
+      "분기점(판단)이 포함되었는가",
+      "예외 처리 흐름이 포함되었는가"
+    ],
+    "submission_type": "mixed",
+    "estimated_hours": 4,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481ccb0a9f0df191f2558"
+  },
+  {
+    "track": "planning",
+    "number": 5,
+    "title": "기능 명세서 작성",
+    "description": "화면별 기능을 개발자가 이해할 수 있도록 상세 기술",
+    "checklist": [
+      "최소 5개 화면에 대한 기능 명세가 있는가",
+      "각 UI 요소의 Trigger와 Action이 명확한가",
+      "예외/제한 사항이 기재되었는가",
+      "화면-기능 매핑이 되어있는가"
+    ],
+    "submission_type": "mixed",
+    "estimated_hours": 5,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481e28731d0db8a993fab"
+  },
+  {
+    "track": "planning",
+    "number": 6,
+    "title": "와이어프레임 리뷰 & 피드백",
+    "description": "디자이너가 제작한 와이어프레임을 기획 관점에서 리뷰하고 피드백 정리",
+    "checklist": [
+      "와이어프레임의 정보 구조가 IA와 일치하는가",
+      "사용자 플로우대로 화면 이동이 가능한가",
+      "기능 명세서의 요구사항이 반영되었는가",
+      "누락된 화면이나 예외 상황이 없는가"
+    ],
+    "submission_type": "mixed",
+    "estimated_hours": 3,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4810ab343fcd153cec06d"
+  },
+  {
+    "track": "planning",
+    "number": 7,
+    "title": "서비스 기획서 통합 정리",
+    "description": "1~6주차 산출물을 하나의 기획서로 통합 정리",
+    "checklist": [
+      "문제 정의~와이어프레임 피드백까지 일관성이 있는가",
+      "전체 기획서가 개발팀에 전달 가능한 수준인가",
+      "목차와 구조가 체계적인가",
+      "핵심 의사결정 근거가 기록되어 있는가"
+    ],
+    "submission_type": "mixed",
+    "estimated_hours": 4,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481e28731d0db8a993fab"
+  },
+  {
+    "track": "planning",
+    "number": 8,
+    "title": "UX 테스트 설계 & 실행",
+    "description": "서비스 프로토타입을 대상으로 사용자 테스트 진행",
+    "checklist": [
+      "테스트 목표와 시나리오가 명확한가",
+      "최소 3명에게 테스트를 진행했는가",
+      "태스크 완료율/시간이 측정되었는가",
+      "사용자 행동 관찰 결과가 정리되었는가"
+    ],
+    "submission_type": "mixed",
+    "estimated_hours": 5,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481b2b527cb2998d88199"
+  },
+  {
+    "track": "planning",
+    "number": 9,
+    "title": "테스트 결과 분석 & 개선안 도출",
+    "description": "UX 테스트 결과를 분석하고 개선 포인트 정리",
+    "checklist": [
+      "테스트 결과 보고서가 작성되었는가",
+      "인사이트와 개선점이 도출되었는가",
+      "Before/After 개선안이 있는가",
+      "개선 우선순위가 정해졌는가"
+    ],
+    "submission_type": "mixed",
+    "estimated_hours": 4,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481b2b527cb2998d88199"
+  },
+  {
+    "track": "planning",
+    "number": 10,
+    "title": "개발 협업을 위한 최종 정리",
+    "description": "개발팀에 전달할 최종 기획 패키지 정리 및 발표",
+    "checklist": [
+      "최종 기획서/명세서가 정리되었는가",
+      "개발 우선순위가 정해졌는가",
+      "MVP 범위가 명확한가",
+      "프레젠테이션이 준비되었는가"
+    ],
+    "submission_type": "mixed",
+    "estimated_hours": 5,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481929b68daf2eb32f25f"
+  },
+  {
+    "track": "design",
+    "number": 1,
+    "title": "Figma 입문 & 시나리오 보드",
+    "description": "Figma 기본기를 익히고 사용자 시나리오를 시각적으로 구성",
+    "checklist": [
+      "Figma에서 프레임과 도형을 활용했는가",
+      "6~8컷 이상의 시나리오가 구성되었는가",
+      "각 장면에 상황 설명 텍스트가 포함되었는가",
+      "화살표로 흐름이 연결되었는가"
+    ],
+    "submission_type": "figma",
+    "estimated_hours": 4,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4817c9d2ee5fe4bdbaf1a"
+  },
+  {
+    "track": "design",
+    "number": 2,
+    "title": "IA(정보 구조) 다이어그램",
+    "description": "서비스의 정보 구조를 트리 형태로 시각화",
+    "checklist": [
+      "트리 구조로 되어있는가",
+      "3단계 이상의 계층인가",
+      "화면 10개 이상인가",
+      "각 노드에 화면명과 기능이 표기되었는가"
+    ],
+    "submission_type": "figma",
+    "estimated_hours": 3,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4814082dce3e329232d90"
+  },
+  {
+    "track": "design",
+    "number": 3,
+    "title": "사용자 플로우 다이어그램",
+    "description": "핵심 시나리오의 User Flow를 Figma에서 제작",
+    "checklist": [
+      "핵심 시나리오 1~2개의 플로우가 있는가",
+      "표준 기호(타원,직사각형,마름모)를 사용했는가",
+      "예외 처리 흐름이 포함되었는가",
+      "IA와 정합성이 맞는가"
+    ],
+    "submission_type": "figma",
+    "estimated_hours": 3,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481ccb0a9f0df191f2558"
+  },
+  {
+    "track": "design",
+    "number": 4,
+    "title": "컴포넌트 & Auto Layout",
+    "description": "재사용 가능한 UI 컴포넌트 라이브러리 제작",
+    "checklist": [
+      "버튼 컴포넌트에 Auto Layout이 적용되었는가",
+      "3개 이상의 Variant가 있는 컴포넌트가 2종 이상인가",
+      "로컬 스타일(Color,Typography)이 등록되었는가",
+      "네이밍 규칙이 일관적인가"
+    ],
+    "submission_type": "figma",
+    "estimated_hours": 5,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f48112a7c5f9bd85c491b4"
+  },
+  {
+    "track": "design",
+    "number": 5,
+    "title": "와이어프레임 제작",
+    "description": "서비스 핵심 화면을 Mid-Fi 와이어프레임으로 제작",
+    "checklist": [
+      "10화면 이상 제작되었는가",
+      "흑백+회색만 사용했는가",
+      "정보 위계가 텍스트 크기/굵기로 표현되었는가",
+      "화면 간 플로우가 연결되었는가"
+    ],
+    "submission_type": "figma",
+    "estimated_hours": 6,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4810ab343fcd153cec06d"
+  },
+  {
+    "track": "design",
+    "number": 6,
+    "title": "기능 명세서 작성",
+    "description": "와이어프레임 기반 상세 기능 명세서",
+    "checklist": [
+      "화면 ID가 부여되었는가",
+      "각 UI 요소의 동작이 Trigger/Action으로 기술되었는가",
+      "예외/제한 사항이 기재되었는가",
+      "개발자가 읽고 구현 가능한 수준인가"
+    ],
+    "submission_type": "mixed",
+    "estimated_hours": 4,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481e28731d0db8a993fab"
+  },
+  {
+    "track": "design",
+    "number": 7,
+    "title": "디자인 시스템 기초",
+    "description": "컬러, 타이포그래피, 간격 등 디자인 토큰 정의",
+    "checklist": [
+      "컬러 팔레트(Primary,Neutral,Semantic)가 정의되었는가",
+      "타이포그래피 체계(Heading,Body,Caption)가 있는가",
+      "4px 배수 간격 시스템이 적용되었는가",
+      "Figma 스타일/변수로 등록되었는가"
+    ],
+    "submission_type": "figma",
+    "estimated_hours": 5,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481ab9cbbe80c0d3375d7"
+  },
+  {
+    "track": "design",
+    "number": 8,
+    "title": "High-Fi UI 디자인",
+    "description": "디자인 시스템 적용한 완성도 높은 UI",
+    "checklist": [
+      "핵심 화면 10장 이상이 High-Fi로 완성되었는가",
+      "디자인 시스템 토큰이 일관되게 적용되었는가",
+      "상태별 화면(기본,로딩,에러,빈상태)이 있는가",
+      "접근성 기준(명도 대비,터치 영역)을 충족하는가"
+    ],
+    "submission_type": "figma",
+    "estimated_hours": 8,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481b2b527cb2998d88199"
+  },
+  {
+    "track": "design",
+    "number": 9,
+    "title": "UX 테스트 & 개선",
+    "description": "사용자 테스트 진행 후 디자인 개선",
+    "checklist": [
+      "최소 3명에게 테스트를 진행했는가",
+      "Before/After 비교가 있는가",
+      "개선 근거가 논리적인가",
+      "테스트 결과 보고서가 작성되었는가"
+    ],
+    "submission_type": "mixed",
+    "estimated_hours": 5,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481b2b527cb2998d88199"
+  },
+  {
+    "track": "design",
+    "number": 10,
+    "title": "개발 핸드오프 정리",
+    "description": "개발팀에 전달할 최종 디자인 패키지 정리",
+    "checklist": [
+      "레이어/프레임 네이밍이 정리되었는가",
+      "에셋에 Export 설정이 완료되었는가",
+      "디자인 주석(동적 요소,예외)이 달려있는가",
+      "디자인 토큰이 Dev Mode에서 확인 가능한가"
+    ],
+    "submission_type": "figma",
+    "estimated_hours": 4,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481929b68daf2eb32f25f"
+  },
+  {
+    "track": "frontend",
+    "number": 1,
+    "title": "HTML/CSS 기초",
+    "description": "아기사자 자기소개 정적 웹페이지 만들기",
+    "checklist": [
+      "index.html + style.css 파일이 분리되었는가",
+      "시맨틱 HTML 태그를 사용했는가",
+      "Flexbox를 활용한 레이아웃인가",
+      "프로필 이미지,이름,파트,한줄소개가 포함되었는가",
+      "인라인 스타일이 없는가"
+    ],
+    "submission_type": "github",
+    "estimated_hours": 4,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f4819890dfced14fd7097b"
+  },
+  {
+    "track": "frontend",
+    "number": 2,
+    "title": "CSS 레이아웃 & 반응형",
+    "description": "아기사자 명단 대시보드를 반응형으로 제작",
+    "checklist": [
+      "Grid 레이아웃이 적용되었는가",
+      "모바일/태블릿/데스크톱 반응형이 동작하는가",
+      "Media Query가 사용되었는가",
+      "여러 명의 카드가 그리드로 배치되는가"
+    ],
+    "submission_type": "github",
+    "estimated_hours": 5,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f481fe943ef27144a26fd7"
+  },
+  {
+    "track": "frontend",
+    "number": 3,
+    "title": "JavaScript 기초",
+    "description": "명단 추가/삭제가 가능한 인터랙티브 대시보드",
+    "checklist": [
+      "DOM 조작으로 요소를 동적 생성하는가",
+      "이벤트 리스너가 addEventListener로 등록되었는가",
+      "추가/삭제 기능이 동작하는가",
+      "인라인 이벤트 핸들러가 없는가"
+    ],
+    "submission_type": "github",
+    "estimated_hours": 6,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f481fa8a52eec6ae08b4d9"
+  },
+  {
+    "track": "frontend",
+    "number": 4,
+    "title": "JS 비동기와 데이터",
+    "description": "외부 API 데이터를 불러와 명단 갱신",
+    "checklist": [
+      "fetch API를 사용했는가",
+      "async/await 문법을 사용했는가",
+      "로딩/에러 상태가 표시되는가",
+      "필터/검색 기능이 동작하는가"
+    ],
+    "submission_type": "github",
+    "estimated_hours": 6,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f481ebacbdd5cdbf060f6e"
+  },
+  {
+    "track": "frontend",
+    "number": 5,
+    "title": "React 시작하기",
+    "description": "대시보드 UI를 React 컴포넌트로 재구성",
+    "checklist": [
+      "함수형 컴포넌트로 작성되었는가",
+      "Props로 데이터가 전달되는가",
+      "컴포넌트가 적절히 분리되었는가",
+      "map을 활용한 리스트 렌더링이 있는가"
+    ],
+    "submission_type": "github",
+    "estimated_hours": 7,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f48140a95dc73343b00434"
+  },
+  {
+    "track": "frontend",
+    "number": 6,
+    "title": "상태와 Effect",
+    "description": "useState/useEffect를 활용한 동적 기능",
+    "checklist": [
+      "useState로 상태 관리가 되는가",
+      "useEffect로 데이터 로딩이 구현되었는가",
+      "폼 입력이 상태로 관리되는가",
+      "추가/삭제가 실제로 동작하는가"
+    ],
+    "submission_type": "github",
+    "estimated_hours": 8,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f4819089c9f2230641f701"
+  },
+  {
+    "track": "frontend",
+    "number": 7,
+    "title": "React Router",
+    "description": "목록/상세 페이지 SPA 라우팅",
+    "checklist": [
+      "React Router v6을 사용했는가",
+      "목록→상세 페이지 이동이 되는가",
+      "URL 파라미터로 상세 데이터를 표시하는가",
+      "뒤로가기/앞으로가기가 동작하는가"
+    ],
+    "submission_type": "github",
+    "estimated_hours": 5,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f481ddac76e92fdef2fee2"
+  },
+  {
+    "track": "frontend",
+    "number": 8,
+    "title": "TypeScript 기초",
+    "description": "기존 프로젝트를 TypeScript로 마이그레이션",
+    "checklist": [
+      ".tsx/.ts 파일로 변환되었는가",
+      "컴포넌트 Props에 타입이 지정되었는가",
+      "any 타입이 최소화되었는가",
+      "tsc 빌드가 에러 없이 통과하는가"
+    ],
+    "submission_type": "github",
+    "estimated_hours": 6,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f481c0b69bce5e8eebfadb"
+  },
+  {
+    "track": "frontend",
+    "number": 9,
+    "title": "Supabase 연동",
+    "description": "실제 DB 연동 명단 관리 앱",
+    "checklist": [
+      "Supabase 테이블이 생성되었는가",
+      "CRUD 기능이 DB와 연동되는가",
+      "로그인/회원가입이 구현되었는가",
+      "환경변수로 API 키가 관리되는가"
+    ],
+    "submission_type": "deploy",
+    "estimated_hours": 8,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f4817f8622f527d0fe5e10"
+  },
+  {
+    "track": "frontend",
+    "number": 10,
+    "title": "최종 서비스 완성 & 배포",
+    "description": "Vercel 배포 + 코드 정리 + 동료 리뷰",
+    "checklist": [
+      "Vercel/Netlify에 배포되었는가",
+      "빌드 에러가 없는가",
+      "콘솔에 불필요한 로그가 없는가",
+      "README가 작성되었는가"
+    ],
+    "submission_type": "deploy",
+    "estimated_hours": 4,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f4813c8187dc6a1d0082d9"
+  },
+  {
+    "track": "backend",
+    "number": 1,
+    "title": "Java 핵심 문법 & 흐름",
+    "description": "콘솔 기반 아기사자 명단 관리 프로그램",
+    "checklist": [
+      "Scanner로 입력을 받는가",
+      "배열에 이름이 저장되는가",
+      "5 미만 입력 시 재입력을 요청하는가",
+      "최종 명단이 출력되는가"
+    ],
+    "submission_type": "github",
+    "estimated_hours": 4,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481878cbdd66f54b19ce9"
+  },
+  {
+    "track": "backend",
+    "number": 2,
+    "title": "객체지향 I - 클래스와 캡슐화",
+    "description": "클래스 기반으로 리팩토링된 명단 관리",
+    "checklist": [
+      "Member 클래스에 private 필드가 있는가",
+      "getter/setter가 구현되었는가",
+      "생성자에서 유효성 검증이 있는가",
+      "main에 로직이 직접 작성되지 않았는가"
+    ],
+    "submission_type": "github",
+    "estimated_hours": 5,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481869998cc607120d4c4"
+  },
+  {
+    "track": "backend",
+    "number": 3,
+    "title": "객체지향 II - 상속/다형성/추상화",
+    "description": "파트별 멤버 계층 구조 구현",
+    "checklist": [
+      "추상 클래스 또는 인터페이스가 사용되었는가",
+      "상속 구조가 적절한가",
+      "다형성으로 조건문이 최소화되었는가",
+      "instanceof 대신 다형성을 활용했는가"
+    ],
+    "submission_type": "github",
+    "estimated_hours": 6,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481638d0cf4aad3314d98"
+  },
+  {
+    "track": "backend",
+    "number": 4,
+    "title": "Java Collections & 설계 확장",
+    "description": "List, Map을 활용한 멤버 관리 확장",
+    "checklist": [
+      "ArrayList가 사용되었는가",
+      "Map으로 파트별 그룹핑이 되는가",
+      "제네릭이 사용되었는가",
+      "이름 검색 기능이 있는가"
+    ],
+    "submission_type": "github",
+    "estimated_hours": 5,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f48151a4cac98414514b2b"
+  },
+  {
+    "track": "backend",
+    "number": 5,
+    "title": "자바로 배우는 IoC/DI",
+    "description": "순수 Java로 DI 패턴 구현",
+    "checklist": [
+      "Repository 인터페이스가 정의되었는가",
+      "두 개 이상의 구현체가 있는가",
+      "생성자 주입이 사용되었는가",
+      "AppConfig 클래스가 있는가"
+    ],
+    "submission_type": "github",
+    "estimated_hours": 5,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f48110b935cf9dc900b42b"
+  },
+  {
+    "track": "backend",
+    "number": 6,
+    "title": "Spring Boot 전환",
+    "description": "Spring Boot 기반으로 전환",
+    "checklist": [
+      "Spring Boot 프로젝트가 생성되었는가",
+      "@Service/@Repository 어노테이션이 사용되었는가",
+      "생성자 주입이 적용되었는가",
+      "GET /hello API가 동작하는가"
+    ],
+    "submission_type": "github",
+    "estimated_hours": 5,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481cfb0fad0418e9c04a5"
+  },
+  {
+    "track": "backend",
+    "number": 7,
+    "title": "REST API 설계(CRUD)",
+    "description": "아기사자 CRUD REST API 구현",
+    "checklist": [
+      "POST/GET/PUT/DELETE API가 구현되었는가",
+      "DTO가 Entity와 분리되었는가",
+      "적절한 HTTP 상태 코드를 반환하는가",
+      "RESTful URL 설계인가"
+    ],
+    "submission_type": "github",
+    "estimated_hours": 6,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f4818ea0e6ebeb22ef09ad"
+  },
+  {
+    "track": "backend",
+    "number": 8,
+    "title": "JPA 기초 & 영속성 컨텍스트",
+    "description": "JPA + DB 연동 API",
+    "checklist": [
+      "@Entity 어노테이션이 사용되었는가",
+      "JpaRepository를 상속했는가",
+      "application.properties에 DB 설정이 있는가",
+      "CRUD가 DB에 반영되는가"
+    ],
+    "submission_type": "github",
+    "estimated_hours": 7,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481fb9dd3ea247d83d657"
+  },
+  {
+    "track": "backend",
+    "number": 9,
+    "title": "연관관계 & 트랜잭션",
+    "description": "Team-Member 1:N 관계 매핑",
+    "checklist": [
+      "@ManyToOne/@OneToMany가 사용되었는가",
+      "@Transactional이 적용되었는가",
+      "팀별 멤버 조회 API가 있는가",
+      "외래키가 올바르게 생성되는가"
+    ],
+    "submission_type": "github",
+    "estimated_hours": 5,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f48108b793f72c8a7146e7"
+  },
+  {
+    "track": "backend",
+    "number": 10,
+    "title": "미니 프로젝트: 예외 처리 & FE 연동",
+    "description": "전역 예외 처리 + 프론트엔드 연동",
+    "checklist": [
+      "@RestControllerAdvice가 사용되었는가",
+      "커스텀 예외 클래스가 있는가",
+      "통일된 에러 응답 형식인가",
+      "프론트엔드에서 API 호출이 동작하는가"
+    ],
+    "submission_type": "github",
+    "estimated_hours": 7,
+    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481e6a824ca2a9f06099b"
+  }
+]
