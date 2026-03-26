@@ -12,8 +12,8 @@ router = APIRouter(prefix="/api/missions", tags=["missions"])
 
 @router.get("")
 def list_missions(track: str = None, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
-    # 운영진은 트랙 선택 가능, 일반 사용자는 본인 트랙만
-    selected_track = track if (user.role == "admin" and track) else user.track
+    # 운영진/테스터는 트랙 선택 가능, 일반 사용자는 본인 트랙만
+    selected_track = track if (user.role in ("admin", "tester") and track) else user.track
     missions = db.query(Mission).filter(Mission.track == selected_track).order_by(Mission.number).all()
 
     result = []
@@ -25,7 +25,9 @@ def list_missions(track: str = None, db: Session = Depends(get_db), user: User =
             .first()
         )
         now = datetime.utcnow()
-        if m.start_date and now < m.start_date:
+        if user.role in ("admin", "tester"):
+            period_status = "open"
+        elif m.start_date and now < m.start_date:
             period_status = "upcoming"
         elif m.end_date and now > m.end_date:
             period_status = "closed"

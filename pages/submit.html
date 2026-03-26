@@ -93,9 +93,11 @@
         const endDate = mission.end_date ? new Date(mission.end_date) : null;
         const now = new Date();
         const isAdmin = user && user.role === 'admin';
-        const isOpen = isAdmin || ((!startDate || now >= startDate) && (!endDate || now <= endDate));
-        const isClosed = !isAdmin && endDate && now > endDate;
-        const isUpcoming = !isAdmin && startDate && now < startDate;
+        const isTester = user && user.role === 'tester';
+        const bypassDate = isAdmin || isTester;
+        const isOpen = bypassDate || ((!startDate || now >= startDate) && (!endDate || now <= endDate));
+        const isClosed = !bypassDate && endDate && now > endDate;
+        const isUpcoming = !bypassDate && startDate && now < startDate;
         const dateStr = startDate && endDate
           ? `${startDate.getMonth()+1}/${startDate.getDate()}(${['일','월','화','수','목','금','토'][startDate.getDay()]}) ~ ${endDate.getMonth()+1}/${endDate.getDate()}(${['일','월','화','수','목','금','토'][endDate.getDay()]})`
           : '';
