@@ -51,6 +51,12 @@
     <!-- Warnings -->
     <div id="warningsSection" style="display:none;"></div>
 
+    <!-- User Management -->
+    <div style="margin-bottom:32px;">
+      <h2 style="font-size:1.2rem;font-weight:700;color:#fff;margin-bottom:16px;">사용자 관리</h2>
+      <div id="userManagementList" style="display:grid;gap:8px;"></div>
+    </div>
+
     <!-- Progress Matrix -->
     <div style="margin-bottom:32px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
@@ -206,6 +212,60 @@
     }
 
     loadPendingUsers();
+
+    // Load user management
+    async function loadUserManagement() {
+      try {
+        var users = await fetchAPI('/admin/users');
+        var container = document.getElementById('userManagementList');
+        if (!users || users.length === 0) {
+          container.innerHTML = '<p style="color:#888;">승인된 사용자가 없습니다.</p>';
+          return;
+        }
+        container.innerHTML = users.map(function(u) {
+          var isAdminUser = u.role === 'admin';
+          var roleLabel = isAdminUser ? '<span style="color:#FF7710;font-weight:600;">운영진</span>' : '<span style="color:#888;">아기사자</span>';
+          var actionBtn = isAdminUser
+            ? '<button class="btn btn-outline btn-sm btn-demote" data-uid="'+u.id+'" data-uname="'+escapeHTML(u.name)+'" style="font-size:.75rem;">강등</button>'
+            : '<button class="btn btn-primary btn-sm btn-promote" data-uid="'+u.id+'" data-uname="'+escapeHTML(u.name)+'" style="font-size:.75rem;">운영진 승격</button>';
+          return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#1a1a1a;border-radius:8px;">'
+            +'<div><strong style="color:#fff;">'+escapeHTML(u.name)+'</strong> '+roleLabel
+            +' <span style="color:#666;font-size:.8rem;margin-left:8px;">'+escapeHTML(u.email)+' · '+(TRACK_LABELS[u.track]||u.track)+' · '+(u.team?u.team+'팀':'')+'</span></div>'
+            +'<div>'+actionBtn+'</div></div>';
+        }).join('');
+
+        container.querySelectorAll('.btn-promote').forEach(function(btn) {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            promoteUser(btn.dataset.uid, btn.dataset.uname);
+          });
+        });
+        container.querySelectorAll('.btn-demote').forEach(function(btn) {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            demoteUser(btn.dataset.uid, btn.dataset.uname);
+          });
+        });
+      } catch (err) { console.error('User management error:', err); }
+    }
+
+    async function promoteUser(userId, name) {
+      try {
+        await fetchAPI('/admin/users/' + userId + '/promote', { method: 'PATCH' });
+        showToast('success', name + '님을 운영진으로 승격했습니다.');
+        loadUserManagement();
+      } catch (err) { showToast('error', err.message); }
+    }
+
+    async function demoteUser(userId, name) {
+      try {
+        await fetchAPI('/admin/users/' + userId + '/demote', { method: 'PATCH' });
+        showToast('success', name + '님을 아기사자로 변경했습니다.');
+        loadUserManagement();
+      } catch (err) { showToast('error', err.message); }
+    }
+
+    loadUserManagement();
 
     // Load warnings
     async function loadWarnings() {

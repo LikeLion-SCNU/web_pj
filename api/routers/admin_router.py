@@ -96,6 +96,49 @@ def reject_user(user_id: int, db: Session = Depends(get_db), admin: User = Depen
     return {"message": f"{name}님의 가입을 거절했습니다."}
 
 
+@router.patch("/users/{user_id}/promote")
+def promote_user(user_id: int, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(404, "사용자를 찾을 수 없습니다")
+    if user.role == "admin":
+        raise HTTPException(400, "이미 운영진입니다")
+    user.role = "admin"
+    db.commit()
+    return {"message": f"{user.name}님을 운영진으로 승격했습니다."}
+
+
+@router.patch("/users/{user_id}/demote")
+def demote_user(user_id: int, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(404, "사용자를 찾을 수 없습니다")
+    if user.id == admin.id:
+        raise HTTPException(400, "자기 자신은 강등할 수 없습니다")
+    if user.role != "admin":
+        raise HTTPException(400, "운영진이 아닙니다")
+    user.role = "baby_lion"
+    db.commit()
+    return {"message": f"{user.name}님을 아기사자로 변경했습니다."}
+
+
+@router.get("/users")
+def list_all_users(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    users = db.query(User).filter(User.approved == True).order_by(User.role.desc(), User.name).all()
+    return [
+        {
+            "id": u.id,
+            "name": u.name,
+            "email": u.email,
+            "track": u.track,
+            "team": u.team,
+            "generation": u.generation,
+            "role": u.role,
+        }
+        for u in users
+    ]
+
+
 @router.get("/submissions")
 def list_submissions(
     track: str = Query(None),
