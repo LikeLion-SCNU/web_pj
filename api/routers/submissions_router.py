@@ -31,10 +31,10 @@ def create_submission(
     if not mission:
         raise HTTPException(404, "미션을 찾을 수 없습니다")
 
-    if mission.track != user.track and user.role != "admin":
+    if mission.track != user.track and user.role not in ("admin", "tester"):
         raise HTTPException(400, "본인 트랙의 미션만 제출할 수 있습니다")
 
-    if user.role != "admin":
+    if user.role not in ("admin", "tester"):
         now = datetime.utcnow()
         if mission.start_date and now < mission.start_date:
             start_str = mission.start_date.strftime("%m/%d")

@@ -91,12 +91,36 @@ def seed_admin(db):
     print(f"관리자 계정이 생성되었습니다. ({admin_email})")
 
 
+def seed_tester(db):
+    if db.query(User).filter(User.role == "tester").count() > 0:
+        print("테스터 계정이 이미 존재합니다. 건너뜁니다.")
+        return
+
+    tester_pw = os.getenv("TESTER_PASSWORD", "test1234!")
+    tester_email = os.getenv("TESTER_EMAIL", "test@likelion.org")
+
+    tester = User(
+        name="테스트 아기사자",
+        email=tester_email,
+        password_hash=hash_password(tester_pw),
+        track="frontend",
+        role="tester",
+        email_verified=True,
+        approved=True,
+        generation=14,
+    )
+    db.add(tester)
+    db.commit()
+    print(f"테스터 계정이 생성되었습니다. ({tester_email} / {tester_pw})")
+
+
 def run_seed():
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:
         seed_missions(db)
         seed_admin(db)
+        seed_tester(db)
     finally:
         db.close()
 
