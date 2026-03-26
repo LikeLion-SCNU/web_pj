@@ -296,9 +296,9 @@
         const qs = track ? '?track=' + track : '';
         const data = await fetchAPI('/admin/progress-matrix' + qs);
         const table = document.getElementById('progressMatrix');
-        const maxMissions = 10;
+        const maxMissions = 11; // M0 ~ M10
         let headerHtml = '<tr><th>이름</th><th>트랙</th><th>팀</th>';
-        for (let i = 1; i <= maxMissions; i++) headerHtml += '<th>M' + i + '</th>';
+        for (let i = 0; i <= 10; i++) headerHtml += '<th>M' + i + '</th>';
         headerHtml += '</tr>';
         table.querySelector('thead').innerHTML = headerHtml;
 
@@ -312,7 +312,7 @@
             const ms = u.missions[i];
             const st = ms ? ms.status : 'upcoming';
             const cls = st === 'passed' ? 'passed' : st === 'pending' ? 'pending' : st === 'reviewing' ? 'reviewing' : st === 'rejected' ? 'rejected' : st === 'missed' ? 'missed' : 'none';
-            cells += '<td><span class="progress-cell progress-cell-' + cls + '" title="미션 ' + (i + 1) + ': ' + st + '"></span></td>';
+            cells += '<td><span class="progress-cell progress-cell-' + cls + '" title="미션 ' + (ms ? ms.number : i) + ': ' + st + '"></span></td>';
           }
           return '<tr>' + cells + '</tr>';
         }).join('');
