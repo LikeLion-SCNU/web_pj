@@ -139,6 +139,31 @@ def set_user_role(user_id: int, role: str = Query(...), db: Session = Depends(ge
     return {"message": f"{user.name}님의 역할을 {ROLE_LABELS.get(old_role, old_role)} → {ROLE_LABELS.get(role, role)}(으)로 변경했습니다."}
 
 
+@router.patch("/submissions/{submission_id}")
+def admin_review_submission(
+    submission_id: int,
+    data: AdminReviewUpdate,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    submission = db.query(Submission).filter(Submission.id == submission_id).first()
+    if not submission:
+        raise HTTPException(404, "제출을 찾을 수 없습니다")
+
+    review = db.query(Review).filter(Review.submission_id == submission_id).first()
+    if not review:
+        review = Review(submission_id=submission_id)
+        db.add(review)
+
+    review.admin_approved = data.approved
+    review.admin_comment = data.comment
+    review.reviewed_at = datetime.utcnow()
+    submission.status = "passed" if data.approved else "rejected"
+    db.commit()
+
+    return {"message": "합격 처리 완료" if data.approved else "반려 처리 완료"}
+
+
 @router.delete("/users/{user_id}")
 def delete_user(user_id: int, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
     user = db.query(User).filter(User.id == user_id).first()
