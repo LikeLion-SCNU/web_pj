@@ -15,7 +15,7 @@ router = APIRouter(prefix="/api/admin", tags=["admin"])
 
 @router.get("/dashboard")
 def dashboard(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
-    total_users = db.query(User).filter(User.role == "baby_lion").count()
+    total_users = db.query(User).filter(User.role.in_(["baby_lion", "tester"])).count()
     total_subs = db.query(Submission).count()
     passed = db.query(Submission).filter(Submission.status == "passed").count()
     rejected = db.query(Submission).filter(Submission.status == "rejected").count()
@@ -24,7 +24,7 @@ def dashboard(db: Session = Depends(get_db), admin: User = Depends(require_admin
 
     track_stats = (
         db.query(User.track, func.count(User.id))
-        .filter(User.role == "baby_lion")
+        .filter(User.role.in_(["baby_lion", "tester"]))
         .group_by(User.track)
         .all()
     )
@@ -139,6 +139,25 @@ def set_user_role(user_id: int, role: str = Query(...), db: Session = Depends(ge
     return {"message": f"{user.name}님의 역할을 {ROLE_LABELS.get(old_role, old_role)} → {ROLE_LABELS.get(role, role)}(으)로 변경했습니다."}
 
 
+@router.delete("/users/{user_id}")
+def delete_user(user_id: int, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(404, "사용자를 찾을 수 없습니다")
+    if user.id == admin.id:
+        raise HTTPException(400, "자기 자신은 삭제할 수 없습니다")
+    if user.role == "admin":
+        raise HTTPException(400, "운영진 계정은 먼저 강등 후 삭제해주세요")
+    name = user.name
+    # 관련 리뷰 → 제출 → 사용자 순서로 삭제
+    for sub in user.submissions:
+        db.query(Review).filter(Review.submission_id == sub.id).delete()
+    db.query(Submission).filter(Submission.user_id == user_id).delete()
+    db.delete(user)
+    db.commit()
+    return {"message": f"{name}님의 계정이 삭제되었습니다."}
+
+
 @router.get("/users")
 def list_all_users(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
     users = db.query(User).filter(User.approved == True).order_by(User.role.desc(), User.name).all()
@@ -235,7 +254,7 @@ def progress_matrix(
     admin: User = Depends(require_admin),
 ):
     """전체 사용자 과제 현황 매트릭스"""
-    user_q = db.query(User).filter(User.role == "baby_lion", User.approved == True)
+    user_q = db.query(User).filter(User.role.in_(["baby_lion", "tester"]), User.approved == True)
     if track:
         user_q = user_q.filter(User.track == track)
     users = user_q.order_by(User.track, User.team, User.name).all()
@@ -287,7 +306,7 @@ def progress_matrix(
 def get_warnings(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
     """2회 이상 미제출 사용자 경고 목록"""
     now = datetime.utcnow()
-    users = db.query(User).filter(User.role == "baby_lion", User.approved == True).all()
+    users = db.query(User).filter(User.role.in_(["baby_lion", "tester"]), User.approved == True).all()
     warnings = []
 
     for u in users:

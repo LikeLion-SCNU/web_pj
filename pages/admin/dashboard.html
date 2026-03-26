@@ -232,15 +232,24 @@
             +'<option value="tester"'+(u.role==='tester'?' selected':'')+'>테스터</option>'
             +'<option value="admin"'+(u.role==='admin'?' selected':'')+'>운영진</option>'
             +'</select>';
+          var deleteBtn = u.role !== 'admin'
+            ? '<button class="btn btn-sm btn-delete" data-uid="'+u.id+'" data-uname="'+escapeHTML(u.name)+'" style="font-size:.75rem;color:#f87171;border:1px solid #f87171;background:transparent;padding:4px 8px;border-radius:6px;margin-left:8px;cursor:pointer;">삭제</button>'
+            : '';
           return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#1a1a1a;border-radius:8px;">'
             +'<div><strong style="color:#fff;">'+escapeHTML(u.name)+'</strong> '+roleLabel
             +' <span style="color:#666;font-size:.8rem;margin-left:8px;">'+escapeHTML(u.email)+' · '+(TRACK_LABELS[u.track]||u.track)+' · '+(u.team?u.team+'팀':'')+'</span></div>'
-            +'<div>'+selectHtml+'</div></div>';
+            +'<div style="display:flex;align-items:center;">'+selectHtml+deleteBtn+'</div></div>';
         }).join('');
 
         container.querySelectorAll('.role-select').forEach(function(sel) {
           sel.addEventListener('change', function() {
             setUserRole(sel.dataset.uid, sel.dataset.uname, sel.value);
+          });
+        });
+        container.querySelectorAll('.btn-delete').forEach(function(btn) {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            deleteUser(btn.dataset.uid, btn.dataset.uname);
           });
         });
       } catch (err) { console.error('User management error:', err); }
@@ -251,6 +260,16 @@
         var res = await fetchAPI('/admin/users/' + userId + '/set-role?role=' + role, { method: 'PATCH' });
         showToast('success', res.message || (name + '님의 역할이 변경되었습니다.'));
         loadUserManagement();
+      } catch (err) { showToast('error', err.message); }
+    }
+
+    async function deleteUser(userId, name) {
+      if (!confirm(name + '님의 계정을 삭제하시겠습니까?\n제출 내역도 모두 삭제됩니다.')) return;
+      try {
+        var res = await fetchAPI('/admin/users/' + userId, { method: 'DELETE' });
+        showToast('success', res.message || (name + '님이 삭제되었습니다.'));
+        loadUserManagement();
+        loadMatrix('');
       } catch (err) { showToast('error', err.message); }
     }
 
