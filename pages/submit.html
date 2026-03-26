@@ -8,6 +8,24 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="css/pbl.css?v=4">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+  <style>
+    .mission-desc { color:#ccc; margin-top:12px; line-height:1.7; }
+    .mission-desc h1,.mission-desc h2,.mission-desc h3 { color:#fff; margin:16px 0 8px; }
+    .mission-desc h3 { font-size:1.05rem; }
+    .mission-desc p { margin:6px 0; }
+    .mission-desc ul,.mission-desc ol { padding-left:20px; margin:6px 0; }
+    .mission-desc li { margin:4px 0; }
+    .mission-desc code { background:#1a1a2e; padding:2px 6px; border-radius:4px; font-size:.85em; color:#a78bfa; }
+    .mission-desc pre { background:#1a1a2e; padding:12px 16px; border-radius:8px; overflow-x:auto; margin:8px 0; }
+    .mission-desc pre code { background:none; padding:0; }
+    .mission-desc a { color:#818cf8; text-decoration:underline; }
+    .mission-desc a:hover { color:#a78bfa; }
+    .mission-desc strong { color:#fff; }
+    .mission-desc blockquote { border-left:3px solid #818cf8; padding-left:12px; color:#999; margin:8px 0; }
+    .mission-desc hr { border:none; border-top:1px solid #333; margin:12px 0; }
+  </style>
 </head>
 <body>
 
@@ -91,7 +109,7 @@
             </a>
           </div>
           <h2 style="font-size:1.3rem;font-weight:700;color:#fff;margin-top:8px;">${escapeHTML(mission.title)}</h2>
-          <p style="color:#888;margin-top:8px;">${escapeHTML(mission.description || '')}</p>
+          <div class="mission-desc">${typeof marked !== 'undefined' ? DOMPurify.sanitize(marked.parse(mission.description || '')) : escapeHTML(mission.description || '')}</div>
           ${dateStr ? `
             <div style="margin-top:12px;padding:12px 16px;background:#1a1a1a;border-radius:8px;border-left:3px solid ${isClosed ? '#f87171' : isUpcoming ? '#888' : '#4ade80'};">
               <span style="font-size:.85rem;color:${isClosed ? '#f87171' : isUpcoming ? '#888' : '#4ade80'};font-weight:600;">
