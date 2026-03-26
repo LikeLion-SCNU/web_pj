@@ -122,6 +122,23 @@ def demote_user(user_id: int, db: Session = Depends(get_db), admin: User = Depen
     return {"message": f"{user.name}님을 아기사자로 변경했습니다."}
 
 
+@router.patch("/users/{user_id}/set-role")
+def set_user_role(user_id: int, role: str = Query(...), db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    ALLOWED_ROLES = ("baby_lion", "admin", "tester")
+    if role not in ALLOWED_ROLES:
+        raise HTTPException(400, f"역할은 {', '.join(ALLOWED_ROLES)} 중 하나여야 합니다")
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(404, "사용자를 찾을 수 없습니다")
+    if user.id == admin.id and role != "admin":
+        raise HTTPException(400, "자기 자신의 운영진 권한은 변경할 수 없습니다")
+    old_role = user.role
+    user.role = role
+    db.commit()
+    ROLE_LABELS = {"baby_lion": "아기사자", "admin": "운영진", "tester": "테스터"}
+    return {"message": f"{user.name}님의 역할을 {ROLE_LABELS.get(old_role, old_role)} → {ROLE_LABELS.get(role, role)}(으)로 변경했습니다."}
+
+
 @router.get("/users")
 def list_all_users(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
     users = db.query(User).filter(User.approved == True).order_by(User.role.desc(), User.name).all()
