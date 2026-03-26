@@ -233,7 +233,7 @@
             +'<option value="admin"'+(u.role==='admin'?' selected':'')+'>운영진</option>'
             +'</select>';
           var deleteBtn = u.role !== 'admin'
-            ? '<button class="btn btn-sm btn-delete" data-uid="'+u.id+'" data-uname="'+escapeHTML(u.name)+'" style="font-size:.75rem;color:#f87171;border:1px solid #f87171;background:transparent;padding:4px 8px;border-radius:6px;margin-left:8px;cursor:pointer;">삭제</button>'
+            ? '<button type="button" class="btn-delete" data-uid="'+u.id+'" data-uname="'+escapeHTML(u.name)+'" style="font-size:.75rem;color:#f87171;border:1px solid #f87171;background:transparent;padding:6px 12px;border-radius:6px;margin-left:8px;cursor:pointer;position:relative;z-index:10;">삭제</button>'
             : '';
           return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#1a1a1a;border-radius:8px;">'
             +'<div><strong style="color:#fff;">'+escapeHTML(u.name)+'</strong> '+roleLabel
