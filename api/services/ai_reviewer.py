@@ -34,7 +34,7 @@ SYSTEM_PROMPT = """당신은 멋쟁이사자처럼 순천대학교의 PBL(프로
 - 30~49: 상당 부분 미충족 (다시 시도 권장)
 - 0~29: 제출물이 과제와 무관하거나 거의 비어있음
 
-60점 이상이면 합격입니다. 초보자에게 너무 엄격하지 마세요."""
+80점 이상이면 합격입니다. 초보자에게 너무 엄격하지 마세요."""
 
 TRACK_PROMPTS = {
     "frontend": """## 프론트엔드 트랙 평가 가이드
@@ -249,8 +249,8 @@ def run_ai_review(submission_id: int):
         )
         db.add(review)
 
-        # 60점 이상 자동 합격, 미만은 운영진 확인
-        if score >= 60:
+        # 80점 이상 자동 합격, 미만은 운영진 확인
+        if score >= 80:
             submission.status = "passed"
         else:
             submission.status = "pending"
