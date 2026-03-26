@@ -3,7 +3,7 @@
     "track": "planning",
     "number": 0,
     "title": "Git/GitHub 협업 가이드",
-    "description": "## Git/GitHub & PM 기초 세팅\n\n### 참고 VOD (필수 시청)\n\n**1) PM 기초 (챕터 1 / 5강 / 38분)**\n강의: https://likelion.net/courses/technology/next-PM\n- Product Manager vs Project Manager (8:16)\n- 서비스 기획자 vs Product Manager (10:32)\n- Product Owner vs Product Manager (8:44)\n- IT 서비스의 탄생 - 기획/디자인/개발 프로세스 (13:07)\n- UI/UX에 대한 이해 (9:58)\n\n**2) PM이 주로 사용하는 툴 (챕터 5 / 2강 / 17분)**\n- Figma (10:27)\n- Jira (7:01)\n\n**3) Git & GitHub (챕터 5 / 11강 / 1시간 31분)**\n프론트엔드 강의에서 시청: https://likelion.net/courses/technology/next-frontend\n- **챕터 5. Git & Github**\n  1. Git & Github의 등장과 역할 (4:52)\n  2. Git 설치 및 세팅하기-윈도우 (7:55)\n  3. Git 설치 및 세팅하기-맥 (9:17)\n  4. Git 동작 흐름과 구성 요소 (4:02)\n  5. 로컬 Git 저장소 생성 (1) (13:31)\n  6. 로컬 Git 저장소 생성 (2) (15:12)\n  7. Github에 소스 반영 (1) (4:41)\n  8. Github에 소스 반영 (2) (4:16)\n  9. Github으로 협업하기 (1) (7:48)\n  10. Github으로 협업하기 (2) (11:19)\n  11. Git GUI 활용하기 (8:42)\n\n### 과제 진행 순서\n\n#### Step 1: PM 강의 시청\n1. PM 강의 챕터 1, 5를 시청하세요\n2. PM이란 무엇인지, 어떤 역할인지 이해하기\n3. Figma, Jira 등 PM이 사용하는 도구 파악하기\n\n#### Step 2: Git 설치 & GitHub 레포 생성\n1. Git & GitHub 강의(프론트 챕터 5)를 시청하면서 따라하기\n2. Git 설치 (Windows: git-scm.com / Mac: 터미널에서 git --version)\n3. 설치 후 터미널에서 설정:\n```\ngit config --global user.name \"내 이름\"\ngit config --global user.email \"내 이메일\"\n```\n4. GitHub에서 새 레포지토리 생성:\n   - Repository name: `likelion-pbl-planning`\n   - **Public** 선택\n   - ✅ Add a README file 체크\n   - Create repository\n\n#### Step 3: README에 기획 소개 작성 & 커밋\n1. GitHub 웹에서 README.md → Edit(연필 아이콘) 클릭\n2. 아래 내용 작성 (Markdown 형식):\n```markdown\n# 멋쟁이사자처럼 PBL - 기획 트랙\n\n## 자기소개\n- 이름: (본인 이름)\n- 파트: 기획 (Product Manager)\n- 관심 분야: (예: 교육, 헬스케어, 커뮤니티)\n\n## PM 강의를 듣고 배운 점\n- (챕터 1에서 인상 깊었던 내용 2~3줄)\n\n## 이번 학기 목표\n- (자유 작성)\n```\n3. **Commit changes** 클릭\n4. 2~3번 더 수정 → 매번 Commit (최소 3회 커밋)\n\n#### Step 4: 브랜치 & PR\n1. 브랜치 드롭다운 → 새 이름 입력 (예: `feature/intro`) → **Create branch**\n2. 새 브랜치에서 파일 수정 → Commit\n3. 상단 **Compare & pull request** → PR 생성\n\n### 제출\nGitHub 레포지토리 URL을 제출하세요. (예: https://github.com/내아이디/likelion-pbl-planning)",
+    "description": "## Git/GitHub & PM 기초 세팅\n\n### 참고 VOD (필수 시청)\n\n**1) PM 기초 (챕터 1 / 5강 / 38분)**\n강의: https://likelion.net/courses/technology/next-PM\n- Product Manager vs Project Manager (8:16)\n- 서비스 기획자 vs Product Manager (10:32)\n- Product Owner vs Product Manager (8:44)\n- IT 서비스의 탄생 - 기획/디자인/개발 프로세스 (13:07)\n- UI/UX에 대한 이해 (9:58)\n\n**2) PM이 주로 사용하는 툴 (챕터 5 / 2강 / 17분)**\n- Figma (10:27)\n- Jira (7:01)\n\n**3) Git & GitHub (챕터 5 / 11강 / 1시간 31분)**\n⚠️ **프론트엔드 강의**에서 Git 챕터를 시청하세요!\n👉 강의 바로가기: https://likelion.net/courses/technology/next-frontend\n- **챕터 5. Git & Github**\n  1. Git & Github의 등장과 역할 (4:52)\n  2. Git 설치 및 세팅하기-윈도우 (7:55)\n  3. Git 설치 및 세팅하기-맥 (9:17)\n  4. Git 동작 흐름과 구성 요소 (4:02)\n  5. 로컬 Git 저장소 생성 (1) (13:31)\n  6. 로컬 Git 저장소 생성 (2) (15:12)\n  7. Github에 소스 반영 (1) (4:41)\n  8. Github에 소스 반영 (2) (4:16)\n  9. Github으로 협업하기 (1) (7:48)\n  10. Github으로 협업하기 (2) (11:19)\n  11. Git GUI 활용하기 (8:42)\n\n### 과제 진행 순서\n\n#### Step 1: PM 강의 시청\n1. PM 강의 챕터 1, 5를 시청하세요\n2. PM이란 무엇인지, 어떤 역할인지 이해하기\n3. Figma, Jira 등 PM이 사용하는 도구 파악하기\n\n#### Step 2: Git 설치 & GitHub 레포 생성\n1. **프론트엔드 강의**(https://likelion.net/courses/technology/next-frontend) 챕터 5를 시청하면서 따라하기\n2. Git 설치 (Windows: git-scm.com / Mac: 터미널에서 git --version)\n3. 설치 후 터미널에서 설정:\n```\ngit config --global user.name \"내 이름\"\ngit config --global user.email \"내 이메일\"\n```\n4. GitHub에서 새 레포지토리 생성:\n   - Repository name: `likelion-pbl-planning`\n   - **Public** 선택\n   - ✅ Add a README file 체크\n   - Create repository\n\n#### Step 3: README에 기획 소개 작성 & 커밋\n1. GitHub 웹에서 README.md → Edit(연필 아이콘) 클릭\n2. 아래 내용 작성 (Markdown 형식):\n```markdown\n# 멋쟁이사자처럼 PBL - 기획 트랙\n\n## 자기소개\n- 이름: (본인 이름)\n- 파트: 기획 (Product Manager)\n- 관심 분야: (예: 교육, 헬스케어, 커뮤니티)\n\n## PM 강의를 듣고 배운 점\n- (챕터 1에서 인상 깊었던 내용 2~3줄)\n\n## 이번 학기 목표\n- (자유 작성)\n```\n3. **Commit changes** 클릭\n4. 2~3번 더 수정 → 매번 Commit (최소 3회 커밋)\n\n#### Step 4: 브랜치 & PR\n1. 브랜치 드롭다운 → 새 이름 입력 (예: `feature/intro`) → **Create branch**\n2. 새 브랜치에서 파일 수정 → Commit\n3. 상단 **Compare & pull request** → PR 생성\n\n### 제출\nGitHub 레포지토리 URL을 제출하세요. (예: https://github.com/내아이디/likelion-pbl-planning)",
     "checklist": [
       "GitHub 레포지토리를 생성했는가",
       "README.md 파일을 작성하고 커밋했는가",
@@ -12,13 +12,14 @@
     ],
     "submission_type": "github",
     "estimated_hours": 2,
-    "pbl_link": "https://likelion.net/courses/technology/next-PM"
+    "pbl_link": "https://likelion.net/courses/technology/next-PM",
+    "order": 0
   },
   {
     "track": "design",
     "number": 0,
     "title": "Git/GitHub & Figma 협업 가이드",
-    "description": "## Git/GitHub & Figma 개발환경 세팅\n\n### 참고 VOD (필수 시청)\n\n**1) Figma 기초 (챕터 1 / 6강 / 47분)**\n강의: https://likelion.net/courses/technology/next_figma\n- Figma 소개 (6:36)\n- Figma 인터페이스 기본 (4:28)\n- 아트보드와 도형 그리기 (12:11)\n- 색상과 스타일 적용 (7:08)\n- 텍스트 추가 및 스타일링 (7:05)\n- Figma로 실습 1 (9:29)\n\n**2) Git & GitHub (챕터 5 / 11강 / 1시간 31분)**\n프론트엔드 강의에서 시청: https://likelion.net/courses/technology/next-frontend\n- **챕터 5. Git & Github**\n  1. Git & Github의 등장과 역할 (4:52)\n  2. Git 설치 및 세팅하기-윈도우 (7:55)\n  3. Git 설치 및 세팅하기-맥 (9:17)\n  4. Git 동작 흐름과 구성 요소 (4:02)\n  5. 로컬 Git 저장소 생성 (1) (13:31)\n  6. 로컬 Git 저장소 생성 (2) (15:12)\n  7. Github에 소스 반영 (1) (4:41)\n  8. Github에 소스 반영 (2) (4:16)\n  9. Github으로 협업하기 (1) (7:48)\n  10. Github으로 협업하기 (2) (11:19)\n  11. Git GUI 활용하기 (8:42)\n\n### 과제 진행 순서\n\n#### Step 1: Figma 세팅\n1. figma.com 가입 (무료, 구글 계정 연동 가능)\n2. Figma 강의 챕터 1을 시청하면서 따라하기\n3. 새 Design File 생성 → 파일 이름: `LIKELION PBL - [내 이름]`\n4. 간단한 자기소개 카드 만들어보기 (프레임 + 도형 + 텍스트)\n5. 공유 링크 생성: 오른쪽 상단 **Share** → **Copy link**\n   - ⚠️ \"Anyone with the link\" → **can view** 설정 필수!\n\n#### Step 2: Git 설치 & GitHub 레포 생성\n1. Git & GitHub 강의(프론트 챕터 5)를 시청하면서 따라하기\n2. Git 설치 (Windows: git-scm.com / Mac: 터미널에서 git --version)\n3. 설치 후 터미널에서 설정:\n```\ngit config --global user.name \"내 이름\"\ngit config --global user.email \"내 이메일\"\n```\n4. GitHub에서 새 레포지토리 생성:\n   - Repository name: `likelion-pbl-design`\n   - **Public** 선택 (AI 검사용)\n   - ✅ Add a README file 체크\n   - Create repository\n\n#### Step 3: README 작성 & 커밋\n1. GitHub 웹에서 README.md → Edit(연필 아이콘) 클릭\n2. 아래 내용 작성:\n```markdown\n# 멋쟁이사자처럼 PBL - 디자인 트랙\n\n## 자기소개\n- 이름: (본인 이름)\n- 파트: 디자인\n- Figma: (Figma 공유 링크)\n\n## 학습 목표\n- Figma 기본 사용법 익히기\n- 사용자 중심 디자인 경험\n```\n3. **Commit changes** 클릭\n4. 2~3번 더 수정 → 매번 Commit (최소 3회 커밋)\n\n#### Step 4: 브랜치 & PR\n1. 브랜치 드롭다운 → 새 이름 입력 (예: `feature/intro`) → **Create branch**\n2. 새 브랜치에서 파일 수정 → Commit\n3. 상단 **Compare & pull request** → PR 생성\n\n### 제출\n- GitHub URL: 레포지토리 주소\n- Figma URL: 공유 링크 (⚠️ 공유 설정 확인!)",
+    "description": "## Git/GitHub & Figma 개발환경 세팅\n\n### 참고 VOD (필수 시청)\n\n**1) Figma 기초 (챕터 1 / 6강 / 47분)**\n강의: https://likelion.net/courses/technology/next_figma\n- Figma 소개 (6:36)\n- Figma 인터페이스 기본 (4:28)\n- 아트보드와 도형 그리기 (12:11)\n- 색상과 스타일 적용 (7:08)\n- 텍스트 추가 및 스타일링 (7:05)\n- Figma로 실습 1 (9:29)\n\n**2) Git & GitHub (챕터 5 / 11강 / 1시간 31분)**\n⚠️ **프론트엔드 강의**에서 Git 챕터를 시청하세요!\n👉 강의 바로가기: https://likelion.net/courses/technology/next-frontend\n- **챕터 5. Git & Github**\n  1. Git & Github의 등장과 역할 (4:52)\n  2. Git 설치 및 세팅하기-윈도우 (7:55)\n  3. Git 설치 및 세팅하기-맥 (9:17)\n  4. Git 동작 흐름과 구성 요소 (4:02)\n  5. 로컬 Git 저장소 생성 (1) (13:31)\n  6. 로컬 Git 저장소 생성 (2) (15:12)\n  7. Github에 소스 반영 (1) (4:41)\n  8. Github에 소스 반영 (2) (4:16)\n  9. Github으로 협업하기 (1) (7:48)\n  10. Github으로 협업하기 (2) (11:19)\n  11. Git GUI 활용하기 (8:42)\n\n### 과제 진행 순서\n\n#### Step 1: Figma 세팅\n1. figma.com 가입 (무료, 구글 계정 연동 가능)\n2. Figma 강의 챕터 1을 시청하면서 따라하기\n3. 새 Design File 생성 → 파일 이름: `LIKELION PBL - [내 이름]`\n4. 간단한 자기소개 카드 만들어보기 (프레임 + 도형 + 텍스트)\n5. 공유 링크 생성: 오른쪽 상단 **Share** → **Copy link**\n   - ⚠️ \"Anyone with the link\" → **can view** 설정 필수!\n\n#### Step 2: Git 설치 & GitHub 레포 생성\n1. **프론트엔드 강의**(https://likelion.net/courses/technology/next-frontend) 챕터 5를 시청하면서 따라하기\n2. Git 설치 (Windows: git-scm.com / Mac: 터미널에서 git --version)\n3. 설치 후 터미널에서 설정:\n```\ngit config --global user.name \"내 이름\"\ngit config --global user.email \"내 이메일\"\n```\n4. GitHub에서 새 레포지토리 생성:\n   - Repository name: `likelion-pbl-design`\n   - **Public** 선택 (AI 검사용)\n   - ✅ Add a README file 체크\n   - Create repository\n\n#### Step 3: README 작성 & 커밋\n1. GitHub 웹에서 README.md → Edit(연필 아이콘) 클릭\n2. 아래 내용 작성:\n```markdown\n# 멋쟁이사자처럼 PBL - 디자인 트랙\n\n## 자기소개\n- 이름: (본인 이름)\n- 파트: 디자인\n- Figma: (Figma 공유 링크)\n\n## 학습 목표\n- Figma 기본 사용법 익히기\n- 사용자 중심 디자인 경험\n```\n3. **Commit changes** 클릭\n4. 2~3번 더 수정 → 매번 Commit (최소 3회 커밋)\n\n#### Step 4: 브랜치 & PR\n1. 브랜치 드롭다운 → 새 이름 입력 (예: `feature/intro`) → **Create branch**\n2. 새 브랜치에서 파일 수정 → Commit\n3. 상단 **Compare & pull request** → PR 생성\n\n### 제출\n- GitHub URL: 레포지토리 주소\n- Figma URL: 공유 링크 (⚠️ 공유 설정 확인!)",
     "checklist": [
       "GitHub 레포지토리를 생성했는가",
       "README.md에 프로젝트 소개를 작성했는가",
@@ -27,7 +28,8 @@
     ],
     "submission_type": "mixed",
     "estimated_hours": 2,
-    "pbl_link": "https://likelion.net/courses/technology/next_figma"
+    "pbl_link": "https://likelion.net/courses/technology/next_figma",
+    "order": 0
   },
   {
     "track": "frontend",
@@ -43,7 +45,8 @@
     ],
     "submission_type": "github",
     "estimated_hours": 2,
-    "pbl_link": "https://likelion.net/courses/technology/next-frontend"
+    "pbl_link": "https://likelion.net/courses/technology/next-frontend",
+    "order": 0
   },
   {
     "track": "backend",
@@ -59,7 +62,8 @@
     ],
     "submission_type": "github",
     "estimated_hours": 2,
-    "pbl_link": "https://likelion.net/courses/technology/next-backendj"
+    "pbl_link": "https://likelion.net/courses/technology/next-backendj",
+    "order": 0
   },
   {
     "track": "planning",
@@ -74,7 +78,8 @@
     ],
     "submission_type": "mixed",
     "estimated_hours": 4,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481e1a985c48dcf850399"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481e1a985c48dcf850399",
+    "order": 1
   },
   {
     "track": "planning",
@@ -89,7 +94,8 @@
     ],
     "submission_type": "mixed",
     "estimated_hours": 3,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4817c9d2ee5fe4bdbaf1a"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4817c9d2ee5fe4bdbaf1a",
+    "order": 2
   },
   {
     "track": "planning",
@@ -104,7 +110,8 @@
     ],
     "submission_type": "mixed",
     "estimated_hours": 4,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4814082dce3e329232d90"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4814082dce3e329232d90",
+    "order": 3
   },
   {
     "track": "planning",
@@ -119,7 +126,8 @@
     ],
     "submission_type": "mixed",
     "estimated_hours": 4,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481ccb0a9f0df191f2558"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481ccb0a9f0df191f2558",
+    "order": 4
   },
   {
     "track": "planning",
@@ -134,7 +142,8 @@
     ],
     "submission_type": "mixed",
     "estimated_hours": 5,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481e28731d0db8a993fab"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481e28731d0db8a993fab",
+    "order": 5
   },
   {
     "track": "planning",
@@ -149,7 +158,8 @@
     ],
     "submission_type": "mixed",
     "estimated_hours": 3,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4810ab343fcd153cec06d"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4810ab343fcd153cec06d",
+    "order": 6
   },
   {
     "track": "planning",
@@ -164,7 +174,8 @@
     ],
     "submission_type": "mixed",
     "estimated_hours": 4,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481e28731d0db8a993fab"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481e28731d0db8a993fab",
+    "order": 7
   },
   {
     "track": "planning",
@@ -179,7 +190,8 @@
     ],
     "submission_type": "mixed",
     "estimated_hours": 5,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481b2b527cb2998d88199"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481b2b527cb2998d88199",
+    "order": 8
   },
   {
     "track": "planning",
@@ -194,7 +206,8 @@
     ],
     "submission_type": "mixed",
     "estimated_hours": 4,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481b2b527cb2998d88199"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481b2b527cb2998d88199",
+    "order": 9
   },
   {
     "track": "planning",
@@ -209,7 +222,8 @@
     ],
     "submission_type": "mixed",
     "estimated_hours": 5,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481929b68daf2eb32f25f"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481929b68daf2eb32f25f",
+    "order": 10
   },
   {
     "track": "design",
@@ -224,7 +238,8 @@
     ],
     "submission_type": "figma",
     "estimated_hours": 4,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4817c9d2ee5fe4bdbaf1a"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4817c9d2ee5fe4bdbaf1a",
+    "order": 1
   },
   {
     "track": "design",
@@ -239,7 +254,8 @@
     ],
     "submission_type": "figma",
     "estimated_hours": 3,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4814082dce3e329232d90"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4814082dce3e329232d90",
+    "order": 2
   },
   {
     "track": "design",
@@ -254,7 +270,8 @@
     ],
     "submission_type": "figma",
     "estimated_hours": 3,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481ccb0a9f0df191f2558"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481ccb0a9f0df191f2558",
+    "order": 3
   },
   {
     "track": "design",
@@ -269,7 +286,8 @@
     ],
     "submission_type": "figma",
     "estimated_hours": 5,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f48112a7c5f9bd85c491b4"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f48112a7c5f9bd85c491b4",
+    "order": 4
   },
   {
     "track": "design",
@@ -284,7 +302,8 @@
     ],
     "submission_type": "figma",
     "estimated_hours": 6,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4810ab343fcd153cec06d"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4810ab343fcd153cec06d",
+    "order": 5
   },
   {
     "track": "design",
@@ -299,7 +318,8 @@
     ],
     "submission_type": "mixed",
     "estimated_hours": 4,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481e28731d0db8a993fab"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481e28731d0db8a993fab",
+    "order": 6
   },
   {
     "track": "design",
@@ -314,7 +334,8 @@
     ],
     "submission_type": "figma",
     "estimated_hours": 5,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481ab9cbbe80c0d3375d7"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481ab9cbbe80c0d3375d7",
+    "order": 7
   },
   {
     "track": "design",
@@ -329,7 +350,8 @@
     ],
     "submission_type": "figma",
     "estimated_hours": 8,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481b2b527cb2998d88199"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481b2b527cb2998d88199",
+    "order": 8
   },
   {
     "track": "design",
@@ -344,7 +366,8 @@
     ],
     "submission_type": "mixed",
     "estimated_hours": 5,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481b2b527cb2998d88199"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481b2b527cb2998d88199",
+    "order": 9
   },
   {
     "track": "design",
@@ -359,7 +382,8 @@
     ],
     "submission_type": "figma",
     "estimated_hours": 4,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481929b68daf2eb32f25f"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481929b68daf2eb32f25f",
+    "order": 10
   },
   {
     "track": "frontend",
@@ -375,7 +399,8 @@
     ],
     "submission_type": "github",
     "estimated_hours": 4,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f4819890dfced14fd7097b"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f4819890dfced14fd7097b",
+    "order": 1
   },
   {
     "track": "frontend",
@@ -390,7 +415,8 @@
     ],
     "submission_type": "github",
     "estimated_hours": 5,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f481fe943ef27144a26fd7"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f481fe943ef27144a26fd7",
+    "order": 2
   },
   {
     "track": "frontend",
@@ -405,7 +431,8 @@
     ],
     "submission_type": "github",
     "estimated_hours": 6,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f481fa8a52eec6ae08b4d9"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f481fa8a52eec6ae08b4d9",
+    "order": 3
   },
   {
     "track": "frontend",
@@ -420,7 +447,8 @@
     ],
     "submission_type": "github",
     "estimated_hours": 6,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f481ebacbdd5cdbf060f6e"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f481ebacbdd5cdbf060f6e",
+    "order": 4
   },
   {
     "track": "frontend",
@@ -435,7 +463,8 @@
     ],
     "submission_type": "github",
     "estimated_hours": 7,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f48140a95dc73343b00434"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f48140a95dc73343b00434",
+    "order": 5
   },
   {
     "track": "frontend",
@@ -450,7 +479,8 @@
     ],
     "submission_type": "github",
     "estimated_hours": 8,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f4819089c9f2230641f701"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f4819089c9f2230641f701",
+    "order": 6
   },
   {
     "track": "frontend",
@@ -465,7 +495,8 @@
     ],
     "submission_type": "github",
     "estimated_hours": 5,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f481ddac76e92fdef2fee2"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f481ddac76e92fdef2fee2",
+    "order": 7
   },
   {
     "track": "frontend",
@@ -480,7 +511,8 @@
     ],
     "submission_type": "github",
     "estimated_hours": 6,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f481c0b69bce5e8eebfadb"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f481c0b69bce5e8eebfadb",
+    "order": 8
   },
   {
     "track": "frontend",
@@ -495,7 +527,8 @@
     ],
     "submission_type": "deploy",
     "estimated_hours": 8,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f4817f8622f527d0fe5e10"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f4817f8622f527d0fe5e10",
+    "order": 9
   },
   {
     "track": "frontend",
@@ -510,7 +543,8 @@
     ],
     "submission_type": "deploy",
     "estimated_hours": 4,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f4813c8187dc6a1d0082d9"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f4813c8187dc6a1d0082d9",
+    "order": 10
   },
   {
     "track": "backend",
@@ -525,7 +559,8 @@
     ],
     "submission_type": "github",
     "estimated_hours": 4,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481878cbdd66f54b19ce9"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481878cbdd66f54b19ce9",
+    "order": 1
   },
   {
     "track": "backend",
@@ -540,7 +575,8 @@
     ],
     "submission_type": "github",
     "estimated_hours": 5,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481869998cc607120d4c4"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481869998cc607120d4c4",
+    "order": 2
   },
   {
     "track": "backend",
@@ -555,7 +591,8 @@
     ],
     "submission_type": "github",
     "estimated_hours": 6,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481638d0cf4aad3314d98"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481638d0cf4aad3314d98",
+    "order": 3
   },
   {
     "track": "backend",
@@ -570,7 +607,8 @@
     ],
     "submission_type": "github",
     "estimated_hours": 5,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f48151a4cac98414514b2b"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f48151a4cac98414514b2b",
+    "order": 4
   },
   {
     "track": "backend",
@@ -585,7 +623,8 @@
     ],
     "submission_type": "github",
     "estimated_hours": 5,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f48110b935cf9dc900b42b"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f48110b935cf9dc900b42b",
+    "order": 5
   },
   {
     "track": "backend",
@@ -600,7 +639,8 @@
     ],
     "submission_type": "github",
     "estimated_hours": 5,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481cfb0fad0418e9c04a5"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481cfb0fad0418e9c04a5",
+    "order": 6
   },
   {
     "track": "backend",
@@ -615,7 +655,8 @@
     ],
     "submission_type": "github",
     "estimated_hours": 6,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f4818ea0e6ebeb22ef09ad"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f4818ea0e6ebeb22ef09ad",
+    "order": 7
   },
   {
     "track": "backend",
@@ -630,7 +671,8 @@
     ],
     "submission_type": "github",
     "estimated_hours": 7,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481fb9dd3ea247d83d657"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481fb9dd3ea247d83d657",
+    "order": 8
   },
   {
     "track": "backend",
@@ -645,7 +687,8 @@
     ],
     "submission_type": "github",
     "estimated_hours": 5,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f48108b793f72c8a7146e7"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f48108b793f72c8a7146e7",
+    "order": 9
   },
   {
     "track": "backend",
@@ -660,6 +703,7 @@
     ],
     "submission_type": "github",
     "estimated_hours": 7,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481e6a824ca2a9f06099b"
+    "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481e6a824ca2a9f06099b",
+    "order": 10
   }
 ]
