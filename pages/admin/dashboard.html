@@ -328,9 +328,9 @@
         const s = stats.stats || stats;
         document.getElementById('statTotal').textContent = s.total_users ?? '-';
         document.getElementById('statSubmissions').textContent = s.total_submissions ?? '-';
-        document.getElementById('statPassed').textContent = s.passed ?? '-';
-        document.getElementById('statRejected').textContent = s.rejected ?? '-';
-        document.getElementById('statPending').textContent = s.pending ?? '-';
+        document.getElementById('statPassed').textContent = s.passed_count ?? '-';
+        document.getElementById('statRejected').textContent = s.rejected_count ?? '-';
+        document.getElementById('statPending').textContent = s.pending_count ?? '-';
       } catch {}
     })();
 
@@ -340,7 +340,7 @@
       tbody.innerHTML = '<tr><td colspan="6" class="text-center"><span class="spinner"></span></td></tr>';
       try {
         const data = await loadAdminSubmissions(params);
-        const list = data.submissions || [];
+        const list = Array.isArray(data) ? data : (data.submissions || []);
         if (list.length === 0) {
           tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">데이터 없음</td></tr>';
           return;

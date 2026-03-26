@@ -173,6 +173,7 @@ def list_submissions(
             "figma_url": s.figma_url,
             "screenshot_path": s.screenshot_path,
             "description": s.description,
+            "team": s.user.team,
             "submitted_at": s.submitted_at.isoformat(),
             "review": {
                 "ai_score": s.review.ai_score,
