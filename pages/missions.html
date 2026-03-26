@@ -29,7 +29,15 @@
 
   <main class="pbl-main">
     <h1 class="pbl-page-title">내 미션</h1>
-    <p class="pbl-page-subtitle" id="trackLabel"></p>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
+      <p class="pbl-page-subtitle" id="trackLabel" style="margin:0;"></p>
+      <select id="adminTrackSelect" class="form-select" style="width:auto;display:none;">
+        <option value="planning">기획</option>
+        <option value="design">디자인</option>
+        <option value="frontend">프론트엔드</option>
+        <option value="backend">백엔드</option>
+      </select>
+    </div>
 
     <div id="missionGrid" class="pbl-card-grid">
       <div class="text-center text-muted"><span class="spinner"></span></div>
@@ -53,10 +61,60 @@
           console.error('Failed to fetch user:', e);
         }
       }
-      document.getElementById('trackLabel').textContent =
-        `${trackNames[user?.track] || ''} 트랙 미션 목록`;
-      loadMissions(document.getElementById('missionGrid'));
+      const grid = document.getElementById('missionGrid');
+      const select = document.getElementById('adminTrackSelect');
+
+      if (user && user.role === 'admin') {
+        select.style.display = 'block';
+        select.value = user.track;
+        document.getElementById('trackLabel').textContent = '트랙 선택:';
+        select.addEventListener('change', function() {
+          loadMissionsForTrack(this.value, grid);
+        });
+        loadMissionsForTrack(select.value, grid);
+      } else {
+        document.getElementById('trackLabel').textContent =
+          (trackNames[user?.track] || '') + ' 트랙 미션 목록';
+        loadMissions(grid);
+      }
     })();
+
+    async function loadMissionsForTrack(track, container) {
+      try {
+        const missions = await fetchAPI('/missions?track=' + track);
+        if (!Array.isArray(missions) || missions.length === 0) {
+          container.innerHTML = '<p class="text-muted text-center">등록된 미션이 없습니다.</p>';
+          return;
+        }
+        container.innerHTML = missions.map(m => {
+          const ps = m.period_status || 'open';
+          const ms = m.my_status;
+          const startDate = m.start_date ? new Date(m.start_date) : null;
+          const endDate = m.end_date ? new Date(m.end_date) : null;
+          const dateStr = startDate && endDate
+            ? (startDate.getMonth()+1)+'/'+startDate.getDate()+' ~ '+(endDate.getMonth()+1)+'/'+endDate.getDate()
+            : '';
+          let cardClass = 'mission-card-active';
+          let statusIcon = '🔥'; let statusText = '진행중';
+          if (ms === 'passed') { cardClass = 'mission-card-passed'; statusIcon = '✅'; statusText = '완료'; }
+          else if (ps === 'closed' && !ms) { cardClass = 'mission-card-missed'; statusIcon = '❌'; statusText = '미제출'; }
+          else if (ps === 'upcoming') { cardClass = 'mission-card-upcoming'; statusIcon = '🔒'; statusText = '예정'; }
+          return '<div class="pbl-card mission-card '+cardClass+'" data-href="/pages/submit?id='+m.id+'">'
+            +'<div style="display:flex;justify-content:space-between;align-items:center;">'
+            +'<div class="mission-number">Mission '+String(m.number).padStart(2,'0')+'</div>'
+            +'<span class="mission-status-badge">'+statusIcon+' '+statusText+'</span></div>'
+            +'<div class="mission-title">'+escapeHTML(m.title)+'</div>'
+            +'<div style="font-size:.8rem;color:#888;margin-top:4px;">'+dateStr+'</div>'
+            +'<div class="mission-meta"><span>'+(m.estimated_hours?m.estimated_hours+'시간':'-')+'</span></div></div>';
+        }).join('');
+        container.querySelectorAll('.mission-card[data-href]').forEach(function(card) {
+          card.addEventListener('click', function() { location.href = card.dataset.href; });
+          card.style.cursor = 'pointer';
+        });
+      } catch (err) {
+        container.innerHTML = '<p class="text-muted">'+escapeHTML(err.message)+'</p>';
+      }
+    }
   </script>
 </body>
 </html>

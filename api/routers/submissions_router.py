@@ -31,16 +31,17 @@ def create_submission(
     if not mission:
         raise HTTPException(404, "미션을 찾을 수 없습니다")
 
-    if mission.track != user.track:
+    if mission.track != user.track and user.role != "admin":
         raise HTTPException(400, "본인 트랙의 미션만 제출할 수 있습니다")
 
-    now = datetime.utcnow()
-    if mission.start_date and now < mission.start_date:
-        start_str = mission.start_date.strftime("%m/%d")
-        raise HTTPException(400, f"아직 제출 기간이 아닙니다. {start_str}부터 제출 가능합니다.")
-    if mission.end_date and now > mission.end_date:
-        end_str = mission.end_date.strftime("%m/%d")
-        raise HTTPException(400, f"제출 기한이 마감되었습니다. (마감: {end_str})")
+    if user.role != "admin":
+        now = datetime.utcnow()
+        if mission.start_date and now < mission.start_date:
+            start_str = mission.start_date.strftime("%m/%d")
+            raise HTTPException(400, f"아직 제출 기간이 아닙니다. {start_str}부터 제출 가능합니다.")
+        if mission.end_date and now > mission.end_date:
+            end_str = mission.end_date.strftime("%m/%d")
+            raise HTTPException(400, f"제출 기한이 마감되었습니다. (마감: {end_str})")
 
     existing = (
         db.query(Submission)
