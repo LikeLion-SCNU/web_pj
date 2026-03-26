@@ -47,7 +47,7 @@
       const container = document.getElementById('mySubmissions');
       try {
         const data = await loadAllMySubmissions();
-        const list = data.submissions || [];
+        const list = Array.isArray(data) ? data : (data.submissions || []);
         if (list.length === 0) {
           container.innerHTML = '<p class="text-muted text-center">제출 내역이 없습니다.</p>';
           return;
@@ -59,10 +59,10 @@
                 <strong style="font-size:.95rem">${escapeHTML(s.mission_title || `미션 ${s.mission_number}`)}</strong>
                 <span class="badge badge-${s.status}" style="margin-left:.5rem">${statusLabel(s.status)}</span>
               </div>
-              <time>${new Date(s.created_at).toLocaleString('ko-KR')}</time>
+              <time>${new Date(s.submitted_at).toLocaleString('ko-KR')}</time>
             </div>
-            ${s.ai_score != null ? `<div style="font-size:.8rem;color:var(--text-muted)">AI 점수: <strong style="color:var(--primary)">${s.ai_score}</strong>/100</div>` : ''}
-            ${s.ai_feedback ? `<div class="feedback-box">${escapeHTML(s.ai_feedback)}</div>` : ''}
+            ${s.review && s.review.ai_score != null ? `<div style="font-size:.8rem;color:var(--text-muted)">AI 점수: <strong style="color:var(--primary)">${s.review.ai_score}</strong>/100</div>` : ''}
+            ${s.review && s.review.ai_summary ? `<div class="feedback-box">${escapeHTML(s.review.ai_summary)}</div>` : ''}
           </div>
         `).join('');
       } catch (err) {
