@@ -401,34 +401,31 @@
       const footer = document.getElementById('modalFooter');
       if (s.status === 'pending' || s.status === 'reviewing') {
         footer.innerHTML = `
-          <button class="btn btn-success btn-sm" id="modalApproveBtn">합격 처리</button>
-          <button class="btn btn-danger btn-sm" id="modalRejectBtn">반려 처리</button>
+          <div style="display:flex;gap:8px;align-items:center;width:100%;flex-wrap:wrap;">
+            <input type="text" id="modalComment" placeholder="사유 입력 (선택)" style="flex:1;min-width:150px;padding:8px 12px;background:#111;color:#fff;border:1px solid #333;border-radius:6px;font-size:.85rem;">
+            <button type="button" id="modalApproveBtn" style="padding:8px 16px;background:#10b981;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;">합격</button>
+            <button type="button" id="modalRejectBtn" style="padding:8px 16px;background:#ef4444;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;">반려</button>
+          </div>
         `;
-        document.getElementById('modalApproveBtn').addEventListener('click', () => handleSubmissionApprove(s.id));
-        document.getElementById('modalRejectBtn').addEventListener('click', () => handleSubmissionReject(s.id));
+        document.getElementById('modalApproveBtn').addEventListener('click', function() { handleSubmissionReview(s.id, true); });
+        document.getElementById('modalRejectBtn').addEventListener('click', function() { handleSubmissionReview(s.id, false); });
       } else {
         footer.innerHTML = '';
       }
       openModal('detailModal');
     }
 
-    async function handleSubmissionApprove(id) {
+    async function handleSubmissionReview(id, approved) {
+      var comment = document.getElementById('modalComment').value.trim() || (approved ? '합격' : '반려');
+      if (!approved && !document.getElementById('modalComment').value.trim()) {
+        if (!confirm('반려 사유 없이 반려하시겠습니까?')) return;
+      }
       try {
-        await adminReviewSubmission(id, true, '합격');
-        showToast('success', '합격 처리 완료');
+        await adminReviewSubmission(id, approved, comment);
+        showToast('success', approved ? '합격 처리 완료' : '반려 처리 완료');
         closeModal('detailModal');
         applyFilters();
-      } catch (err) { showToast('error', err.message); }
-    }
-
-    async function handleSubmissionReject(id) {
-      const reason = prompt('반려 사유를 입력하세요:');
-      if (reason === null) return;
-      try {
-        await adminReviewSubmission(id, false, reason);
-        showToast('success', '반려 처리 완료');
-        closeModal('detailModal');
-        applyFilters();
+        loadMatrix(document.getElementById('matrixTrackFilter').value);
       } catch (err) { showToast('error', err.message); }
     }
   </script>
