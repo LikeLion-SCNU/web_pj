@@ -170,21 +170,15 @@
         `).join('');
 
         // 이벤트 바인딩
-        var approveButtons = list.querySelectorAll('.btn-approve');
-        var rejectButtons = list.querySelectorAll('.btn-reject');
-        console.log('[DEBUG] approve buttons:', approveButtons.length, 'reject buttons:', rejectButtons.length);
-
-        approveButtons.forEach(function(btn) {
+        list.querySelectorAll('.btn-approve').forEach(function(btn) {
           btn.addEventListener('click', function(e) {
             e.stopPropagation();
-            console.log('[DEBUG] approve clicked, uid:', btn.dataset.uid);
             handleApprove(btn.dataset.uid, btn.dataset.name);
           });
         });
-        rejectButtons.forEach(function(btn) {
+        list.querySelectorAll('.btn-reject').forEach(function(btn) {
           btn.addEventListener('click', function(e) {
             e.stopPropagation();
-            console.log('[DEBUG] reject clicked, uid:', btn.dataset.uid);
             handleReject(btn.dataset.uid, btn.dataset.name);
           });
         });
