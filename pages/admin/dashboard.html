@@ -169,12 +169,24 @@
           </div>
         `).join('');
 
-        // 이벤트 바인딩 (CSP 호환)
-        list.querySelectorAll('.btn-approve').forEach(btn => {
-          btn.addEventListener('click', () => handleApprove(btn.dataset.uid, btn.dataset.name));
+        // 이벤트 바인딩
+        var approveButtons = list.querySelectorAll('.btn-approve');
+        var rejectButtons = list.querySelectorAll('.btn-reject');
+        console.log('[DEBUG] approve buttons:', approveButtons.length, 'reject buttons:', rejectButtons.length);
+
+        approveButtons.forEach(function(btn) {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            console.log('[DEBUG] approve clicked, uid:', btn.dataset.uid);
+            handleApprove(btn.dataset.uid, btn.dataset.name);
+          });
         });
-        list.querySelectorAll('.btn-reject').forEach(btn => {
-          btn.addEventListener('click', () => handleReject(btn.dataset.uid, btn.dataset.name));
+        rejectButtons.forEach(function(btn) {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            console.log('[DEBUG] reject clicked, uid:', btn.dataset.uid);
+            handleReject(btn.dataset.uid, btn.dataset.name);
+          });
         });
       } catch (err) {
         console.error('Pending users load error:', err);
@@ -182,18 +194,18 @@
     }
 
     async function handleApprove(userId, name) {
-      if (!confirm(name + '님의 가입을 승인하시겠습니까?')) return;
       try {
-        await fetchAPI('/admin/users/' + userId + '/approve', { method: 'PATCH' });
+        const res = await fetchAPI('/admin/users/' + userId + '/approve', { method: 'PATCH' });
         showToast('success', name + '님이 승인되었습니다.');
         loadPendingUsers();
+        loadWarnings();
+        loadMatrix('');
       } catch (err) { showToast('error', err.message); }
     }
 
     async function handleReject(userId, name) {
-      if (!confirm(name + '님의 가입을 거절하시겠습니까? 계정이 삭제됩니다.')) return;
       try {
-        await fetchAPI('/admin/users/' + userId + '/reject', { method: 'PATCH' });
+        const res = await fetchAPI('/admin/users/' + userId + '/reject', { method: 'PATCH' });
         showToast('success', name + '님의 가입이 거절되었습니다.');
         loadPendingUsers();
       } catch (err) { showToast('error', err.message); }
