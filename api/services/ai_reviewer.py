@@ -7,6 +7,7 @@ import json
 import os
 import re
 import traceback
+from pathlib import Path
 
 from openai import OpenAI
 from sqlalchemy.orm import Session
@@ -199,18 +200,21 @@ def encode_screenshot(screenshot_path: str) -> dict | None:
     if not screenshot_path:
         return None
 
-    # /uploads/abc.png → /app/uploads/abc.png
-    full_path = os.path.join(UPLOAD_DIR, os.path.basename(screenshot_path))
-    if not os.path.exists(full_path):
+    # /uploads/abc.png → /app/uploads/abc.png (path traversal 방어)
+    full_path = Path(UPLOAD_DIR) / os.path.basename(screenshot_path)
+    full_path = full_path.resolve()
+    if not str(full_path).startswith(str(Path(UPLOAD_DIR).resolve())):
+        return None
+    if not full_path.exists():
         return None
 
     try:
+        # 파일 크기 선행 체크 (메모리 보호)
+        if full_path.stat().st_size > 10 * 1024 * 1024:
+            return None
+
         with open(full_path, "rb") as f:
             data = f.read()
-
-        # 10MB 초과 시 건너뜀
-        if len(data) > 10 * 1024 * 1024:
-            return None
 
         ext = screenshot_path.rsplit(".", 1)[-1].lower()
         mime_map = {
@@ -238,11 +242,11 @@ def encode_screenshot(screenshot_path: str) -> dict | None:
 # ============================================================
 
 def _sanitize_student_input(text: str) -> str:
-    """학생 입력에서 XML 태그 탈출 시도를 방지"""
+    """학생 입력에서 XML 태그 탈출 시도를 방지 (대소문자/공백 변형 포함)"""
     if not text:
         return text
-    # </student_submission> 태그 닫기 시도 무력화
-    return text.replace("</student_submission>", "[태그 제거됨]").replace("<student_submission>", "[태그 제거됨]")
+    # <student_submission> / </student_submission> 변형 무력화 (대소문자, 공백 무시)
+    return re.sub(r'</?student_submission\s*>', '[태그 제거됨]', text, flags=re.IGNORECASE)
 
 
 def build_submission_context(submission: Submission, mission: Mission) -> str:
@@ -323,7 +327,8 @@ RESPONSE_FORMAT = """
 
 def validate_review_output(result: dict, checklist_count: int) -> dict:
     """AI 출력의 일관성을 검증하고 필요 시 보정"""
-    score = min(100, max(0, int(result.get("score", 0))))
+    original_score = min(100, max(0, int(result.get("score", 0))))
+    score = original_score
     checklist_results = result.get("checklist_results", [])
 
     if not checklist_results:
@@ -336,15 +341,16 @@ def validate_review_output(result: dict, checklist_count: int) -> dict:
     flags = []
 
     # 1. 점수와 체크리스트 통과율 불일치 탐지
+    #    보정 공식: 통과율 × 기준점(80/85)으로 실제 수준에 맞게 재산정
     if score >= 80 and pass_rate < 0.4:
         flags.append(f"점수({score})가 체크리스트 통과율({pass_rate:.0%})에 비해 과도하게 높음")
-        score = int(pass_rate * 80)  # 보정
+        score = int(pass_rate * 80)
     elif score <= 40 and pass_rate > 0.7:
         flags.append(f"점수({score})가 체크리스트 통과율({pass_rate:.0%})에 비해 과도하게 낮음")
-        score = int(pass_rate * 85)  # 보정
+        score = int(pass_rate * 85)
 
-    # 2. 만점 의심 (체크리스트가 4개 이상인데 전부 통과 + 만점)
-    if score == 100 and total_items >= 4 and pass_rate == 1.0:
+    # 2. 만점 의심 — 원본 AI 점수 기준으로 판단 (보정 후 우회 방지)
+    if original_score == 100 and total_items >= 4 and pass_rate == 1.0:
         flags.append("만점 제출물 - 운영진 확인 필요")
 
     # 3. 체크리스트 항목 수 불일치

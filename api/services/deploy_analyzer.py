@@ -42,8 +42,27 @@ def _resolve_and_validate(hostname: str) -> bool:
         return False
 
 
+# 학생 배포에 사용되는 허용 호스팅 도메인 (SSRF 1차 방어)
+_ALLOWED_DEPLOY_DOMAINS = (
+    ".vercel.app",
+    ".netlify.app",
+    ".github.io",
+    ".pages.dev",        # Cloudflare Pages
+    ".web.app",          # Firebase
+    ".firebaseapp.com",
+    ".surge.sh",
+    ".render.com",
+    ".onrender.com",
+    ".fly.dev",
+    ".railway.app",
+    ".herokuapp.com",
+    ".amplifyapp.com",
+    ".cloudfront.net",
+)
+
+
 def _is_safe_url(url: str) -> bool:
-    """SSRF 방어: DNS 해석 + IP 검증으로 내부 네트워크 접근 차단"""
+    """SSRF 방어: 도메인 allowlist + DNS 해석 + IP 검증"""
     try:
         parsed = urlparse(url)
         if parsed.scheme not in ("http", "https"):
@@ -54,7 +73,10 @@ def _is_safe_url(url: str) -> bool:
         # localhost 변형 차단
         if hostname in ("localhost", "127.0.0.1", "0.0.0.0", "::1"):
             return False
-        # DNS 해석 후 실제 IP 검증
+        # 1차: 도메인 allowlist 체크 (DNS rebinding TOCTOU 근본 해결)
+        if not any(hostname.endswith(d) for d in _ALLOWED_DEPLOY_DOMAINS):
+            return False
+        # 2차: DNS 해석 후 실제 IP 검증 (방어 심층화)
         return _resolve_and_validate(hostname)
     except Exception:
         return False
@@ -164,16 +186,17 @@ def fetch_deploy_preview(url: str) -> str | None:
                 items = [t[:60] for t in headings[:5]]
                 parts.append(f"- {h} 태그: {', '.join(items)}")
 
-        # 5. 외부 리소스 (CSS/JS 프레임워크 탐지)
+        # 5. 외부 리소스 (CSS/JS 프레임워크 탐지 — script src/link href 기반)
         frameworks = []
-        html_lower = html.lower()
-        if "bootstrap" in html_lower:
+        resource_refs = re.findall(r'(?:src|href)\s*=\s*["\']([^"\']+)["\']', html, re.IGNORECASE)
+        resource_text = " ".join(resource_refs).lower()
+        if "bootstrap" in resource_text:
             frameworks.append("Bootstrap")
-        if "tailwind" in html_lower:
+        if "tailwind" in resource_text:
             frameworks.append("Tailwind CSS")
-        if "react" in html_lower or "_next" in html_lower:
+        if "react" in resource_text or "react-dom" in resource_text or "/_next/" in resource_text:
             frameworks.append("React/Next.js")
-        if "vue" in html_lower:
+        if "vue" in resource_text:
             frameworks.append("Vue.js")
         if frameworks:
             parts.append(f"- 감지된 프레임워크: {', '.join(frameworks)}")
@@ -187,5 +210,5 @@ def fetch_deploy_preview(url: str) -> str | None:
 
     except httpx.TimeoutException:
         return "배포 URL 접근 시간 초과 (10초)"
-    except Exception as e:
-        return f"배포 URL 분석 실패: {type(e).__name__}"
+    except Exception:
+        return "배포 URL 분석 중 오류가 발생했습니다"

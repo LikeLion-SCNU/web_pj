@@ -1,6 +1,7 @@
 import os
 import uuid
 from datetime import datetime, timezone
+from urllib.parse import urlparse
 
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, UploadFile, File, Form
 from sqlalchemy.orm import Session, joinedload
@@ -27,6 +28,13 @@ def create_submission(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
+    # URL 형식 검증 (입력 경계에서 차단)
+    for url_val, url_name in [(deploy_url, "배포"), (figma_url, "Figma"), (github_url, "GitHub")]:
+        if url_val:
+            parsed = urlparse(url_val)
+            if parsed.scheme not in ("http", "https") or not parsed.hostname:
+                raise HTTPException(400, f"유효한 {url_name} URL을 입력하세요 (http/https)")
+
     mission = db.query(Mission).filter(Mission.id == mission_id).first()
     if not mission:
         raise HTTPException(404, "미션을 찾을 수 없습니다")
