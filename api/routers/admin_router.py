@@ -248,28 +248,6 @@ def list_submissions(
     ]
 
 
-@router.patch("/submissions/{submission_id}")
-def review_submission(
-    submission_id: int,
-    data: AdminReviewUpdate,
-    db: Session = Depends(get_db),
-    admin: User = Depends(require_admin),
-):
-    sub = db.query(Submission).filter(Submission.id == submission_id).first()
-    if not sub:
-        raise HTTPException(404, "제출을 찾을 수 없습니다")
-
-    review = db.query(Review).filter(Review.submission_id == submission_id).first()
-    if not review:
-        review = Review(submission_id=submission_id)
-        db.add(review)
-
-    review.admin_approved = data.approved
-    review.admin_comment = data.comment
-    sub.status = "passed" if data.approved else "rejected"
-
-    db.commit()
-    return {"status": sub.status}
 
 
 @router.get("/progress-matrix")
@@ -278,27 +256,45 @@ def progress_matrix(
     db: Session = Depends(get_db),
     admin: User = Depends(require_admin),
 ):
-    """전체 사용자 과제 현황 매트릭스"""
+    """전체 사용자 과제 현황 매트릭스 (N+1 최적화)"""
     user_q = db.query(User).filter(User.role.in_(["baby_lion", "tester"]), User.approved == True)
     if track:
         user_q = user_q.filter(User.track == track)
     users = user_q.order_by(User.track, User.team, User.name).all()
 
+    if not users:
+        return []
+
+    # 모든 관련 트랙의 미션을 한 번에 조회
+    tracks = list(set(u.track for u in users))
+    all_missions = db.query(Mission).filter(Mission.track.in_(tracks)).order_by(Mission.number).all()
+    missions_by_track = {}
+    for m in all_missions:
+        missions_by_track.setdefault(m.track, []).append(m)
+
+    # 모든 관련 사용자의 제출을 한 번에 조회
+    user_ids = [u.id for u in users]
+    mission_ids = [m.id for m in all_missions]
+    all_subs = db.query(Submission).filter(
+        Submission.user_id.in_(user_ids),
+        Submission.mission_id.in_(mission_ids),
+    ).all()
+
+    # (user_id, mission_id) → 최신 제출 매핑
+    sub_map = {}
+    for s in all_subs:
+        key = (s.user_id, s.mission_id)
+        if key not in sub_map or s.attempt > sub_map[key].attempt:
+            sub_map[key] = s
+
     now = datetime.utcnow()
     result = []
-
     for u in users:
-        missions = db.query(Mission).filter(Mission.track == u.track).order_by(Mission.number).all()
+        missions = missions_by_track.get(u.track, [])
         mission_statuses = []
         missed_count = 0
-
         for m in missions:
-            sub = (
-                db.query(Submission)
-                .filter(Submission.user_id == u.id, Submission.mission_id == m.id)
-                .order_by(Submission.attempt.desc())
-                .first()
-            )
+            sub = sub_map.get((u.id, m.id))
             if sub:
                 status = sub.status
             elif m.end_date and now > m.end_date:
@@ -308,20 +304,12 @@ def progress_matrix(
                 status = "open"
             else:
                 status = "upcoming"
-
-            mission_statuses.append({
-                "number": m.number,
-                "status": status,
-            })
+            mission_statuses.append({"number": m.number, "status": status})
 
         result.append({
-            "user_id": u.id,
-            "name": u.name,
-            "track": u.track,
-            "team": u.team,
-            "generation": u.generation,
-            "missions": mission_statuses,
-            "missed_count": missed_count,
+            "user_id": u.id, "name": u.name, "track": u.track,
+            "team": u.team, "generation": u.generation,
+            "missions": mission_statuses, "missed_count": missed_count,
         })
 
     return result
@@ -329,33 +317,40 @@ def progress_matrix(
 
 @router.get("/warnings")
 def get_warnings(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
-    """2회 이상 미제출 사용자 경고 목록"""
+    """2회 이상 미제출 사용자 경고 목록 (N+1 최적화)"""
     now = datetime.utcnow()
     users = db.query(User).filter(User.role.in_(["baby_lion", "tester"]), User.approved == True).all()
+
+    if not users:
+        return []
+
+    # 마감된 미션을 트랙별로 한 번에 조회
+    expired_missions = db.query(Mission).filter(Mission.end_date < now).all()
+    expired_by_track = {}
+    for m in expired_missions:
+        expired_by_track.setdefault(m.track, []).append(m)
+
+    # 모든 관련 제출을 한 번에 조회
+    user_ids = [u.id for u in users]
+    mission_ids = [m.id for m in expired_missions]
+    if not mission_ids:
+        return []
+
+    submitted = db.query(Submission.user_id, Submission.mission_id).filter(
+        Submission.user_id.in_(user_ids),
+        Submission.mission_id.in_(mission_ids),
+    ).distinct().all()
+    submitted_set = set((s.user_id, s.mission_id) for s in submitted)
+
     warnings = []
-
     for u in users:
-        missions = db.query(Mission).filter(
-            Mission.track == u.track, Mission.end_date < now
-        ).all()
-
-        missed = []
-        for m in missions:
-            has_sub = db.query(Submission).filter(
-                Submission.user_id == u.id, Submission.mission_id == m.id
-            ).count()
-            if not has_sub:
-                missed.append(m.number)
-
+        missions = expired_by_track.get(u.track, [])
+        missed = [m.number for m in missions if (u.id, m.id) not in submitted_set]
         if len(missed) >= 2:
             warnings.append({
-                "user_id": u.id,
-                "name": u.name,
-                "email": u.email,
-                "track": u.track,
-                "team": u.team,
-                "missed_missions": missed,
-                "missed_count": len(missed),
+                "user_id": u.id, "name": u.name, "email": u.email,
+                "track": u.track, "team": u.team,
+                "missed_missions": missed, "missed_count": len(missed),
             })
 
     return sorted(warnings, key=lambda w: -w["missed_count"])

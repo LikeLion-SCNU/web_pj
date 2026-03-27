@@ -13,7 +13,7 @@ def generate_verification_code() -> str:
 
 def send_verification_email(to_email: str, name: str, code: str) -> bool:
     if not SMTP_PASSWORD:
-        print(f"[SMTP] 비밀번호 미설정. 인증 코드: {code} (개발 모드)")
+        print("[SMTP] 비밀번호 미설정 (개발 모드). 이메일 발송 건너뜀.")
         return True
 
     msg = MIMEMultipart("alternative")

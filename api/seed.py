@@ -96,7 +96,11 @@ def seed_tester(db):
         print("테스터 계정이 이미 존재합니다. 건너뜁니다.")
         return
 
-    tester_pw = os.getenv("TESTER_PASSWORD", "test1234!")
+    tester_pw = os.getenv("TESTER_PASSWORD", "")
+    if not tester_pw:
+        import secrets
+        tester_pw = secrets.token_urlsafe(12)
+        print(f"[!] TESTER_PASSWORD 미설정. 임시 비밀번호 생성됨. .env에 TESTER_PASSWORD를 설정하세요.")
     tester_email = os.getenv("TESTER_EMAIL", "test@likelion.org")
 
     tester = User(
@@ -111,7 +115,7 @@ def seed_tester(db):
     )
     db.add(tester)
     db.commit()
-    print(f"테스터 계정이 생성되었습니다. ({tester_email} / {tester_pw})")
+    print(f"테스터 계정이 생성되었습니다. ({tester_email})")
 
 
 def run_seed():

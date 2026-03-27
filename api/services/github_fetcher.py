@@ -1,7 +1,12 @@
 """GitHub 레포지토리에서 코드를 가져오는 서비스"""
+import re
+from urllib.parse import urlparse
+
 import httpx
 
 from config import GITHUB_TOKEN
+
+_VALID_GITHUB_NAME = re.compile(r"^[a-zA-Z0-9._-]+$")
 
 # 트랙별 관심 파일 패턴
 TRACK_FILE_PATTERNS = {
@@ -39,16 +44,22 @@ TRACK_FILE_PATTERNS = {
 
 
 def parse_github_url(url: str) -> tuple[str, str] | None:
-    """GitHub URL에서 owner/repo를 추출"""
+    """GitHub URL에서 owner/repo를 추출 (SSRF 방어 포함)"""
     if not url:
         return None
-    url = url.rstrip("/")
-    if "github.com/" not in url:
+    try:
+        parsed = urlparse(url.strip())
+        if parsed.hostname != "github.com":
+            return None
+        parts = parsed.path.strip("/").split("/")
+        if len(parts) < 2:
+            return None
+        owner, repo = parts[0], parts[1].split("?")[0].split("#")[0]
+        if not _VALID_GITHUB_NAME.match(owner) or not _VALID_GITHUB_NAME.match(repo):
+            return None
+        return owner, repo
+    except Exception:
         return None
-    parts = url.split("github.com/")[1].split("/")
-    if len(parts) < 2:
-        return None
-    return parts[0], parts[1].split("?")[0].split("#")[0]
 
 
 def _get_headers():

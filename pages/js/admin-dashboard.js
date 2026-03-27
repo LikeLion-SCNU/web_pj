@@ -65,8 +65,10 @@ function loadUserManagement() {
         +'<option value="admin"'+(u.role==='admin'?' selected':'')+'>운영진</option>'
         +'</select>';
       var deleteBtn = u.role !== 'admin'
-        ? '<button type="button" class="btn-delete" data-uid="'+u.id+'" data-uname="'+escapeHTML(u.name)+'" style="font-size:.75rem;color:#f87171;border:1px solid #f87171;background:transparent;padding:6px 12px;border-radius:6px;margin-left:8px;cursor:pointer;">삭제</button>'
+        ? '<button type="button" onclick="handleDeleteUser('+u.id+',\''+escapeHTML(u.name).replace(/'/g, "\\'")+'\')" style="font-size:.75rem;color:#f87171;border:1px solid #f87171;background:transparent;padding:6px 12px;border-radius:6px;margin-left:8px;cursor:pointer;">삭제</button>'
         : '';
+      var selectOnchange = ' onchange="handleRoleChange('+u.id+',\''+escapeHTML(u.name).replace(/'/g, "\\'")+'\''+',this.value)"';
+      selectHtml = selectHtml.replace('class="form-select role-select"', 'class="form-select role-select"' + selectOnchange);
       return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#1a1a1a;border-radius:8px;">'
         +'<div><strong style="color:#fff;">'+escapeHTML(u.name)+'</strong> '+roleLabel
         +' <span style="color:#666;font-size:.8rem;margin-left:8px;">'+escapeHTML(u.email)+' · '+(TRACK_LABELS[u.track]||u.track)+' · '+(u.team?u.team+'팀':'')+'</span></div>'
@@ -75,26 +77,21 @@ function loadUserManagement() {
   }).catch(function(err) { console.error('User management error:', err); });
 }
 
-// User management - event delegation
-document.getElementById('userManagementList').addEventListener('click', function(e) {
-  var btn = e.target.closest('.btn-delete');
-  if (btn) {
-    if (!confirm(btn.dataset.uname + '님의 계정을 삭제하시겠습니까?\n제출 내역도 모두 삭제됩니다.')) return;
-    fetchAPI('/admin/users/' + btn.dataset.uid, { method: 'DELETE' }).then(function(res) {
-      showToast('success', res.message || '삭제되었습니다.');
-      loadUserManagement(); loadMatrix('');
-    }).catch(function(err) { showToast('error', err.message); });
-  }
-});
-document.getElementById('userManagementList').addEventListener('change', function(e) {
-  var sel = e.target.closest('.role-select');
-  if (sel) {
-    fetchAPI('/admin/users/' + sel.dataset.uid + '/set-role?role=' + sel.value, { method: 'PATCH' }).then(function(res) {
-      showToast('success', res.message || '역할이 변경되었습니다.');
-      loadUserManagement();
-    }).catch(function(err) { showToast('error', err.message); });
-  }
-});
+// Global handlers for onclick/onchange (CSP 'unsafe-inline' allowed in external JS context)
+function handleDeleteUser(userId, name) {
+  if (!confirm(name + '님의 계정을 삭제하시겠습니까?\n제출 내역도 모두 삭제됩니다.')) return;
+  fetchAPI('/admin/users/' + userId, { method: 'DELETE' }).then(function(res) {
+    showToast('success', res.message || '삭제되었습니다.');
+    loadUserManagement(); loadMatrix('');
+  }).catch(function(err) { showToast('error', err.message); });
+}
+
+function handleRoleChange(userId, name, role) {
+  fetchAPI('/admin/users/' + userId + '/set-role?role=' + role, { method: 'PATCH' }).then(function(res) {
+    showToast('success', res.message || '역할이 변경되었습니다.');
+    loadUserManagement();
+  }).catch(function(err) { showToast('error', err.message); });
+}
 
 loadUserManagement();
 

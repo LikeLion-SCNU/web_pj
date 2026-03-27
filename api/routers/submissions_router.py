@@ -58,9 +58,19 @@ def create_submission(
         if ext not in ALLOWED_EXTENSIONS:
             raise HTTPException(400, f"허용된 이미지 형식: {', '.join(ALLOWED_EXTENSIONS)}")
 
-        contents = screenshot.file.read()
-        if len(contents) > 5 * 1024 * 1024:  # 5MB
-            raise HTTPException(400, "스크린샷 파일은 5MB 이하여야 합니다")
+        # 크기 제한: 청크 단위로 읽어 메모리 폭주 방지
+        max_size = 5 * 1024 * 1024  # 5MB
+        chunks = []
+        total = 0
+        while True:
+            chunk = screenshot.file.read(64 * 1024)  # 64KB씩
+            if not chunk:
+                break
+            total += len(chunk)
+            if total > max_size:
+                raise HTTPException(400, "스크린샷 파일은 5MB 이하여야 합니다")
+            chunks.append(chunk)
+        contents = b"".join(chunks)
 
         filename = f"{uuid.uuid4().hex}{ext}"
         filepath = os.path.join(UPLOAD_DIR, filename)
