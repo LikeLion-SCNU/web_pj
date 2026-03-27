@@ -241,19 +241,23 @@
             +'<div style="display:flex;align-items:center;">'+selectHtml+deleteBtn+'</div></div>';
         }).join('');
 
-        container.querySelectorAll('.role-select').forEach(function(sel) {
-          sel.addEventListener('change', function() {
-            setUserRole(sel.dataset.uid, sel.dataset.uname, sel.value);
-          });
-        });
-        container.querySelectorAll('.btn-delete').forEach(function(btn) {
-          btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            deleteUser(btn.dataset.uid, btn.dataset.uname);
-          });
-        });
       } catch (err) { console.error('User management error:', err); }
     }
+
+    // 이벤트 위임: container에서 한 번만 바인딩
+    document.getElementById('userManagementList').addEventListener('click', function(e) {
+      var btn = e.target.closest('.btn-delete');
+      if (btn) {
+        e.stopPropagation();
+        deleteUser(btn.dataset.uid, btn.dataset.uname);
+      }
+    });
+    document.getElementById('userManagementList').addEventListener('change', function(e) {
+      var sel = e.target.closest('.role-select');
+      if (sel) {
+        setUserRole(sel.dataset.uid, sel.dataset.uname, sel.value);
+      }
+    });
 
     async function setUserRole(userId, name, role) {
       try {
