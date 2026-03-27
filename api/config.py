@@ -18,3 +18,6 @@ SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
 SMTP_USER = os.getenv("SMTP_USER", "sunchon.univ@likelion.org")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 CURRENT_GENERATION = int(os.getenv("CURRENT_GENERATION", "14"))
+
+# Cloudflare Turnstile
+TURNSTILE_SECRET_KEY = os.getenv("TURNSTILE_SECRET_KEY", "")

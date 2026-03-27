@@ -12,6 +12,7 @@ class UserRegister(BaseModel):
     track: str  # planning, design, frontend, backend
     team: Optional[int] = None
     generation: Optional[int] = None  # 기수 (없으면 현재 기수)
+    turnstile_token: Optional[str] = None
 
 
 class EmailVerify(BaseModel):
@@ -22,6 +23,7 @@ class EmailVerify(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+    turnstile_token: Optional[str] = None
 
 
 class UserResponse(BaseModel):

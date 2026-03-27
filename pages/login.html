@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="css/pbl.css?v=4">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 
@@ -38,7 +39,7 @@
 
         <!-- Login -->
         <div id="tab-login" class="tab-panel active">
-          <form id="loginForm" onsubmit="handleLogin(event)">
+          <form id="loginForm" onsubmit="handleLoginWithTurnstile(event)">
             <div class="form-group">
               <label class="form-label">이메일</label>
               <input type="email" name="email" class="form-input" placeholder="example@scnu.ac.kr" required>
@@ -47,6 +48,7 @@
               <label class="form-label">비밀번호</label>
               <input type="password" name="password" class="form-input" placeholder="비밀번호" required>
             </div>
+            <div class="cf-turnstile" data-sitekey="TURNSTILE_SITE_KEY" data-theme="dark" data-callback="onLoginTurnstile" style="margin-bottom:12px;"></div>
             <button type="submit" class="btn btn-primary btn-block">로그인</button>
           </form>
         </div>
@@ -96,6 +98,7 @@
                 <option value="5">5팀</option>
               </select>
             </div>
+            <div class="cf-turnstile" data-sitekey="TURNSTILE_SITE_KEY" data-theme="dark" data-callback="onRegisterTurnstile" style="margin-bottom:12px;"></div>
             <button type="submit" class="btn btn-primary btn-block">인증 코드 발송</button>
           </form>
         </div>
@@ -138,6 +141,31 @@
   <script>
     let registerEmail = '';
     let registerPassword = '';
+    let loginTurnstileToken = '';
+    let registerTurnstileToken = '';
+    function onLoginTurnstile(token) { loginTurnstileToken = token; }
+    function onRegisterTurnstile(token) { registerTurnstileToken = token; }
+
+    async function handleLoginWithTurnstile(e) {
+      e.preventDefault();
+      var form = e.target;
+      var email = form.querySelector('[name="email"]').value.trim();
+      var password = form.querySelector('[name="password"]').value;
+      try {
+        var data = await fetchAPI('/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({ email: email, password: password, turnstile_token: loginTurnstileToken }),
+        });
+        localStorage.setItem('pbl_token', data.access_token);
+        var user = await fetchAPI('/auth/me');
+        localStorage.setItem('pbl_user', JSON.stringify(user));
+        showToast('success', '로그인 성공!');
+        setTimeout(function() { window.location.href = '/pages/missions'; }, 500);
+      } catch (err) {
+        showToast('error', err.message || '로그인 실패');
+        if (typeof turnstile !== 'undefined') turnstile.reset();
+      }
+    }
 
     async function handleRegister(e) {
       e.preventDefault();
@@ -149,6 +177,7 @@
         track: form.track.value,
         generation: parseInt(form.generation.value),
         team: parseInt(form.team.value),
+        turnstile_token: registerTurnstileToken,
       };
 
       registerEmail = data.email;
