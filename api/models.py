@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import (
     Column, Integer, String, Text, Boolean, DateTime, ForeignKey, JSON, UniqueConstraint
@@ -24,7 +24,7 @@ class User(Base):
     verification_code = Column(String(6), nullable=True)
     verification_attempts = Column(Integer, default=0)
     verification_expires_at = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     submissions = relationship("Submission", back_populates="user")
 
@@ -62,7 +62,7 @@ class Submission(Base):
     screenshot_path = Column(String(500))
     description = Column(Text)
     status = Column(String(20), default="pending")  # pending, reviewing, passed, rejected
-    submitted_at = Column(DateTime, default=datetime.utcnow)
+    submitted_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     user = relationship("User", back_populates="submissions")
     mission = relationship("Mission", back_populates="submissions")
@@ -79,6 +79,6 @@ class Review(Base):
     ai_summary = Column(Text)
     admin_approved = Column(Boolean)
     admin_comment = Column(Text)
-    reviewed_at = Column(DateTime, default=datetime.utcnow)
+    reviewed_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     submission = relationship("Submission", back_populates="review")

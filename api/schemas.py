@@ -1,18 +1,28 @@
+import re
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 
 # Auth
 class UserRegister(BaseModel):
     name: str
     email: EmailStr
-    password: str = Field(..., min_length=8)
+    password: str = Field(..., min_length=8, max_length=128)
     track: str  # planning, design, frontend, backend
     team: Optional[int] = None
     generation: Optional[int] = None  # 기수 (없으면 현재 기수)
     turnstile_token: Optional[str] = None
+
+    @field_validator("password")
+    @classmethod
+    def password_complexity(cls, v: str) -> str:
+        if not re.search(r"[A-Za-z]", v):
+            raise ValueError("비밀번호에 영문자를 포함해야 합니다")
+        if not re.search(r"\d", v):
+            raise ValueError("비밀번호에 숫자를 포함해야 합니다")
+        return v
 
 
 class EmailVerify(BaseModel):
@@ -22,7 +32,7 @@ class EmailVerify(BaseModel):
 
 class UserLogin(BaseModel):
     email: EmailStr
-    password: str
+    password: str = Field(..., min_length=1, max_length=128)
     turnstile_token: Optional[str] = None
 
 

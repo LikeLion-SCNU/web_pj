@@ -1,3 +1,4 @@
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -8,6 +9,8 @@ from database import engine, Base
 from routers import auth_router, missions_router, submissions_router, admin_router
 from seed import run_seed
 
+IS_DEV = os.getenv("ENV", "production") == "development"
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -16,7 +19,13 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="LIKELION SCNU PBL API", lifespan=lifespan)
+app = FastAPI(
+    title="LIKELION SCNU PBL API",
+    lifespan=lifespan,
+    docs_url="/docs" if IS_DEV else None,
+    redoc_url="/redoc" if IS_DEV else None,
+    openapi_url="/openapi.json" if IS_DEV else None,
+)
 
 app.add_middleware(
     CORSMiddleware,

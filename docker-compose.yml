@@ -9,6 +9,8 @@ services:
     depends_on:
       - api
     restart: always
+    networks:
+      - frontend
 
   api:
     build: ./api
@@ -21,6 +23,9 @@ services:
       db:
         condition: service_healthy
     restart: always
+    networks:
+      - frontend
+      - backend
 
   db:
     image: postgres:16-alpine
@@ -35,7 +40,13 @@ services:
       timeout: 5s
       retries: 5
     restart: always
+    networks:
+      - backend
 
 volumes:
   pgdata:
   uploads:
+
+networks:
+  frontend:
+  backend:

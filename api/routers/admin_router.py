@@ -1,8 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import func
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
+from sqlalchemy import case, func
+from sqlalchemy.orm import Session, contains_eager, joinedload
 
 from auth import require_admin
 from database import get_db
@@ -16,11 +16,15 @@ router = APIRouter(prefix="/api/admin", tags=["admin"])
 @router.get("/dashboard")
 def dashboard(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
     total_users = db.query(User).filter(User.role.in_(["baby_lion", "tester"])).count()
-    total_subs = db.query(Submission).count()
-    passed = db.query(Submission).filter(Submission.status == "passed").count()
-    rejected = db.query(Submission).filter(Submission.status == "rejected").count()
-    reviewing = db.query(Submission).filter(Submission.status == "reviewing").count()
-    pending = db.query(Submission).filter(Submission.status == "pending").count()
+
+    # N+1 방지: 단일 쿼리로 모든 상태별 카운트 조회
+    sub_stats = db.query(
+        func.count(Submission.id),
+        func.count(case((Submission.status == "passed", 1))),
+        func.count(case((Submission.status == "rejected", 1))),
+        func.count(case((Submission.status == "reviewing", 1))),
+        func.count(case((Submission.status == "pending", 1))),
+    ).first()
 
     track_stats = (
         db.query(User.track, func.count(User.id))
@@ -31,11 +35,11 @@ def dashboard(db: Session = Depends(get_db), admin: User = Depends(require_admin
 
     return {
         "total_users": total_users,
-        "total_submissions": total_subs,
-        "passed_count": passed,
-        "rejected_count": rejected,
-        "reviewing_count": reviewing,
-        "pending_count": pending,
+        "total_submissions": sub_stats[0],
+        "passed_count": sub_stats[1],
+        "rejected_count": sub_stats[2],
+        "reviewing_count": sub_stats[3],
+        "pending_count": sub_stats[4],
         "track_stats": [{"track": t, "count": c} for t, c in track_stats],
     }
 
@@ -64,7 +68,7 @@ def pending_users(db: Session = Depends(get_db), admin: User = Depends(require_a
 
 
 @router.patch("/users/{user_id}/approve")
-def approve_user(user_id: int, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+def approve_user(user_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(404, "사용자를 찾을 수 없습니다")
@@ -76,12 +80,12 @@ def approve_user(user_id: int, db: Session = Depends(get_db), admin: User = Depe
     user.approved = True
     db.commit()
 
-    send_approval_notification(user.email, user.name, approved=True)
+    background_tasks.add_task(send_approval_notification, user.email, user.name, True)
     return {"message": f"{user.name}님의 가입을 승인했습니다."}
 
 
 @router.patch("/users/{user_id}/reject")
-def reject_user(user_id: int, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+def reject_user(user_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(404, "사용자를 찾을 수 없습니다")
@@ -92,7 +96,7 @@ def reject_user(user_id: int, db: Session = Depends(get_db), admin: User = Depen
     db.delete(user)
     db.commit()
 
-    send_approval_notification(email, name, approved=False)
+    background_tasks.add_task(send_approval_notification, email, name, False)
     return {"message": f"{name}님의 가입을 거절했습니다."}
 
 
@@ -157,7 +161,7 @@ def admin_review_submission(
 
     review.admin_approved = data.approved
     review.admin_comment = data.comment
-    review.reviewed_at = datetime.utcnow()
+    review.reviewed_at = datetime.now(timezone.utc)
     submission.status = "passed" if data.approved else "rejected"
     db.commit()
 
@@ -208,7 +212,11 @@ def list_submissions(
     db: Session = Depends(get_db),
     admin: User = Depends(require_admin),
 ):
-    q = db.query(Submission).join(Mission).join(User)
+    q = (
+        db.query(Submission)
+        .join(Mission).join(User)
+        .options(contains_eager(Submission.mission), contains_eager(Submission.user), joinedload(Submission.review))
+    )
 
     if track:
         q = q.filter(Mission.track == track)
@@ -287,7 +295,7 @@ def progress_matrix(
         if key not in sub_map or s.attempt > sub_map[key].attempt:
             sub_map[key] = s
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     result = []
     for u in users:
         missions = missions_by_track.get(u.track, [])
@@ -318,7 +326,7 @@ def progress_matrix(
 @router.get("/warnings")
 def get_warnings(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
     """2회 이상 미제출 사용자 경고 목록 (N+1 최적화)"""
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     users = db.query(User).filter(User.role.in_(["baby_lion", "tester"]), User.approved == True).all()
 
     if not users:

@@ -71,7 +71,12 @@ def seed_admin(db):
     if not admin_pw:
         import secrets
         admin_pw = secrets.token_urlsafe(12)
-        print(f"[!] ADMIN_PASSWORD 미설정. 임시 비밀번호: {admin_pw}")
+        # 보안: 비밀번호를 로그에 출력하지 않고 파일에 저장
+        pw_file = "/app/admin_password.txt"
+        with open(pw_file, "w") as f:
+            f.write(admin_pw)
+        os.chmod(pw_file, 0o600)
+        print(f"[!] ADMIN_PASSWORD 미설정. 임시 비밀번호가 {pw_file}에 저장되었습니다.")
         print("[!] .env에 ADMIN_PASSWORD를 설정하세요.")
 
     admin_email = os.getenv("ADMIN_EMAIL", "sunchon.univ@likelion.org")

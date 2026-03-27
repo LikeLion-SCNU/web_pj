@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -16,15 +16,23 @@ def list_missions(track: str = None, db: Session = Depends(get_db), user: User =
     selected_track = track if (user.role in ("admin", "tester") and track) else user.track
     missions = db.query(Mission).filter(Mission.track == selected_track).order_by(Mission.number).all()
 
+    # N+1 방지: 사용자의 모든 제출을 한 번에 조회
+    mission_ids = [m.id for m in missions]
+    user_subs = (
+        db.query(Submission)
+        .filter(Submission.user_id == user.id, Submission.mission_id.in_(mission_ids))
+        .all()
+    ) if mission_ids else []
+    # mission_id → 최신 시도 매핑
+    sub_by_mission = {}
+    for s in user_subs:
+        if s.mission_id not in sub_by_mission or s.attempt > sub_by_mission[s.mission_id].attempt:
+            sub_by_mission[s.mission_id] = s
+
     result = []
     for m in missions:
-        sub = (
-            db.query(Submission)
-            .filter(Submission.user_id == user.id, Submission.mission_id == m.id)
-            .order_by(Submission.attempt.desc())
-            .first()
-        )
-        now = datetime.utcnow()
+        sub = sub_by_mission.get(m.id)
+        now = datetime.now(timezone.utc)
         if user.role in ("admin", "tester"):
             period_status = "open"
         elif m.start_date and now < m.start_date:

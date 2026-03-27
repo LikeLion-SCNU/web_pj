@@ -1,5 +1,6 @@
+import hmac
 import httpx
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -15,6 +16,7 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 VERIFY_CODE_EXPIRE_MINUTES = 15
 MAX_VERIFY_ATTEMPTS = 5
+MAX_TOTAL_VERIFY_ATTEMPTS = 15  # 재전송 포함 누적 최대 시도
 
 
 def verify_turnstile(token: str) -> bool:
@@ -56,7 +58,7 @@ def register(data: UserRegister, db: Session = Depends(get_db)):
         approved=False,
         verification_code=code,
         verification_attempts=0,
-        verification_expires_at=datetime.utcnow() + timedelta(minutes=VERIFY_CODE_EXPIRE_MINUTES),
+        verification_expires_at=datetime.now(timezone.utc) + timedelta(minutes=VERIFY_CODE_EXPIRE_MINUTES),
     )
     db.add(user)
     db.commit()
@@ -78,16 +80,18 @@ def verify_email(data: EmailVerify, db: Session = Depends(get_db)):
     if user.email_verified:
         return {"message": "이미 이메일 인증이 완료되었습니다. 운영진 승인을 기다려주세요."}
 
-    if user.verification_attempts >= MAX_VERIFY_ATTEMPTS:
-        raise HTTPException(429, "인증 시도 횟수를 초과했습니다. 인증 코드를 재전송해주세요.")
+    if user.verification_attempts >= MAX_TOTAL_VERIFY_ATTEMPTS:
+        raise HTTPException(429, "인증 시도 횟수를 초과했습니다. 운영진에게 문의해주세요.")
 
-    if user.verification_expires_at and datetime.utcnow() > user.verification_expires_at:
+    if user.verification_expires_at and datetime.now(timezone.utc) > user.verification_expires_at:
         raise HTTPException(400, "인증 코드가 만료되었습니다. 인증 코드를 재전송해주세요.")
 
-    if user.verification_code != data.code:
+    if not hmac.compare_digest(user.verification_code or "", data.code):
         user.verification_attempts += 1
         db.commit()
-        remaining = MAX_VERIFY_ATTEMPTS - user.verification_attempts
+        remaining = MAX_TOTAL_VERIFY_ATTEMPTS - user.verification_attempts
+        if remaining <= 0:
+            raise HTTPException(429, "인증 시도 횟수를 초과했습니다. 운영진에게 문의해주세요.")
         raise HTTPException(400, f"인증 코드가 올바르지 않습니다. (남은 시도: {remaining}회)")
 
     user.email_verified = True
@@ -108,10 +112,19 @@ def resend_code(data: UserLogin, db: Session = Depends(get_db)):
     if user.email_verified:
         return {"message": "이미 이메일 인증이 완료되었습니다."}
 
+    if user.verification_attempts >= MAX_TOTAL_VERIFY_ATTEMPTS:
+        raise HTTPException(429, "인증 시도 횟수를 초과했습니다. 운영진에게 문의해주세요.")
+
+    # 재전송 쿨다운: 마지막 코드 발급 후 60초 이내 재전송 방지
+    if user.verification_expires_at:
+        code_issued_at = user.verification_expires_at - timedelta(minutes=VERIFY_CODE_EXPIRE_MINUTES)
+        if datetime.now(timezone.utc) < code_issued_at + timedelta(seconds=60):
+            raise HTTPException(429, "인증 코드 재전송은 60초 후에 가능합니다.")
+
     code = generate_verification_code()
     user.verification_code = code
-    user.verification_attempts = 0
-    user.verification_expires_at = datetime.utcnow() + timedelta(minutes=VERIFY_CODE_EXPIRE_MINUTES)
+    # 시도 횟수는 유지 (누적 추적), 새 코드로만 리프레시
+    user.verification_expires_at = datetime.now(timezone.utc) + timedelta(minutes=VERIFY_CODE_EXPIRE_MINUTES)
     db.commit()
 
     send_verification_email(user.email, user.name, code)

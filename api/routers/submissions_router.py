@@ -1,9 +1,9 @@
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, UploadFile, File, Form
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from auth import get_current_user
 from config import MAX_SUBMISSIONS_PER_MISSION, UPLOAD_DIR
@@ -35,7 +35,7 @@ def create_submission(
         raise HTTPException(400, "본인 트랙의 미션만 제출할 수 있습니다")
 
     if user.role not in ("admin", "tester"):
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         if mission.start_date and now < mission.start_date:
             start_str = mission.start_date.strftime("%m/%d")
             raise HTTPException(400, f"아직 제출 기간이 아닙니다. {start_str}부터 제출 가능합니다.")
@@ -103,6 +103,7 @@ def create_submission(
 def my_submissions(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     subs = (
         db.query(Submission)
+        .options(joinedload(Submission.mission), joinedload(Submission.review))
         .filter(Submission.user_id == user.id)
         .order_by(Submission.submitted_at.desc())
         .all()
