@@ -3,6 +3,11 @@ import uuid
 from datetime import datetime, timezone
 from urllib.parse import urlparse
 
+
+def _utcnow() -> datetime:
+    """naive UTC datetime (DB DateTime 컬럼과 비교 호환용)"""
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, UploadFile, File, Form
 from sqlalchemy.orm import Session, joinedload
 
@@ -43,7 +48,7 @@ def create_submission(
         raise HTTPException(400, "본인 트랙의 미션만 제출할 수 있습니다")
 
     if user.role not in ("admin", "tester"):
-        now = datetime.now(timezone.utc)
+        now = _utcnow()
         if mission.start_date and now < mission.start_date:
             start_str = mission.start_date.strftime("%m/%d")
             raise HTTPException(400, f"아직 제출 기간이 아닙니다. {start_str}부터 제출 가능합니다.")
