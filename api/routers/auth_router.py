@@ -3,16 +3,16 @@ import httpx
 from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
-
-
-def _utcnow() -> datetime:
-    """naive UTC datetime (DB DateTime 컬럼과 비교 호환용)"""
-    return datetime.now(timezone.utc).replace(tzinfo=None)
 from sqlalchemy.orm import Session
 
 from auth import hash_password, verify_password, create_access_token, get_current_user
 from config import CURRENT_GENERATION, TURNSTILE_SECRET_KEY
 from database import get_db
+
+
+def _utcnow() -> datetime:
+    """naive UTC datetime (DB DateTime 컬럼과 비교 호환용)"""
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 from models import User
 from schemas import UserRegister, UserLogin, UserResponse, Token, EmailVerify
 from services.email_service import generate_verification_code, send_verification_email
@@ -129,7 +129,7 @@ def resend_code(data: UserLogin, db: Session = Depends(get_db)):
     code = generate_verification_code()
     user.verification_code = code
     # 시도 횟수는 유지 (누적 추적), 새 코드로만 리프레시
-    user.verification_expires_at = datetime.now(timezone.utc) + timedelta(minutes=VERIFY_CODE_EXPIRE_MINUTES)
+    user.verification_expires_at = _utcnow() + timedelta(minutes=VERIFY_CODE_EXPIRE_MINUTES)
     db.commit()
 
     send_verification_email(user.email, user.name, code)

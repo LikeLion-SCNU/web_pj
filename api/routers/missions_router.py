@@ -1,13 +1,19 @@
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from auth import get_current_user
 from database import get_db
 from models import User, Mission, Submission
 
 router = APIRouter(prefix="/api/missions", tags=["missions"])
+
+
+def _utcnow():
+    """naive UTC datetime (DB DateTime 컬럼과 비교 호환용)"""
+    from datetime import timezone
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 
 @router.get("")
@@ -32,7 +38,7 @@ def list_missions(track: str = None, db: Session = Depends(get_db), user: User =
     result = []
     for m in missions:
         sub = sub_by_mission.get(m.id)
-        now = datetime.now(timezone.utc)
+        now = _utcnow()
         if user.role in ("admin", "tester"):
             period_status = "open"
         elif m.start_date and now < m.start_date:
@@ -68,6 +74,7 @@ def get_mission(mission_id: int, db: Session = Depends(get_db), user: User = Dep
 
     submissions = (
         db.query(Submission)
+        .options(joinedload(Submission.review))
         .filter(Submission.user_id == user.id, Submission.mission_id == mission_id)
         .order_by(Submission.attempt.desc())
         .all()

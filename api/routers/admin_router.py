@@ -13,6 +13,11 @@ from services.email_service import send_approval_notification
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
 
+def _utcnow() -> datetime:
+    """naive UTC datetime (DB DateTime 컬럼과 비교 호환용)"""
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
+
 @router.get("/dashboard")
 def dashboard(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
     total_users = db.query(User).filter(User.role.in_(["baby_lion", "tester"])).count()
@@ -161,7 +166,7 @@ def admin_review_submission(
 
     review.admin_approved = data.approved
     review.admin_comment = data.comment
-    review.reviewed_at = datetime.now(timezone.utc)
+    review.reviewed_at = _utcnow()
     submission.status = "passed" if data.approved else "rejected"
     db.commit()
 
@@ -295,7 +300,7 @@ def progress_matrix(
         if key not in sub_map or s.attempt > sub_map[key].attempt:
             sub_map[key] = s
 
-    now = datetime.now(timezone.utc)
+    now = _utcnow()
     result = []
     for u in users:
         missions = missions_by_track.get(u.track, [])
@@ -326,7 +331,7 @@ def progress_matrix(
 @router.get("/warnings")
 def get_warnings(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
     """2회 이상 미제출 사용자 경고 목록 (N+1 최적화)"""
-    now = datetime.now(timezone.utc)
+    now = _utcnow()
     users = db.query(User).filter(User.role.in_(["baby_lion", "tester"]), User.approved == True).all()
 
     if not users:
