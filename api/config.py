@@ -38,4 +38,7 @@ TURNSTILE_SECRET_KEY = os.getenv("TURNSTILE_SECRET_KEY", "")
 SITE_URL = os.getenv("SITE_URL", "https://likelionscnu.site")
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "https://likelionscnu.site,http://localhost:8888").split(",")
 
-IS_DEV = os.getenv("IS_DEV", "").lower() in ("1", "true", "yes")
+IS_DEV = (
+    os.getenv("ENV", "production") == "development"
+    or os.getenv("IS_DEV", "").lower() in ("1", "true", "yes")
+)

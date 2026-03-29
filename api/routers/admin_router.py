@@ -16,7 +16,9 @@ router = APIRouter(prefix="/api/admin", tags=["admin"])
 
 def _get_user_or_404(db: Session, user_id: int) -> User:
     """유저를 조회하고, 없으면 404 반환"""
-    user = _get_user_or_404(db, user_id)
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(404, "사용자를 찾을 수 없습니다")
     return user
 
 
