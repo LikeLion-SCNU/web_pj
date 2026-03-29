@@ -14,6 +14,12 @@ from utils import utcnow
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
 
+def _get_user_or_404(db: Session, user_id: int) -> User:
+    """유저를 조회하고, 없으면 404 반환"""
+    user = _get_user_or_404(db, user_id)
+    return user
+
+
 @router.get("/dashboard")
 def dashboard(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
     total_users = db.query(User).filter(User.role.in_(["baby_lion", "tester"])).count()
@@ -70,9 +76,7 @@ def pending_users(db: Session = Depends(get_db), admin: User = Depends(require_a
 
 @router.patch("/users/{user_id}/approve")
 def approve_user(user_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(404, "사용자를 찾을 수 없습니다")
+    user = _get_user_or_404(db, user_id)
     if user.approved:
         raise HTTPException(400, "이미 승인된 사용자입니다")
     if not user.email_verified:
@@ -87,9 +91,7 @@ def approve_user(user_id: int, background_tasks: BackgroundTasks, db: Session = 
 
 @router.patch("/users/{user_id}/reject")
 def reject_user(user_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(404, "사용자를 찾을 수 없습니다")
+    user = _get_user_or_404(db, user_id)
     if user.approved:
         raise HTTPException(400, "이미 승인된 사용자는 거절할 수 없습니다")
 
@@ -103,9 +105,7 @@ def reject_user(user_id: int, background_tasks: BackgroundTasks, db: Session = D
 
 @router.patch("/users/{user_id}/promote")
 def promote_user(user_id: int, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(404, "사용자를 찾을 수 없습니다")
+    user = _get_user_or_404(db, user_id)
     if user.role == "admin":
         raise HTTPException(400, "이미 운영진입니다")
     user.role = "admin"
@@ -115,9 +115,7 @@ def promote_user(user_id: int, db: Session = Depends(get_db), admin: User = Depe
 
 @router.patch("/users/{user_id}/demote")
 def demote_user(user_id: int, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(404, "사용자를 찾을 수 없습니다")
+    user = _get_user_or_404(db, user_id)
     if user.id == admin.id:
         raise HTTPException(400, "자기 자신은 강등할 수 없습니다")
     if user.role != "admin":
@@ -132,9 +130,7 @@ def set_user_role(user_id: int, role: str = Query(...), db: Session = Depends(ge
     ALLOWED_ROLES = ("baby_lion", "admin", "tester")
     if role not in ALLOWED_ROLES:
         raise HTTPException(400, f"역할은 {', '.join(ALLOWED_ROLES)} 중 하나여야 합니다")
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(404, "사용자를 찾을 수 없습니다")
+    user = _get_user_or_404(db, user_id)
     if user.id == admin.id and role != "admin":
         raise HTTPException(400, "자기 자신의 운영진 권한은 변경할 수 없습니다")
     old_role = user.role
@@ -171,9 +167,7 @@ def admin_review_submission(
 
 @router.delete("/users/{user_id}")
 def delete_user(user_id: int, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(404, "사용자를 찾을 수 없습니다")
+    user = _get_user_or_404(db, user_id)
     if user.id == admin.id:
         raise HTTPException(400, "자기 자신은 삭제할 수 없습니다")
     if user.role == "admin":
