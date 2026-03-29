@@ -6,14 +6,9 @@ from sqlalchemy.orm import Session, joinedload
 from auth import get_current_user
 from database import get_db
 from models import User, Mission, Submission
+from utils import utcnow
 
 router = APIRouter(prefix="/api/missions", tags=["missions"])
-
-
-def _utcnow():
-    """naive UTC datetime (DB DateTime 컬럼과 비교 호환용)"""
-    from datetime import timezone
-    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 
 @router.get("")
@@ -38,7 +33,7 @@ def list_missions(track: str = None, db: Session = Depends(get_db), user: User =
     result = []
     for m in missions:
         sub = sub_by_mission.get(m.id)
-        now = _utcnow()
+        now = utcnow()
         if user.role in ("admin", "tester"):
             period_status = "open"
         elif m.start_date and now < m.start_date:

@@ -7,12 +7,8 @@ from sqlalchemy.orm import Session
 
 from auth import hash_password, verify_password, create_access_token, get_current_user
 from config import CURRENT_GENERATION, TURNSTILE_SECRET_KEY
+from utils import utcnow
 from database import get_db
-
-
-def _utcnow() -> datetime:
-    """naive UTC datetime (DB DateTime 컬럼과 비교 호환용)"""
-    return datetime.now(timezone.utc).replace(tzinfo=None)
 from models import User
 from schemas import UserRegister, UserLogin, UserResponse, Token, EmailVerify
 from services.email_service import generate_verification_code, send_verification_email
@@ -63,7 +59,7 @@ def register(data: UserRegister, db: Session = Depends(get_db)):
         approved=False,
         verification_code=code,
         verification_attempts=0,
-        verification_expires_at=_utcnow() + timedelta(minutes=VERIFY_CODE_EXPIRE_MINUTES),
+        verification_expires_at=utcnow() + timedelta(minutes=VERIFY_CODE_EXPIRE_MINUTES),
     )
     db.add(user)
     db.commit()
@@ -88,7 +84,7 @@ def verify_email(data: EmailVerify, db: Session = Depends(get_db)):
     if user.verification_attempts >= MAX_TOTAL_VERIFY_ATTEMPTS:
         raise HTTPException(429, "인증 시도 횟수를 초과했습니다. 운영진에게 문의해주세요.")
 
-    if user.verification_expires_at and _utcnow() > user.verification_expires_at:
+    if user.verification_expires_at and utcnow() > user.verification_expires_at:
         raise HTTPException(400, "인증 코드가 만료되었습니다. 인증 코드를 재전송해주세요.")
 
     if not hmac.compare_digest(user.verification_code or "", data.code):
@@ -123,13 +119,13 @@ def resend_code(data: UserLogin, db: Session = Depends(get_db)):
     # 재전송 쿨다운: 마지막 코드 발급 후 60초 이내 재전송 방지
     if user.verification_expires_at:
         code_issued_at = user.verification_expires_at - timedelta(minutes=VERIFY_CODE_EXPIRE_MINUTES)
-        if _utcnow() < code_issued_at + timedelta(seconds=60):
+        if utcnow() < code_issued_at + timedelta(seconds=60):
             raise HTTPException(429, "인증 코드 재전송은 60초 후에 가능합니다.")
 
     code = generate_verification_code()
     user.verification_code = code
     # 시도 횟수는 유지 (누적 추적), 새 코드로만 리프레시
-    user.verification_expires_at = _utcnow() + timedelta(minutes=VERIFY_CODE_EXPIRE_MINUTES)
+    user.verification_expires_at = utcnow() + timedelta(minutes=VERIFY_CODE_EXPIRE_MINUTES)
     db.commit()
 
     send_verification_email(user.email, user.name, code)
