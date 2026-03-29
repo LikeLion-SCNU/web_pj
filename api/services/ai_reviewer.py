@@ -12,7 +12,7 @@ from pathlib import Path
 from openai import OpenAI
 from sqlalchemy.orm import Session
 
-from config import OPENAI_API_KEY, UPLOAD_DIR
+from config import OPENAI_API_KEY, UPLOAD_DIR, MAX_SCREENSHOT_SIZE, AI_MODEL, AI_MAX_TOKENS, AI_TEMPERATURE
 from database import SessionLocal
 from models import Submission, Mission, Review
 from services.github_fetcher import fetch_repo_code
@@ -210,7 +210,7 @@ def encode_screenshot(screenshot_path: str) -> dict | None:
 
     try:
         # 파일 크기 선행 체크 (메모리 보호)
-        if full_path.stat().st_size > 10 * 1024 * 1024:
+        if full_path.stat().st_size > MAX_SCREENSHOT_SIZE:
             return None
 
         with open(full_path, "rb") as f:
@@ -419,10 +419,10 @@ def run_ai_review(submission_id: int):
         # OpenAI API 호출
         client = OpenAI(api_key=OPENAI_API_KEY)
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model=AI_MODEL,
             messages=messages,
-            temperature=0.3,
-            max_tokens=2500,
+            temperature=AI_TEMPERATURE,
+            max_tokens=AI_MAX_TOKENS,
             response_format={"type": "json_object"},
         )
 

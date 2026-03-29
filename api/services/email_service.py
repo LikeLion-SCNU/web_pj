@@ -5,7 +5,7 @@ import string
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from config import SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD
+from config import SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, SITE_URL
 
 
 def generate_verification_code() -> str:
@@ -68,7 +68,7 @@ def send_approval_notification(to_email: str, name: str, approved: bool) -> bool
             <h1 style="color: #FF7710; text-align: center;">회원가입 승인 완료!</h1>
             <p style="color: #ccc; text-align: center;">{safe_name}님, 멋쟁이사자처럼 순천대 PBL 시스템에 오신 것을 환영합니다!</p>
             <div style="text-align: center; margin-top: 24px;">
-                <a href="https://likelionscnu.site/pages/login.html" style="background: #FF7710; color: #fff; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 600;">로그인하기</a>
+                <a href="{SITE_URL}/pages/login.html" style="background: #FF7710; color: #fff; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 600;">로그인하기</a>
             </div>
         </div>
         """

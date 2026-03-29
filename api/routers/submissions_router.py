@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, UploadFi
 from sqlalchemy.orm import Session, joinedload
 
 from auth import get_current_user
-from config import MAX_SUBMISSIONS_PER_MISSION, UPLOAD_DIR
+from config import MAX_SUBMISSIONS_PER_MISSION, MAX_UPLOAD_SIZE, UPLOAD_DIR
 from utils import utcnow
 from database import get_db
 from models import User, Mission, Submission, Review
@@ -67,7 +67,7 @@ def create_submission(
             raise HTTPException(400, f"허용된 이미지 형식: {', '.join(ALLOWED_EXTENSIONS)}")
 
         # 크기 제한: 청크 단위로 읽어 메모리 폭주 방지
-        max_size = 5 * 1024 * 1024  # 5MB
+        max_size = MAX_UPLOAD_SIZE
         chunks = []
         total = 0
         while True:

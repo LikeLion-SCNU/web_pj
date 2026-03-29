@@ -6,6 +6,8 @@ from urllib.parse import urljoin, urlparse
 
 import httpx
 
+from config import MAX_HTML_FETCH_SIZE
+
 
 def _is_safe_ip(ip_str: str) -> bool:
     """IP 주소가 안전한지 검증 (private, loopback, link-local, reserved 차단)"""
@@ -142,7 +144,7 @@ def fetch_deploy_preview(url: str) -> str | None:
         if "text/html" not in content_type:
             return f"HTML이 아닌 응답 (Content-Type: {content_type})"
 
-        html = resp.text[:30000]  # 30KB까지만
+        html = resp.text[:MAX_HTML_FETCH_SIZE]
         parts = []
 
         # 1. 제목

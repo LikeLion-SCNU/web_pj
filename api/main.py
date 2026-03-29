@@ -1,15 +1,13 @@
-import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+from config import CORS_ORIGINS, IS_DEV, UPLOAD_DIR
 from database import engine, Base
 from routers import auth_router, missions_router, submissions_router, admin_router
 from seed import run_seed
-
-IS_DEV = os.getenv("ENV", "production") == "development"
 
 
 @asynccontextmanager
@@ -29,13 +27,13 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://likelionscnu.site", "http://localhost:8888"],
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.mount("/uploads", StaticFiles(directory="/app/uploads"), name="uploads")
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 app.include_router(auth_router.router)
 app.include_router(missions_router.router)

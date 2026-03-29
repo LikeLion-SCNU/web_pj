@@ -14,6 +14,16 @@ ALGORITHM = "HS256"
 MAX_SUBMISSIONS_PER_MISSION = 2
 UPLOAD_DIR = "/app/uploads"
 
+# 파일 업로드 제한
+MAX_UPLOAD_SIZE = 5 * 1024 * 1024       # 5MB (사용자 업로드)
+MAX_SCREENSHOT_SIZE = 10 * 1024 * 1024  # 10MB (AI 비전 분석용)
+
+# AI 리뷰 설정
+AI_MODEL = "gpt-4o-mini"
+AI_MAX_TOKENS = 2500
+AI_TEMPERATURE = 0.3
+MAX_HTML_FETCH_SIZE = 30_000  # 배포 URL HTML 최대 문자 수
+
 # SMTP (Gmail App Password)
 SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
 SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
@@ -23,3 +33,9 @@ CURRENT_GENERATION = int(os.getenv("CURRENT_GENERATION", "14"))
 
 # Cloudflare Turnstile
 TURNSTILE_SECRET_KEY = os.getenv("TURNSTILE_SECRET_KEY", "")
+
+# 사이트 URL
+SITE_URL = os.getenv("SITE_URL", "https://likelionscnu.site")
+CORS_ORIGINS = os.getenv("CORS_ORIGINS", "https://likelionscnu.site,http://localhost:8888").split(",")
+
+IS_DEV = os.getenv("IS_DEV", "").lower() in ("1", "true", "yes")
