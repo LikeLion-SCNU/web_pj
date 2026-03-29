@@ -12,17 +12,31 @@ def generate_verification_code() -> str:
     return "".join(secrets.choice(string.digits) for _ in range(6))
 
 
-def send_verification_email(to_email: str, name: str, code: str) -> bool:
+def _send_html_email(to_email: str, subject: str, html_body: str) -> bool:
+    """SMTP로 HTML 이메일을 전송하는 공통 헬퍼"""
     if not SMTP_PASSWORD:
-        print("[SMTP] 비밀번호 미설정 (개발 모드). 이메일 발송 건너뜀.")
+        print(f"[SMTP] 비밀번호 미설정. 이메일 발송 건너뜀: {subject}")
         return True
 
-    safe_name = html_lib.escape(name)
-
     msg = MIMEMultipart("alternative")
-    msg["Subject"] = "[멋쟁이사자처럼 순천대] 이메일 인증을 완료해주세요"
+    msg["Subject"] = subject
     msg["From"] = f"멋쟁이사자처럼 순천대 <{SMTP_USER}>"
     msg["To"] = to_email
+    msg.attach(MIMEText(html_body, "html"))
+
+    try:
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+            server.starttls()
+            server.login(SMTP_USER, SMTP_PASSWORD)
+            server.sendmail(SMTP_USER, to_email, msg.as_string())
+        return True
+    except Exception as e:
+        print(f"[SMTP] 이메일 발송 실패: {type(e).__name__}")
+        return False
+
+
+def send_verification_email(to_email: str, name: str, code: str) -> bool:
+    safe_name = html_lib.escape(name)
 
     html = f"""
     <div style="font-family: 'Pretendard', sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #0d0d0d; color: #fff; border-radius: 16px;">
@@ -41,30 +55,12 @@ def send_verification_email(to_email: str, name: str, code: str) -> bool:
     </div>
     """
 
-    msg.attach(MIMEText(html, "html"))
-
-    try:
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
-            server.starttls()
-            server.login(SMTP_USER, SMTP_PASSWORD)
-            server.sendmail(SMTP_USER, to_email, msg.as_string())
-        return True
-    except Exception as e:
-        print(f"[SMTP] 이메일 발송 실패: {e}")
-        return False
+    return _send_html_email(to_email, "[멋쟁이사자처럼 순천대] 이메일 인증을 완료해주세요", html)
 
 
 def send_approval_notification(to_email: str, name: str, approved: bool) -> bool:
-    if not SMTP_PASSWORD:
-        print(f"[SMTP] 비밀번호 미설정. {'승인' if approved else '거절'} 알림 스킵")
-        return True
-
     safe_name = html_lib.escape(name)
     status = "승인" if approved else "거절"
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = f"[멋쟁이사자처럼 순천대] 회원가입이 {status}되었습니다"
-    msg["From"] = f"멋쟁이사자처럼 순천대 <{SMTP_USER}>"
-    msg["To"] = to_email
 
     if approved:
         body = f"""
@@ -84,14 +80,4 @@ def send_approval_notification(to_email: str, name: str, approved: bool) -> bool
         </div>
         """
 
-    msg.attach(MIMEText(body, "html"))
-
-    try:
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
-            server.starttls()
-            server.login(SMTP_USER, SMTP_PASSWORD)
-            server.sendmail(SMTP_USER, to_email, msg.as_string())
-        return True
-    except Exception as e:
-        print(f"[SMTP] 이메일 발송 실패: {e}")
-        return False
+    return _send_html_email(to_email, f"[멋쟁이사자처럼 순천대] 회원가입이 {status}되었습니다", body)
