@@ -11,7 +11,6 @@ from config import MAX_SUBMISSIONS_PER_MISSION, UPLOAD_DIR
 from utils import utcnow
 from database import get_db
 from models import User, Mission, Submission, Review
-from schemas import SubmissionCreate
 from services.ai_reviewer import run_ai_review
 
 router = APIRouter(prefix="/api/submissions", tags=["submissions"])
