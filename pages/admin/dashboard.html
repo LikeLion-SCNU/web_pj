@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>운영진 대시보드 - SCNU LIKELION PBL</title>
+  <link rel="icon" type="image/png" href="../../images/logo_og.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="../css/pbl.css?v=4">
+</head>
+<body>
+
+  <header class="pbl-header">
+    <nav class="pbl-nav">
+      <a href="/" class="pbl-logo">
+        <img src="../../images/ll_logo.webp" alt="LIKELION">
+        <span>LIKELION</span>
+        <span class="accent">PBL</span>
+      </a>
+      <ul class="pbl-nav-menu">
+        <li><a href="../missions">미션</a></li>
+        <li><a href="../my">내 현황</a></li>
+        <li><a href="dashboard" class="active admin-link">운영진</a></li>
+      </ul>
+      <div class="pbl-nav-actions"></div>
+      <button class="pbl-hamburger"><span></span><span></span><span></span></button>
+    </nav>
+  </header>
+
+  <main class="pbl-main">
+    <h1 class="pbl-page-title">운영진 대시보드</h1>
+
+    <!-- Pending Users -->
+    <div id="pendingUsersSection" style="display:none; margin-bottom:32px;">
+      <h2 style="color:#FF7710; font-size:1.2rem; margin-bottom:16px;">
+        <i class="fa-solid fa-user-clock"></i> 가입 승인 대기 (<span id="pendingUserCount">0</span>명)
+      </h2>
+      <div id="pendingUsersList" class="card-grid"></div>
+    </div>
+
+    <!-- Stats -->
+    <div id="statsGrid" class="stats-grid">
+      <div class="stat-card"><div class="stat-value" id="statTotal">-</div><div class="stat-label">총 인원</div></div>
+      <div class="stat-card"><div class="stat-value" id="statSubmissions">-</div><div class="stat-label">총 제출</div></div>
+      <div class="stat-card"><div class="stat-value" id="statPassed">-</div><div class="stat-label">합격</div></div>
+      <div class="stat-card"><div class="stat-value" id="statRejected">-</div><div class="stat-label">반려</div></div>
+      <div class="stat-card"><div class="stat-value" id="statPending">-</div><div class="stat-label">대기</div></div>
+    </div>
+
+    <!-- Warnings -->
+    <div id="warningsSection" style="display:none;"></div>
+
+    <!-- User Management -->
+    <div style="margin-bottom:32px;">
+      <h2 style="font-size:1.2rem;font-weight:700;color:#fff;margin-bottom:16px;">사용자 관리</h2>
+      <div id="userManagementList" style="display:grid;gap:8px;"></div>
+    </div>
+
+    <!-- Progress Matrix -->
+    <div style="margin-bottom:32px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h2 style="font-size:1.2rem;font-weight:700;color:#fff;">과제 현황</h2>
+        <select id="matrixTrackFilter" class="form-select" style="width:auto;">
+          <option value="">전체 트랙</option>
+          <option value="planning">기획</option>
+          <option value="design">디자인</option>
+          <option value="frontend">프론트엔드</option>
+          <option value="backend">백엔드</option>
+        </select>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="progress-matrix" id="progressMatrix">
+          <thead><tr><th>이름</th><th>트랙</th><th>팀</th></tr></thead>
+          <tbody><tr><td colspan="3" style="text-align:center;color:#888;">로딩중...</td></tr></tbody>
+        </table>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:16px;flex-wrap:wrap;font-size:.75rem;color:#888;">
+        <span><span class="progress-cell progress-cell-passed" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></span> 합격</span>
+        <span><span class="progress-cell progress-cell-pending" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></span> 대기</span>
+        <span><span class="progress-cell progress-cell-reviewing" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></span> 검토중</span>
+        <span><span class="progress-cell progress-cell-rejected" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></span> 반려</span>
+        <span><span class="progress-cell progress-cell-missed" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></span> 미제출(마감)</span>
+        <span><span class="progress-cell progress-cell-none" style="width:12px;height:12px;display:inline-block;vertical-align:middle;"></span> 미진행</span>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+      <select id="filterTrack" class="form-select">
+        <option value="">전체 트랙</option>
+        <option value="planning">기획</option>
+        <option value="design">디자인</option>
+        <option value="frontend">프론트엔드</option>
+        <option value="backend">백엔드</option>
+      </select>
+      <input id="filterMission" type="number" class="form-input" placeholder="미션 번호" min="1" style="width:120px">
+      <select id="filterStatus" class="form-select">
+        <option value="">전체 상태</option>
+        <option value="passed">합격</option>
+        <option value="rejected">반려</option>
+        <option value="pending">대기</option>
+        <option value="reviewing">검토중</option>
+      </select>
+      <button class="btn btn-primary btn-sm" id="filterBtn">필터 적용</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <table class="pbl-table">
+        <thead>
+          <tr>
+            <th>이름</th>
+            <th>트랙</th>
+            <th>팀</th>
+            <th>미션</th>
+            <th>상태</th>
+            <th>제출일</th>
+          </tr>
+        </thead>
+        <tbody id="submissionTable">
+          <tr><td colspan="6" class="text-center text-muted"><span class="spinner"></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Detail Modal -->
+  <div class="modal-overlay" id="detailModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">제출 상세</h3>
+        <button class="modal-close" id="modalCloseBtn">&times;</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer" id="modalFooter"></div>
+    </div>
+  </div>
+
+  <script src="../js/pbl.js?v=4"></script>
+  <script src="../js/admin-dashboard.js?v=1"></script>
+</body>
+</html>

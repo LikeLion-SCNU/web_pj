@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>내 현황 - SCNU LIKELION PBL</title>
+  <link rel="icon" type="image/png" href="../images/logo_og.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="css/pbl.css?v=4">
+</head>
+<body>
+
+  <header class="pbl-header">
+    <nav class="pbl-nav">
+      <a href="/" class="pbl-logo">
+        <img src="../images/ll_logo.webp" alt="LIKELION">
+        <span>LIKELION</span>
+        <span class="accent">PBL</span>
+      </a>
+      <ul class="pbl-nav-menu">
+        <li><a href="missions">미션</a></li>
+        <li><a href="my" class="active">내 현황</a></li>
+      </ul>
+      <div class="pbl-nav-actions"></div>
+      <button class="pbl-hamburger"><span></span><span></span><span></span></button>
+    </nav>
+  </header>
+
+  <main class="pbl-main">
+    <h1 class="pbl-page-title">내 제출 현황</h1>
+    <p class="pbl-page-subtitle" id="userInfo"></p>
+
+    <div id="mySubmissions">
+      <div class="text-center text-muted"><span class="spinner"></span></div>
+    </div>
+  </main>
+
+  <script src="js/pbl.js?v=4"></script>
+  <script>
+    requireAuth();
+    const user = getUser();
+    const trackNames = { planning: '기획', design: '디자인', frontend: '프론트엔드', backend: '백엔드' };
+    document.getElementById('userInfo').textContent = `${user?.name} | ${trackNames[user?.track] || ''} 트랙 | ${user?.team}팀`;
+
+    (async () => {
+      const container = document.getElementById('mySubmissions');
+      try {
+        const data = await loadAllMySubmissions();
+        const list = Array.isArray(data) ? data : (data.submissions || []);
+        if (list.length === 0) {
+          container.innerHTML = '<p class="text-muted text-center">제출 내역이 없습니다.</p>';
+          return;
+        }
+        container.innerHTML = list.map(s => `
+          <div class="submission-item">
+            <div class="submission-item-header">
+              <div>
+                <strong style="font-size:.95rem">${escapeHTML(s.mission_title || `미션 ${s.mission_number}`)}</strong>
+                <span class="badge badge-${s.status}" style="margin-left:.5rem">${statusLabel(s.status)}</span>
+              </div>
+              <time>${new Date(s.submitted_at).toLocaleString('ko-KR')}</time>
+            </div>
+            ${s.review && s.review.ai_score != null ? `<div style="font-size:.8rem;color:var(--text-muted)">AI 점수: <strong style="color:var(--primary)">${s.review.ai_score}</strong>/100</div>` : ''}
+            ${s.review && s.review.ai_summary ? `<div class="feedback-box">${escapeHTML(s.review.ai_summary)}</div>` : ''}
+          </div>
+        `).join('');
+      } catch (err) {
+        container.innerHTML = `<p class="text-muted">${escapeHTML(err.message)}</p>`;
+      }
+    })();
+  </script>
+</body>
+</html>

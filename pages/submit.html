@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>미션 제출 - SCNU LIKELION PBL</title>
+  <link rel="icon" type="image/png" href="../images/logo_og.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="css/pbl.css?v=4">
+  <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.4/dist/purify.min.js"></script>
+  <style>
+    .mission-desc { color:#ccc; margin-top:12px; line-height:1.7; }
+    .mission-desc h1,.mission-desc h2,.mission-desc h3 { color:#fff; margin:16px 0 8px; }
+    .mission-desc h3 { font-size:1.05rem; }
+    .mission-desc p { margin:6px 0; }
+    .mission-desc ul,.mission-desc ol { padding-left:20px; margin:6px 0; }
+    .mission-desc li { margin:4px 0; }
+    .mission-desc code { background:#1a1a2e; padding:2px 6px; border-radius:4px; font-size:.85em; color:#a78bfa; }
+    .mission-desc pre { background:#1a1a2e; padding:12px 16px; border-radius:8px; overflow-x:auto; margin:8px 0; }
+    .mission-desc pre code { background:none; padding:0; }
+    .mission-desc a { display:inline-flex; align-items:center; gap:6px; padding:8px 16px; background:linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff; text-decoration:none; border-radius:8px; font-size:.85rem; font-weight:600; transition:all .2s; margin:4px 4px 4px 0; }
+    .mission-desc a:hover { background:linear-gradient(135deg,#4338ca,#6d28d9); transform:translateY(-1px); box-shadow:0 4px 12px rgba(79,70,229,.4); }
+    .mission-desc a::before { content:"🔗"; font-size:.8em; }
+    .mission-desc li > a, .mission-desc p > a { display:inline-flex; }
+    .mission-desc strong { color:#fff; }
+    .mission-desc blockquote { border-left:3px solid #818cf8; padding-left:12px; color:#999; margin:8px 0; }
+    .mission-desc hr { border:none; border-top:1px solid #333; margin:12px 0; }
+  </style>
+</head>
+<body>
+
+  <header class="pbl-header">
+    <nav class="pbl-nav">
+      <a href="/" class="pbl-logo">
+        <img src="../images/ll_logo.webp" alt="LIKELION">
+        <span>LIKELION</span>
+        <span class="accent">PBL</span>
+      </a>
+      <ul class="pbl-nav-menu">
+        <li><a href="missions">미션</a></li>
+        <li><a href="my">내 현황</a></li>
+      </ul>
+      <div class="pbl-nav-actions"></div>
+      <button class="pbl-hamburger"><span></span><span></span><span></span></button>
+    </nav>
+  </header>
+
+  <main class="pbl-main">
+    <div id="missionDetail">
+      <div class="text-center text-muted"><span class="spinner"></span></div>
+    </div>
+
+    <div id="submitSection" style="display:none; margin-top:24px;">
+      <h2 style="font-size:1.25rem;font-weight:700;margin-bottom:1rem;">과제 제출</h2>
+      <form id="submitForm" class="pbl-card" style="padding:24px;">
+        <input type="hidden" name="mission_id" id="missionIdField">
+        <div id="dynamicFields"></div>
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top:16px;">제출하기</button>
+      </form>
+    </div>
+
+    <div id="submissionHistory" style="margin-top:24px;"></div>
+  </main>
+
+  <script src="js/pbl.js?v=4"></script>
+  <script>
+    requireAuth();
+    const params = new URLSearchParams(location.search);
+    const missionId = params.get('id');
+    if (!missionId) location.href = 'missions';
+
+    // PBL 링크는 DB에서 가져옴
+
+    (async () => {
+      let user = getUser();
+      if (!user && isLoggedIn()) {
+        try {
+          user = await fetchAPI('/auth/me');
+          localStorage.setItem('pbl_user', JSON.stringify(user));
+          updateNav();
+        } catch (e) {}
+      }
+
+      try {
+        const mission = await loadMissionDetail(missionId);
+
+        // 미션 상세 표시
+        const pblLink = mission.pbl_link || 'https://likelion-pbl-five.vercel.app';
+
+        const startDate = mission.start_date ? new Date(mission.start_date) : null;
+        const endDate = mission.end_date ? new Date(mission.end_date) : null;
+        const now = new Date();
+        const isAdmin = user && user.role === 'admin';
+        const isTester = user && user.role === 'tester';
+        const bypassDate = isAdmin || isTester;
+        const isOpen = bypassDate || ((!startDate || now >= startDate) && (!endDate || now <= endDate));
+        const isClosed = !bypassDate && endDate && now > endDate;
+        const isUpcoming = !bypassDate && startDate && now < startDate;
+        const dateStr = startDate && endDate
+          ? `${startDate.getMonth()+1}/${startDate.getDate()}(${['일','월','화','수','목','금','토'][startDate.getDay()]}) ~ ${endDate.getMonth()+1}/${endDate.getDate()}(${['일','월','화','수','목','금','토'][endDate.getDay()]})`
+          : '';
+
+        document.getElementById('missionDetail').innerHTML = `
+          <a href="missions" style="font-size:.85rem;color:#888;text-decoration:none;">&larr; 미션 목록으로</a>
+          <div style="display:flex;align-items:center;gap:16px;margin-top:12px;flex-wrap:wrap;">
+            <h1 style="font-size:1.8rem;font-weight:800;color:#fff;margin:0;">
+              Mission ${String(mission.number).padStart(2, '0')}
+            </h1>
+            <a href="${pblLink}" target="_blank" class="btn btn-outline btn-sm" style="font-size:.8rem;">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i> PBL 과제 페이지 이동
+            </a>
+          </div>
+          <h2 style="font-size:1.3rem;font-weight:700;color:#fff;margin-top:8px;">${escapeHTML(mission.title)}</h2>
+          <div class="mission-desc">${typeof marked !== 'undefined' ? DOMPurify.sanitize(marked.parse(mission.description || '')) : escapeHTML(mission.description || '')}</div>
+          ${dateStr ? `
+            <div style="margin-top:12px;padding:12px 16px;background:#1a1a1a;border-radius:8px;border-left:3px solid ${isClosed ? '#f87171' : isUpcoming ? '#888' : '#4ade80'};">
+              <span style="font-size:.85rem;color:${isClosed ? '#f87171' : isUpcoming ? '#888' : '#4ade80'};font-weight:600;">
+                <i class="fa-regular fa-calendar"></i>
+                ${isClosed ? '마감됨' : isUpcoming ? '예정' : '진행중'}
+              </span>
+              <span style="font-size:.85rem;color:#888;margin-left:12px;">${dateStr}</span>
+            </div>
+          ` : ''}
+
+          ${mission.checklist && mission.checklist.length > 0 ? `
+            <div class="pbl-card" style="padding:20px;margin-top:16px;">
+              <h3 style="font-size:1rem;font-weight:600;color:#FF7710;margin-bottom:12px;">
+                <i class="fa-solid fa-clipboard-check"></i> 체크리스트
+              </h3>
+              <ul style="list-style:none;padding:0;margin:0;">
+                ${mission.checklist.map((c, i) => `
+                  <li style="padding:8px 0;border-bottom:1px solid #222;color:#ccc;font-size:.9rem;cursor:pointer;" onclick="this.classList.toggle('checked')">
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                      <input type="checkbox" style="accent-color:#FF7710;width:18px;height:18px;cursor:pointer;">
+                      <span>${escapeHTML(c)}</span>
+                    </label>
+                  </li>
+                `).join('')}
+              </ul>
+            </div>
+          ` : ''}
+
+          <div style="margin-top:12px;font-size:.85rem;color:#666;">
+            예상 소요시간: ${mission.estimated_hours}시간 · 제출 방식: ${mission.submission_type}
+          </div>
+        `;
+
+        // 제출 폼 설정 (기간 내만 표시)
+        if (isOpen) {
+          document.getElementById('missionIdField').value = missionId;
+          const track = mission.submission_type === 'github' ? (user?.track || 'backend')
+                      : mission.submission_type === 'figma' ? 'design'
+                      : mission.submission_type === 'deploy' ? 'frontend'
+                      : (user?.track || 'planning');
+          renderSubmitFields(track, document.getElementById('dynamicFields'));
+          document.getElementById('submitSection').style.display = 'block';
+        } else {
+          document.getElementById('submitSection').innerHTML = `
+            <div style="text-align:center;padding:24px;color:#888;">
+              <i class="fa-solid fa-lock" style="font-size:24px;margin-bottom:8px;"></i>
+              <p>${isClosed ? '제출 기한이 마감되었습니다.' : '아직 제출 기간이 아닙니다.'}</p>
+            </div>
+          `;
+          document.getElementById('submitSection').style.display = 'block';
+        }
+
+        // 이전 제출 내역
+        const submissions = mission.submissions || [];
+        const historyEl = document.getElementById('submissionHistory');
+
+        if (submissions.length > 0) {
+          historyEl.innerHTML = `
+            <h2 style="font-size:1.25rem;font-weight:700;margin-bottom:1rem;">이전 제출 내역</h2>
+            ${submissions.map(s => `
+              <div class="pbl-card" style="padding:16px;margin-bottom:12px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                  <span>
+                    <span class="badge badge-${s.status}">${statusLabel(s.status)}</span>
+                    <span style="color:#888;font-size:.85rem;margin-left:8px;">${s.attempt}차 시도</span>
+                  </span>
+                  <time style="color:#666;font-size:.8rem;">${new Date(s.submitted_at).toLocaleString('ko-KR')}</time>
+                </div>
+                ${s.review ? `
+                  <div style="background:#111;padding:12px;border-radius:8px;margin-top:8px;">
+                    ${s.review.ai_score !== null ? `<div style="color:#FF7710;font-weight:600;margin-bottom:4px;">AI 점수: ${s.review.ai_score}/100</div>` : ''}
+                    ${s.review.ai_summary ? `<div style="color:#ccc;font-size:.85rem;margin-bottom:8px;">${escapeHTML(s.review.ai_summary)}</div>` : ''}
+                    ${s.review.ai_feedback ? s.review.ai_feedback.map(f => `
+                      <div style="font-size:.8rem;padding:4px 0;color:${f.passed ? '#4ade80' : '#f87171'};">
+                        ${f.passed ? '✓' : '✗'} ${escapeHTML(f.item)} ${f.comment ? `<span style="color:#888;">— ${escapeHTML(f.comment)}</span>` : ''}
+                      </div>
+                    `).join('') : ''}
+                    ${s.review.admin_approved !== null ? `
+                      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #333;">
+                        <span style="color:${s.review.admin_approved ? '#4ade80' : '#f87171'};font-weight:600;">
+                          운영진: ${s.review.admin_approved ? '승인' : '반려'}
+                        </span>
+                        ${s.review.admin_comment ? `<div style="color:#888;font-size:.85rem;margin-top:4px;">${escapeHTML(s.review.admin_comment)}</div>` : ''}
+                      </div>
+                    ` : ''}
+                  </div>
+                ` : '<div style="color:#666;font-size:.85rem;margin-top:4px;">검사 중...</div>'}
+              </div>
+            `).join('')}
+          `;
+
+          // 합격했거나 2회 제출했으면 폼 숨김
+          const done = submissions.some(s => s.status === 'passed') || submissions.length >= 2;
+          if (done) document.getElementById('submitSection').style.display = 'none';
+        }
+
+      } catch (err) {
+        document.getElementById('missionDetail').innerHTML =
+          `<p style="color:#888;">${escapeHTML(err.message)}</p>`;
+      }
+    })();
+
+    // 제출 핸들러
+    document.getElementById('submitForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = e.target.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> 제출 중...';
+      try {
+        const fd = new FormData(e.target);
+        await submitAssignment(fd);
+        showToast('success', '과제가 제출되었습니다! AI 검사가 진행됩니다.');
+        setTimeout(() => location.reload(), 1500);
+      } catch (err) {
+        showToast('error', err.message || '제출 실패');
+        btn.disabled = false;
+        btn.textContent = '제출하기';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+.git
+.gitignore
+.env
+.env.example
+.DS_Store
+api/
+likelion-pbl-test/
+docker-compose.yml
+Dockerfile
+*.md
+.claude/
+node_modules/
+__pycache__/
+*.pyc
