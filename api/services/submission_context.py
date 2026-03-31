@@ -67,6 +67,27 @@ def build_submission_context(submission: Submission, mission: Mission) -> str:
         repo_data = fetch_repo_code(submission.github_url, mission.track)
         if repo_data and "error" not in repo_data:
             parts.append(f"총 파일 수: {repo_data['total_files']}개")
+            parts.append(f"총 커밋 수: {repo_data.get('total_commits', '?')}개")
+
+            # 브랜치 정보
+            branches = repo_data.get("branches", [])
+            if branches:
+                parts.append(f"브랜치 목록: {', '.join(branches)} ({len(branches)}개)")
+
+            # PR 정보
+            prs = repo_data.get("pull_requests", [])
+            if prs:
+                parts.append(f"\n### Pull Requests ({len(prs)}개)")
+                for pr in prs:
+                    parts.append(f"- [{pr['state']}] {pr['title']} ({pr['head']} → {pr['base']})")
+
+            # 최근 커밋 메시지
+            recent = repo_data.get("recent_commits", [])
+            if recent:
+                parts.append(f"\n### 최근 커밋 ({len(recent)}개)")
+                for c in recent[:5]:
+                    parts.append(f"- {c['message']}")
+
             parts.append(f"\n파일 트리 (상위 {len(repo_data['file_tree'])}개):")
             for f in repo_data["file_tree"]:
                 parts.append(f"  {f}")
