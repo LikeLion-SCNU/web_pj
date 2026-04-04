@@ -173,7 +173,9 @@ RESPONSE_FORMAT = """
   "improvement_tips": ["개선 팁 1", "개선 팁 2"]
 }
 ```
-반드시 위 JSON 형식만 출력하세요. 다른 텍스트를 추가하지 마세요."""
+- improvement_tips는 반드시 이 미션의 체크리스트·학습 목표와 직접 관련된 팁만 작성하세요.
+- 미션과 무관한 일반적인 도구 추천(예: Live Server, Prettier 등)이나 확장 프로그램 설치 권유는 금지합니다.
+- 반드시 위 JSON 형식만 출력하세요. 다른 텍스트를 추가하지 마세요."""
 
 
 def build_mission_context(mission: Mission) -> str:
