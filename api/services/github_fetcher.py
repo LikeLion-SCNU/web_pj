@@ -141,6 +141,57 @@ def select_key_files(file_paths: list[str], track: str) -> list[str]:
     return (priority + others)[:max_files]
 
 
+def fetch_repo_metadata(owner: str, repo: str) -> dict:
+    """레포지토리의 커밋 수, 브랜치 목록, PR 목록을 가져옴"""
+    headers = _get_headers()
+    metadata = {"total_commits": 0, "branches": [], "pull_requests": []}
+
+    with httpx.Client(timeout=10) as client:
+        # 커밋 수 (모든 브랜치 포함, 최근 100개까지)
+        try:
+            resp = client.get(
+                f"https://api.github.com/repos/{owner}/{repo}/commits?per_page=100",
+                headers=headers,
+            )
+            if resp.status_code == 200:
+                commits = resp.json()
+                metadata["total_commits"] = len(commits)
+                metadata["recent_commits"] = [
+                    {"message": c["commit"]["message"][:100], "date": c["commit"]["committer"]["date"]}
+                    for c in commits[:10]
+                ]
+        except Exception:
+            pass
+
+        # 브랜치 목록
+        try:
+            resp = client.get(
+                f"https://api.github.com/repos/{owner}/{repo}/branches?per_page=30",
+                headers=headers,
+            )
+            if resp.status_code == 200:
+                metadata["branches"] = [b["name"] for b in resp.json()]
+        except Exception:
+            pass
+
+        # PR 목록 (open + closed)
+        try:
+            resp = client.get(
+                f"https://api.github.com/repos/{owner}/{repo}/pulls?state=all&per_page=10",
+                headers=headers,
+            )
+            if resp.status_code == 200:
+                metadata["pull_requests"] = [
+                    {"title": pr["title"], "state": pr["state"],
+                     "head": pr["head"]["ref"], "base": pr["base"]["ref"]}
+                    for pr in resp.json()
+                ]
+        except Exception:
+            pass
+
+    return metadata
+
+
 def fetch_repo_code(github_url: str, track: str) -> dict | None:
     """GitHub URL에서 트랙에 맞는 핵심 코드를 가져옴"""
     parsed = parse_github_url(github_url)
@@ -148,6 +199,11 @@ def fetch_repo_code(github_url: str, track: str) -> dict | None:
         return None
 
     owner, repo = parsed
+
+    # .git 접미사 제거
+    if repo.endswith(".git"):
+        repo = repo[:-4]
+
     tree = fetch_repo_tree(owner, repo)
     if not tree:
         return {"error": f"레포지토리를 가져올 수 없습니다: {owner}/{repo}"}
@@ -161,10 +217,17 @@ def fetch_repo_code(github_url: str, track: str) -> dict | None:
         if content:
             files[path] = content
 
+    # 커밋, 브랜치, PR 메타데이터 가져오기
+    metadata = fetch_repo_metadata(owner, repo)
+
     return {
         "owner": owner,
         "repo": repo,
         "total_files": len(tree),
-        "file_tree": tree[:50],  # 전체 트리 (최대 50개)
+        "file_tree": tree[:50],
         "code_files": files,
+        "total_commits": metadata["total_commits"],
+        "recent_commits": metadata.get("recent_commits", []),
+        "branches": metadata["branches"],
+        "pull_requests": metadata["pull_requests"],
     }
