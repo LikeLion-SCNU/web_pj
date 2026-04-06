@@ -3,6 +3,7 @@ import json
 import os
 from datetime import datetime
 
+from config import IS_DEV
 from database import engine, SessionLocal, Base
 from models import Mission, User
 from auth import hash_password
@@ -69,15 +70,14 @@ def seed_admin(db):
 
     admin_pw = os.getenv("ADMIN_PASSWORD", "")
     if not admin_pw:
+        if not IS_DEV:
+            raise RuntimeError(
+                "ADMIN_PASSWORD 환경변수가 설정되지 않았습니다. "
+                "프로덕션에서는 .env에 ADMIN_PASSWORD를 반드시 설정하세요."
+            )
         import secrets
         admin_pw = secrets.token_urlsafe(12)
-        # 보안: 비밀번호를 로그에 출력하지 않고 파일에 저장
-        pw_file = "/app/admin_password.txt"
-        with open(pw_file, "w") as f:
-            f.write(admin_pw)
-        os.chmod(pw_file, 0o600)
-        print(f"[!] ADMIN_PASSWORD 미설정. 임시 비밀번호가 {pw_file}에 저장되었습니다.")
-        print("[!] .env에 ADMIN_PASSWORD를 설정하세요.")
+        print(f"[DEV] ADMIN_PASSWORD 미설정. 임시 비밀번호: {admin_pw}")
 
     admin_email = os.getenv("ADMIN_EMAIL", "sunchon.univ@likelion.org")
 

@@ -80,6 +80,25 @@ def create_submission(
             chunks.append(chunk)
         contents = b"".join(chunks)
 
+        # Magic bytes로 실제 파일 타입 검증 (확장자 위조 방지)
+        MAGIC_BYTES = {
+            b"\x89PNG": ".png",
+            b"\xff\xd8\xff": ".jpg",
+            b"GIF87a": ".gif",
+            b"GIF89a": ".gif",
+            b"RIFF": ".webp",  # WebP: RIFF....WEBP (추가 검증 아래)
+        }
+        detected = False
+        for magic, _ in MAGIC_BYTES.items():
+            if contents[:len(magic)] == magic:
+                # WebP: RIFF 컨테이너 중 WEBP인지 추가 확인
+                if magic == b"RIFF" and contents[8:12] != b"WEBP":
+                    continue
+                detected = True
+                break
+        if not detected:
+            raise HTTPException(400, "파일 내용이 허용된 이미지 형식과 일치하지 않습니다")
+
         filename = f"{uuid.uuid4().hex}{ext}"
         filepath = os.path.join(UPLOAD_DIR, filename)
         os.makedirs(UPLOAD_DIR, exist_ok=True)
