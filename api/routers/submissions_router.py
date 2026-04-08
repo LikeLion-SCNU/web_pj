@@ -117,9 +117,9 @@ def create_submission(
     if existing >= MAX_SUBMISSIONS_PER_MISSION and user.role not in ("admin", "tester"):
         raise HTTPException(400, f"미션당 최대 {MAX_SUBMISSIONS_PER_MISSION}번까지 제출할 수 있습니다")
 
-    # 디자인/기획 미션은 스크린샷 최소 1장 필수
+    # 디자인/기획 미션은 스크린샷 최소 1장 필수 (admin/tester 제외)
     needs_screenshot = mission.submission_type in ("figma", "mixed")
-    if needs_screenshot and not any([screenshot, screenshot2, screenshot3]):
+    if needs_screenshot and user.role not in ("admin", "tester") and not any([screenshot, screenshot2, screenshot3]):
         raise HTTPException(400, "디자인/기획 미션은 스크린샷을 최소 1장 이상 첨부해야 합니다")
 
     screenshot_path = _save_screenshot(screenshot)
@@ -128,7 +128,11 @@ def create_submission(
 
     max_attempt = (
         db.query(func.max(Submission.attempt))
-        .filter(Submission.user_id == user.id, Submission.mission_id == mission_id)
+        .filter(
+            Submission.user_id == user.id,
+            Submission.mission_id == mission_id,
+            Submission.status != "error",
+        )
         .scalar()
     ) or 0
 
