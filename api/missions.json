@@ -552,10 +552,12 @@
     "title": "Java 핵심 문법 & 흐름",
     "description": "콘솔 기반 아기사자 명단 관리 프로그램",
     "checklist": [
-      "Scanner로 입력을 받는가",
-      "배열에 이름이 저장되는가",
-      "5 미만 입력 시 재입력을 요청하는가",
-      "최종 명단이 출력되는가"
+      "Scanner로 아기사자 수를 입력받는가",
+      "5 미만 입력 시 재입력을 요청하는 반복 처리가 있는가",
+      "입력받은 수만큼 배열을 생성하는가",
+      "반복문으로 아기사자 이름을 입력받아 배열에 저장하는가",
+      "최종 명단을 순회하며 출력하는가",
+      "변수, 조건문, 반복문, 배열이 모두 사용되었는가"
     ],
     "submission_type": "github",
     "estimated_hours": 4,
@@ -568,10 +570,12 @@
     "title": "객체지향 I - 클래스와 캡슐화",
     "description": "클래스 기반으로 리팩토링된 명단 관리",
     "checklist": [
-      "Member 클래스에 private 필드가 있는가",
-      "getter/setter가 구현되었는가",
-      "생성자에서 유효성 검증이 있는가",
-      "main에 로직이 직접 작성되지 않았는가"
+      "Lion 클래스가 별도 파일로 분리되어 있는가",
+      "필드가 private으로 선언되어 있는가",
+      "getter/setter 메서드가 구현되어 있는가",
+      "생성자에서 유효성 검증(이름 null/빈값 등)이 있는가",
+      "main 메서드에 비즈니스 로직이 직접 작성되지 않았는가",
+      "public/private 접근 제어자의 차이를 이해하고 적용했는가"
     ],
     "submission_type": "github",
     "estimated_hours": 5,
@@ -584,10 +588,12 @@
     "title": "객체지향 II - 상속/다형성/추상화",
     "description": "파트별 멤버 계층 구조 구현",
     "checklist": [
-      "추상 클래스 또는 인터페이스가 사용되었는가",
-      "상속 구조가 적절한가",
-      "다형성으로 조건문이 최소화되었는가",
-      "instanceof 대신 다형성을 활용했는가"
+      "추상 클래스 또는 인터페이스가 정의되어 있는가",
+      "공통 속성을 부모 클래스로 분리한 상속 구조가 있는가",
+      "역할별(백엔드/프론트엔드/디자인 등) 하위 클래스가 있는가",
+      "다형성을 활용하여 역할별 동작이 구현되었는가",
+      "instanceof 대신 오버라이딩으로 분기 처리했는가",
+      "정책 인터페이스를 통한 기능 분리가 있는가"
     ],
     "submission_type": "github",
     "estimated_hours": 6,
@@ -600,10 +606,12 @@
     "title": "Java Collections & 설계 확장",
     "description": "List, Map을 활용한 멤버 관리 확장",
     "checklist": [
-      "ArrayList가 사용되었는가",
-      "Map으로 파트별 그룹핑이 되는가",
-      "제네릭이 사용되었는가",
-      "이름 검색 기능이 있는가"
+      "배열 대신 ArrayList로 멤버를 관리하는가",
+      "Map을 사용하여 파트별 멤버를 그룹핑하는가",
+      "제네릭(List<Lion> 등)이 올바르게 사용되었는가",
+      "멤버 등록 시 중복 확인 로직이 있는가",
+      "이름으로 멤버를 검색하는 기능이 있는가",
+      "파트별 멤버 필터링 기능이 있는가"
     ],
     "submission_type": "github",
     "estimated_hours": 5,
@@ -616,10 +624,12 @@
     "title": "자바로 배우는 IoC/DI",
     "description": "순수 Java로 DI 패턴 구현",
     "checklist": [
-      "Repository 인터페이스가 정의되었는가",
-      "두 개 이상의 구현체가 있는가",
-      "생성자 주입이 사용되었는가",
-      "AppConfig 클래스가 있는가"
+      "Repository 인터페이스가 정의되어 있는가",
+      "두 개 이상의 구현체(MemoryRepository, MockRepository 등)가 있는가",
+      "Service 클래스가 Repository에 의존하는 구조인가",
+      "생성자를 통한 의존성 주입이 사용되었는가",
+      "AppConfig 등 설정 클래스에서 객체를 조립하는가",
+      "main에서 직접 new 하지 않고 AppConfig를 통해 객체를 생성하는가"
     ],
     "submission_type": "github",
     "estimated_hours": 5,
@@ -632,10 +642,12 @@
     "title": "Spring Boot 전환",
     "description": "Spring Boot 기반으로 전환",
     "checklist": [
-      "Spring Boot 프로젝트가 생성되었는가",
-      "@Service/@Repository 어노테이션이 사용되었는가",
-      "생성자 주입이 적용되었는가",
-      "GET /hello API가 동작하는가"
+      "Spring Boot 프로젝트(Spring Initializr)가 생성되었는가",
+      "5주차 코드가 Spring Boot 구조로 이전되었는가",
+      "@Service, @Repository 어노테이션이 사용되었는가",
+      "생성자 주입이 적용되어 있는가",
+      "GET /hello API가 정상 동작하는가",
+      "@Configuration + @Bean 수동 등록 또는 자동 등록 방식을 사용했는가"
     ],
     "submission_type": "github",
     "estimated_hours": 5,
@@ -648,10 +660,13 @@
     "title": "REST API 설계(CRUD)",
     "description": "아기사자 CRUD REST API 구현",
     "checklist": [
-      "POST/GET/PUT/DELETE API가 구현되었는가",
-      "DTO가 Entity와 분리되었는가",
-      "적절한 HTTP 상태 코드를 반환하는가",
-      "RESTful URL 설계인가"
+      "POST /members API로 멤버를 생성할 수 있는가",
+      "GET /members API로 전체 멤버를 조회할 수 있는가",
+      "PUT /members/{id} API로 멤버를 수정할 수 있는가",
+      "DELETE /members/{id} API로 멤버를 삭제할 수 있는가",
+      "요청/응답용 DTO가 Entity와 분리되어 있는가",
+      "ResponseEntity로 적절한 HTTP 상태 코드를 반환하는가",
+      "RESTful URL 설계 규칙을 따르는가"
     ],
     "submission_type": "github",
     "estimated_hours": 6,
@@ -664,10 +679,13 @@
     "title": "JPA 기초 & 영속성 컨텍스트",
     "description": "JPA + DB 연동 API",
     "checklist": [
-      "@Entity 어노테이션이 사용되었는가",
-      "JpaRepository를 상속했는가",
-      "application.properties에 DB 설정이 있는가",
-      "CRUD가 DB에 반영되는가"
+      "@Entity 어노테이션으로 JPA 엔티티가 정의되었는가",
+      "@Id와 @GeneratedValue 전략이 설정되었는가",
+      "JpaRepository를 상속한 Repository 인터페이스가 있는가",
+      "application.properties에 DB 연결 설정이 있는가",
+      "CRUD 기능이 실제 DB에 반영되는가",
+      "@Enumerated(EnumType.STRING)으로 Enum 타입을 사용했는가",
+      "Hibernate SQL 로그가 출력되도록 설정했는가"
     ],
     "submission_type": "github",
     "estimated_hours": 7,
@@ -680,10 +698,12 @@
     "title": "연관관계 & 트랜잭션",
     "description": "Team-Member 1:N 관계 매핑",
     "checklist": [
-      "@ManyToOne/@OneToMany가 사용되었는가",
-      "@Transactional이 적용되었는가",
+      "@ManyToOne/@OneToMany로 연관관계가 매핑되었는가",
+      "@JoinColumn으로 외래키가 올바르게 설정되었는가",
+      "연관관계의 주인(N쪽)이 올바르게 설정되었는가",
+      "@Transactional이 Service 계층에 적용되었는가",
       "팀별 멤버 조회 API가 있는가",
-      "외래키가 올바르게 생성되는가"
+      "과제(Assignment) 엔티티와 멤버 간 1:N 관계가 구현되었는가"
     ],
     "submission_type": "github",
     "estimated_hours": 5,
@@ -696,10 +716,13 @@
     "title": "미니 프로젝트: 예외 처리 & FE 연동",
     "description": "전역 예외 처리 + 프론트엔드 연동",
     "checklist": [
-      "@RestControllerAdvice가 사용되었는가",
-      "커스텀 예외 클래스가 있는가",
-      "통일된 에러 응답 형식인가",
-      "프론트엔드에서 API 호출이 동작하는가"
+      "@RestControllerAdvice로 전역 예외 처리가 구현되었는가",
+      "커스텀 예외 클래스가 정의되어 있는가",
+      "통일된 에러 응답 형식(ErrorResponse 등)이 사용되는가",
+      "Service에서 예외를 던지는 방식으로 리팩토링되었는가",
+      "검색 기능 API가 추가되었는가",
+      "프론트엔드에서 fetch()로 API를 호출하고 결과를 표시하는가",
+      "GET/POST/PUT/DELETE가 브라우저에서 동작하는가"
     ],
     "submission_type": "github",
     "estimated_hours": 7,

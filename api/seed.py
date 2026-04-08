@@ -46,10 +46,46 @@ def update_mission_schedule(db):
         print(f"{updated}개 미션 스케줄이 업데이트되었습니다.")
 
 
+def update_mission_content(db):
+    """missions.json의 체크리스트/설명 등을 기존 DB 미션에 동기화"""
+    data_path = os.path.join(os.path.dirname(__file__), "missions.json")
+    if not os.path.exists(data_path):
+        return
+
+    with open(data_path, "r", encoding="utf-8") as f:
+        missions_data = json.load(f)
+
+    # (track, number) → json 데이터 매핑
+    json_map = {(m["track"], m["number"]): m for m in missions_data}
+
+    updated = 0
+    for m in db.query(Mission).all():
+        src = json_map.get((m.track, m.number))
+        if not src:
+            continue
+        changed = False
+        if m.checklist != src.get("checklist"):
+            m.checklist = src["checklist"]
+            changed = True
+        if m.description != src.get("description", ""):
+            m.description = src.get("description", "")
+            changed = True
+        if m.pbl_link != src.get("pbl_link"):
+            m.pbl_link = src.get("pbl_link")
+            changed = True
+        if changed:
+            updated += 1
+
+    if updated:
+        db.commit()
+        print(f"{updated}개 미션 콘텐츠(체크리스트/설명)가 업데이트되었습니다.")
+
+
 def seed_missions(db):
     if db.query(Mission).count() > 0:
-        print("미션 데이터가 이미 존재합니다. 스케줄만 업데이트합니다.")
+        print("미션 데이터가 이미 존재합니다. 스케줄·콘텐츠를 업데이트합니다.")
         update_mission_schedule(db)
+        update_mission_content(db)
         return
 
     data_path = os.path.join(os.path.dirname(__file__), "missions.json")
