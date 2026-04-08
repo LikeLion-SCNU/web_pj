@@ -205,13 +205,14 @@
             `).join('')}
           `;
 
-          // 합격했거나 최대 횟수 제출했으면 폼 숨김 (admin/tester 제외)
+          // 합격했거나 최대 횟수 제출했으면 폼 숨김 (admin/tester 제외, error 제외)
           const maxSub = mission.max_submissions || 5;
-          const done = !bypassDate && (submissions.some(s => s.status === 'passed') || submissions.length >= maxSub);
+          const validSubs = submissions.filter(s => s.status !== 'error');
+          const done = !bypassDate && (validSubs.some(s => s.status === 'passed') || validSubs.length >= maxSub);
           if (done) document.getElementById('submitSection').style.display = 'none';
 
-          // 남은 기회 경고 배너
-          const remaining = maxSub - submissions.length;
+          // 남은 기회 경고 배너 (error 제외)
+          const remaining = maxSub - validSubs.length;
           if (!done && remaining <= 2 && remaining > 0 && !bypassDate) {
             const warningEl = document.createElement('div');
             warningEl.style.cssText = 'margin-top:12px;padding:14px 18px;background:#1a1a1a;border:1px solid #f59e0b;border-radius:8px;color:#f59e0b;font-weight:600;font-size:.9rem;';

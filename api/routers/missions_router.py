@@ -25,9 +25,11 @@ def list_missions(track: str = None, db: Session = Depends(get_db), user: User =
         .filter(Submission.user_id == user.id, Submission.mission_id.in_(mission_ids))
         .all()
     ) if mission_ids else []
-    # mission_id → 최신 시도 매핑
+    # mission_id → 최신 시도 매핑 (error 제외)
     sub_by_mission = {}
     for s in user_subs:
+        if s.status == "error":
+            continue
         if s.mission_id not in sub_by_mission or s.attempt > sub_by_mission[s.mission_id].attempt:
             sub_by_mission[s.mission_id] = s
 

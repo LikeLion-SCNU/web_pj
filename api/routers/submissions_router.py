@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from urllib.parse import urlparse
 
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, UploadFile, File, Form
+from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 
 from auth import get_current_user
@@ -53,7 +54,11 @@ def create_submission(
 
     existing = (
         db.query(Submission)
-        .filter(Submission.user_id == user.id, Submission.mission_id == mission_id)
+        .filter(
+            Submission.user_id == user.id,
+            Submission.mission_id == mission_id,
+            Submission.status != "error",
+        )
         .count()
     )
     if existing >= MAX_SUBMISSIONS_PER_MISSION and user.role not in ("admin", "tester"):
@@ -106,10 +111,16 @@ def create_submission(
             f.write(contents)
         screenshot_path = f"/uploads/{filename}"
 
+    max_attempt = (
+        db.query(func.max(Submission.attempt))
+        .filter(Submission.user_id == user.id, Submission.mission_id == mission_id)
+        .scalar()
+    ) or 0
+
     submission = Submission(
         user_id=user.id,
         mission_id=mission_id,
-        attempt=existing + 1,
+        attempt=max_attempt + 1,
         github_url=github_url,
         deploy_url=deploy_url,
         figma_url=figma_url,
@@ -123,7 +134,7 @@ def create_submission(
 
     background_tasks.add_task(run_ai_review, submission.id)
 
-    remaining = MAX_SUBMISSIONS_PER_MISSION - submission.attempt
+    remaining = MAX_SUBMISSIONS_PER_MISSION - (existing + 1)
     result = {"id": submission.id, "status": submission.status, "attempt": submission.attempt, "remaining": remaining}
     if remaining <= 2:
         result["warning"] = f"⚠️ 남은 제출 기회가 {remaining}번입니다. 신중하게 제출하세요!"

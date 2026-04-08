@@ -1,5 +1,6 @@
 """GitHub 레포지토리에서 코드를 가져오는 서비스"""
 import re
+import time
 from urllib.parse import urlparse
 
 import httpx
@@ -192,18 +193,8 @@ def fetch_repo_metadata(owner: str, repo: str) -> dict:
     return metadata
 
 
-def fetch_repo_code(github_url: str, track: str) -> dict | None:
-    """GitHub URL에서 트랙에 맞는 핵심 코드를 가져옴"""
-    parsed = parse_github_url(github_url)
-    if not parsed:
-        return None
-
-    owner, repo = parsed
-
-    # .git 접미사 제거
-    if repo.endswith(".git"):
-        repo = repo[:-4]
-
+def _fetch_repo_code_once(owner: str, repo: str, track: str) -> dict:
+    """GitHub에서 코드를 한 번 시도하여 가져옴"""
     tree = fetch_repo_tree(owner, repo)
     if not tree:
         return {"error": f"레포지토리를 가져올 수 없습니다: {owner}/{repo}"}
@@ -231,3 +222,28 @@ def fetch_repo_code(github_url: str, track: str) -> dict | None:
         "branches": metadata["branches"],
         "pull_requests": metadata["pull_requests"],
     }
+
+
+def fetch_repo_code(github_url: str, track: str, max_retries: int = 2) -> dict | None:
+    """GitHub URL에서 트랙에 맞는 핵심 코드를 가져옴 (실패 시 재시도)"""
+    parsed = parse_github_url(github_url)
+    if not parsed:
+        return None
+
+    owner, repo = parsed
+
+    # .git 접미사 제거
+    if repo.endswith(".git"):
+        repo = repo[:-4]
+
+    last_result = None
+    for attempt in range(max_retries):
+        result = _fetch_repo_code_once(owner, repo, track)
+        if "error" not in result:
+            return result
+        last_result = result
+        if attempt < max_retries - 1:
+            time.sleep(2)
+            print(f"[GitHub] {owner}/{repo} fetch 재시도 ({attempt + 2}/{max_retries})")
+
+    return last_result

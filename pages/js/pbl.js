@@ -211,7 +211,7 @@ function escapeHTML(str) {
 }
 
 function statusLabel(status) {
-  const map = { passed: '합격', rejected: '반려', pending: '대기', reviewing: '검토중', none: '미제출' };
+  const map = { passed: '합격', rejected: '반려', pending: '대기', reviewing: '검토중', error: '오류', none: '미제출' };
   return map[status] || '미제출';
 }
 

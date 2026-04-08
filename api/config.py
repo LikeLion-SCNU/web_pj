@@ -21,7 +21,7 @@ MAX_SCREENSHOT_SIZE = 10 * 1024 * 1024  # 10MB (AI 비전 분석용)
 # AI 리뷰 설정
 AI_MODEL = "gpt-4o-mini"
 AI_MAX_TOKENS = 2500
-AI_TEMPERATURE = 0.3
+AI_TEMPERATURE = 0.1
 MAX_HTML_FETCH_SIZE = 30_000  # 배포 URL HTML 최대 문자 수
 
 # SMTP (Gmail App Password)

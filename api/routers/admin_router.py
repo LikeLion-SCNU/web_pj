@@ -260,9 +260,11 @@ def progress_matrix(
         Submission.mission_id.in_(mission_ids),
     ).all()
 
-    # (user_id, mission_id) → 최신 제출 매핑
+    # (user_id, mission_id) → 최신 제출 매핑 (error 제외)
     sub_map = {}
     for s in all_subs:
+        if s.status == "error":
+            continue
         key = (s.user_id, s.mission_id)
         if key not in sub_map or s.attempt > sub_map[key].attempt:
             sub_map[key] = s
@@ -319,6 +321,7 @@ def get_warnings(db: Session = Depends(get_db), admin: User = Depends(require_ad
     submitted = db.query(Submission.user_id, Submission.mission_id).filter(
         Submission.user_id.in_(user_ids),
         Submission.mission_id.in_(mission_ids),
+        Submission.status != "error",
     ).distinct().all()
     submitted_set = set((s.user_id, s.mission_id) for s in submitted)
 
