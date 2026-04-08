@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from auth import hash_password, verify_password, create_access_token, get_current_user
-from config import CURRENT_GENERATION, TURNSTILE_SECRET_KEY
+from config import CURRENT_GENERATION, IS_DEV, TURNSTILE_SECRET_KEY
 from utils import utcnow
 from database import get_db
 from models import User
@@ -23,7 +23,9 @@ MAX_TOTAL_VERIFY_ATTEMPTS = 15  # 재전송 포함 누적 최대 시도
 def verify_turnstile(token: str) -> bool:
     """Cloudflare Turnstile 토큰 검증"""
     if not TURNSTILE_SECRET_KEY:
-        return True  # 키 미설정 시 검증 건너뜀
+        if IS_DEV:
+            return True  # 개발 환경에서만 검증 건너뜀
+        return False  # 프로덕션에서 키 미설정 시 검증 실패
     try:
         resp = httpx.post(
             "https://challenges.cloudflare.com/turnstile/v0/siteverify",

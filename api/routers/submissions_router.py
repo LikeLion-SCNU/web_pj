@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from urllib.parse import urlparse
 
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, UploadFile, File, Form
+from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 
 from auth import get_current_user
@@ -16,6 +17,57 @@ from services.ai_reviewer import run_ai_review
 router = APIRouter(prefix="/api/submissions", tags=["submissions"])
 
 
+def _save_screenshot(file: UploadFile) -> str | None:
+    """스크린샷 파일을 검증하고 저장한 뒤 경로를 반환한다."""
+    if not file or not file.filename:
+        return None
+
+    ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp"}
+    ext = os.path.splitext(file.filename)[1].lower() if file.filename else ""
+    if ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(400, f"허용된 이미지 형식: {', '.join(ALLOWED_EXTENSIONS)}")
+
+    # 크기 제한: 청크 단위로 읽어 메모리 폭주 방지
+    max_size = MAX_UPLOAD_SIZE
+    chunks = []
+    total = 0
+    while True:
+        chunk = file.file.read(64 * 1024)  # 64KB씩
+        if not chunk:
+            break
+        total += len(chunk)
+        if total > max_size:
+            raise HTTPException(400, "스크린샷 파일은 5MB 이하여야 합니다")
+        chunks.append(chunk)
+    contents = b"".join(chunks)
+
+    # Magic bytes로 실제 파일 타입 검증 (확장자 위조 방지)
+    MAGIC_BYTES = {
+        b"\x89PNG": ".png",
+        b"\xff\xd8\xff": ".jpg",
+        b"GIF87a": ".gif",
+        b"GIF89a": ".gif",
+        b"RIFF": ".webp",  # WebP: RIFF....WEBP (추가 검증 아래)
+    }
+    detected = False
+    for magic, _ in MAGIC_BYTES.items():
+        if contents[:len(magic)] == magic:
+            # WebP: RIFF 컨테이너 중 WEBP인지 추가 확인
+            if magic == b"RIFF" and contents[8:12] != b"WEBP":
+                continue
+            detected = True
+            break
+    if not detected:
+        raise HTTPException(400, "파일 내용이 허용된 이미지 형식과 일치하지 않습니다")
+
+    filename = f"{uuid.uuid4().hex}{ext}"
+    filepath = os.path.join(UPLOAD_DIR, filename)
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+    with open(filepath, "wb") as f:
+        f.write(contents)
+    return f"/uploads/{filename}"
+
+
 @router.post("", status_code=201)
 def create_submission(
     background_tasks: BackgroundTasks,
@@ -25,6 +77,8 @@ def create_submission(
     figma_url: str = Form(None),
     description: str = Form(None),
     screenshot: UploadFile = File(None),
+    screenshot2: UploadFile = File(None),
+    screenshot3: UploadFile = File(None),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
@@ -53,48 +107,41 @@ def create_submission(
 
     existing = (
         db.query(Submission)
-        .filter(Submission.user_id == user.id, Submission.mission_id == mission_id)
+        .filter(
+            Submission.user_id == user.id,
+            Submission.mission_id == mission_id,
+            Submission.status != "error",
+        )
         .count()
     )
-    if existing >= MAX_SUBMISSIONS_PER_MISSION:
+    if existing >= MAX_SUBMISSIONS_PER_MISSION and user.role not in ("admin", "tester"):
         raise HTTPException(400, f"미션당 최대 {MAX_SUBMISSIONS_PER_MISSION}번까지 제출할 수 있습니다")
 
-    screenshot_path = None
-    if screenshot:
-        ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp"}
-        ext = os.path.splitext(screenshot.filename)[1].lower() if screenshot.filename else ""
-        if ext not in ALLOWED_EXTENSIONS:
-            raise HTTPException(400, f"허용된 이미지 형식: {', '.join(ALLOWED_EXTENSIONS)}")
+    # 디자인/기획 미션은 스크린샷 최소 1장 필수
+    needs_screenshot = mission.submission_type in ("figma", "mixed")
+    if needs_screenshot and not any([screenshot, screenshot2, screenshot3]):
+        raise HTTPException(400, "디자인/기획 미션은 스크린샷을 최소 1장 이상 첨부해야 합니다")
 
-        # 크기 제한: 청크 단위로 읽어 메모리 폭주 방지
-        max_size = MAX_UPLOAD_SIZE
-        chunks = []
-        total = 0
-        while True:
-            chunk = screenshot.file.read(64 * 1024)  # 64KB씩
-            if not chunk:
-                break
-            total += len(chunk)
-            if total > max_size:
-                raise HTTPException(400, "스크린샷 파일은 5MB 이하여야 합니다")
-            chunks.append(chunk)
-        contents = b"".join(chunks)
+    screenshot_path = _save_screenshot(screenshot)
+    screenshot_path2 = _save_screenshot(screenshot2)
+    screenshot_path3 = _save_screenshot(screenshot3)
 
-        filename = f"{uuid.uuid4().hex}{ext}"
-        filepath = os.path.join(UPLOAD_DIR, filename)
-        os.makedirs(UPLOAD_DIR, exist_ok=True)
-        with open(filepath, "wb") as f:
-            f.write(contents)
-        screenshot_path = f"/uploads/{filename}"
+    max_attempt = (
+        db.query(func.max(Submission.attempt))
+        .filter(Submission.user_id == user.id, Submission.mission_id == mission_id)
+        .scalar()
+    ) or 0
 
     submission = Submission(
         user_id=user.id,
         mission_id=mission_id,
-        attempt=existing + 1,
+        attempt=max_attempt + 1,
         github_url=github_url,
         deploy_url=deploy_url,
         figma_url=figma_url,
         screenshot_path=screenshot_path,
+        screenshot_path2=screenshot_path2,
+        screenshot_path3=screenshot_path3,
         description=description,
         status="reviewing",
     )
@@ -104,7 +151,11 @@ def create_submission(
 
     background_tasks.add_task(run_ai_review, submission.id)
 
-    return {"id": submission.id, "status": submission.status, "attempt": submission.attempt}
+    remaining = MAX_SUBMISSIONS_PER_MISSION - (existing + 1)
+    result = {"id": submission.id, "status": submission.status, "attempt": submission.attempt, "remaining": remaining}
+    if remaining <= 2:
+        result["warning"] = f"⚠️ 남은 제출 기회가 {remaining}번입니다. 신중하게 제출하세요!"
+    return result
 
 
 @router.get("/my")

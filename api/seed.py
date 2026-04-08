@@ -3,6 +3,7 @@ import json
 import os
 from datetime import datetime
 
+from config import IS_DEV
 from database import engine, SessionLocal, Base
 from models import Mission, User
 from auth import hash_password
@@ -10,25 +11,87 @@ from auth import hash_password
 # 주차별 스케줄 (시험기간 제외)
 # 미션 번호 → (시작일, 종료일)
 MISSION_SCHEDULE = {
-    0:  ("2026-03-30", "2026-04-03"),  # Git/GitHub 가이드
-    1:  ("2026-04-06", "2026-04-10"),
+    0:  ("2026-03-30", "2026-04-10"),  # Git/GitHub 가이드
+    1:  ("2026-04-06", "2026-04-11"),
     # 중간고사: 04/13 ~ 04/24
-    2:  ("2026-04-27", "2026-05-01"),
-    3:  ("2026-05-04", "2026-05-08"),
-    4:  ("2026-05-11", "2026-05-15"),
-    5:  ("2026-05-18", "2026-05-22"),
-    6:  ("2026-05-25", "2026-05-29"),
-    7:  ("2026-06-01", "2026-06-05"),
+    2:  ("2026-04-27", "2026-05-02"),
+    3:  ("2026-05-04", "2026-05-09"),
+    4:  ("2026-05-11", "2026-05-16"),
+    5:  ("2026-05-18", "2026-05-23"),
+    6:  ("2026-05-25", "2026-05-30"),
+    7:  ("2026-06-01", "2026-06-06"),
     # 기말고사: 06/08 ~ 06/19
-    8:  ("2026-06-22", "2026-06-26"),
-    9:  ("2026-06-29", "2026-07-03"),
-    10: ("2026-07-06", "2026-07-10"),
+    8:  ("2026-06-22", "2026-06-27"),
+    9:  ("2026-06-29", "2026-07-04"),
+    10: ("2026-07-06", "2026-07-11"),
 }
+
+
+def update_mission_schedule(db):
+    """기존 미션의 시작일/종료일을 MISSION_SCHEDULE에 맞게 업데이트"""
+    missions = db.query(Mission).all()
+    updated = 0
+    for m in missions:
+        schedule = MISSION_SCHEDULE.get(m.number)
+        if not schedule:
+            continue
+        start_date = datetime.strptime(schedule[0], "%Y-%m-%d")
+        end_date = datetime.strptime(schedule[1], "%Y-%m-%d").replace(hour=23, minute=59, second=59)
+        if m.start_date != start_date or m.end_date != end_date:
+            m.start_date = start_date
+            m.end_date = end_date
+            updated += 1
+    if updated:
+        db.commit()
+        print(f"{updated}개 미션 스케줄이 업데이트되었습니다.")
+
+
+def update_mission_content(db):
+    """missions.json의 체크리스트/설명 등을 기존 DB 미션에 동기화"""
+    data_path = os.path.join(os.path.dirname(__file__), "missions.json")
+    if not os.path.exists(data_path):
+        return
+
+    with open(data_path, "r", encoding="utf-8") as f:
+        missions_data = json.load(f)
+
+    # (track, number) → json 데이터 매핑
+    json_map = {(m["track"], m["number"]): m for m in missions_data}
+
+    updated = 0
+    for m in db.query(Mission).all():
+        src = json_map.get((m.track, m.number))
+        if not src:
+            continue
+        changed = False
+        if m.checklist != src.get("checklist"):
+            m.checklist = src["checklist"]
+            changed = True
+        if m.description != src.get("description", ""):
+            m.description = src.get("description", "")
+            changed = True
+        if m.pbl_link != src.get("pbl_link"):
+            m.pbl_link = src.get("pbl_link")
+            changed = True
+        if m.submission_type != src.get("submission_type", "github"):
+            m.submission_type = src.get("submission_type", "github")
+            changed = True
+        if m.estimated_hours != src.get("estimated_hours", 20):
+            m.estimated_hours = src.get("estimated_hours", 20)
+            changed = True
+        if changed:
+            updated += 1
+
+    if updated:
+        db.commit()
+        print(f"{updated}개 미션 콘텐츠가 업데이트되었습니다.")
 
 
 def seed_missions(db):
     if db.query(Mission).count() > 0:
-        print("미션 데이터가 이미 존재합니다. 건너뜁니다.")
+        print("미션 데이터가 이미 존재합니다. 스케줄·콘텐츠를 업데이트합니다.")
+        update_mission_schedule(db)
+        update_mission_content(db)
         return
 
     data_path = os.path.join(os.path.dirname(__file__), "missions.json")
@@ -69,15 +132,14 @@ def seed_admin(db):
 
     admin_pw = os.getenv("ADMIN_PASSWORD", "")
     if not admin_pw:
+        if not IS_DEV:
+            raise RuntimeError(
+                "ADMIN_PASSWORD 환경변수가 설정되지 않았습니다. "
+                "프로덕션에서는 .env에 ADMIN_PASSWORD를 반드시 설정하세요."
+            )
         import secrets
         admin_pw = secrets.token_urlsafe(12)
-        # 보안: 비밀번호를 로그에 출력하지 않고 파일에 저장
-        pw_file = "/app/admin_password.txt"
-        with open(pw_file, "w") as f:
-            f.write(admin_pw)
-        os.chmod(pw_file, 0o600)
-        print(f"[!] ADMIN_PASSWORD 미설정. 임시 비밀번호가 {pw_file}에 저장되었습니다.")
-        print("[!] .env에 ADMIN_PASSWORD를 설정하세요.")
+        print(f"[DEV] ADMIN_PASSWORD 미설정. 임시 비밀번호: {admin_pw}")
 
     admin_email = os.getenv("ADMIN_EMAIL", "sunchon.univ@likelion.org")
 

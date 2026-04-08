@@ -79,16 +79,34 @@ def run_ai_review(submission_id: int):
         # 프롬프트 조립
         track_guide = TRACK_PROMPTS.get(mission.track, "")
         mission_context = build_mission_context(mission)
-        submission_context = build_submission_context(submission, mission)
+        submission_context, github_fetch_ok = build_submission_context(submission, mission)
+
+        # GitHub 제출인데 코드를 못 가져왔으면 AI 호출 없이 에러 처리
+        needs_github = mission.submission_type in ("github", "mixed") and submission.github_url
+        if needs_github and not github_fetch_ok:
+            review = Review(
+                submission_id=submission_id,
+                ai_score=None,
+                ai_summary="GitHub 레포지토리 정보를 가져올 수 없어 검사를 진행하지 못했습니다. "
+                           "레포지토리가 Public인지 확인 후 다시 제출해주세요. "
+                           "이 제출은 횟수에 포함되지 않습니다.",
+                ai_feedback=None,
+            )
+            db.add(review)
+            submission.status = "error"
+            db.commit()
+            print(f"[AI Review] Submission #{submission_id}: GitHub fetch 실패 → error 처리")
+            return
 
         user_prompt = f"{mission_context}\n\n{submission_context}\n\n{RESPONSE_FORMAT}"
         system_content = SYSTEM_PROMPT + "\n\n" + track_guide
 
         # 메시지 조립 (스크린샷이 있으면 Vision 멀티모달)
         user_content_parts = [{"type": "text", "text": user_prompt}]
-        screenshot_data = encode_screenshot(submission.screenshot_path)
-        if screenshot_data:
-            user_content_parts.append(screenshot_data)
+        for path in [submission.screenshot_path, submission.screenshot_path2, submission.screenshot_path3]:
+            screenshot_data = encode_screenshot(path)
+            if screenshot_data:
+                user_content_parts.append(screenshot_data)
 
         messages = [
             {"role": "system", "content": system_content},
@@ -133,7 +151,13 @@ def run_ai_review(submission_id: int):
         )
         db.add(review)
 
-        if 80 <= score < 100 and not validation["needs_manual"]:
+        # 자동합격: 80점 이상 + 체크리스트 60% 이상 통과 + 검증 플래그 없음
+        checklist_results = result.get("checklist_results", [])
+        passed_count = sum(1 for cr in checklist_results if cr.get("passed"))
+        total_items = len(checklist_results)
+        pass_rate = passed_count / total_items if total_items > 0 else 0
+
+        if 80 <= score < 100 and pass_rate >= 0.6 and not validation["needs_manual"]:
             submission.status = "passed"
         else:
             submission.status = "pending"
@@ -152,10 +176,11 @@ def run_ai_review(submission_id: int):
                 if not existing:
                     review = Review(
                         submission_id=submission_id,
-                        ai_summary="AI 검사 중 오류가 발생했습니다. 운영진이 직접 평가합니다.",
+                        ai_summary="AI 검사 중 오류가 발생했습니다. "
+                                   "다시 제출해주세요. 이 제출은 횟수에 포함되지 않습니다.",
                     )
                     db.add(review)
-                submission.status = "pending"
+                submission.status = "error"
                 db.commit()
         except Exception:
             traceback.print_exc()

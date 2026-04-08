@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session, contains_eager, joinedload
 from auth import require_admin
 from database import get_db
 from models import User, Mission, Submission, Review
-from schemas import AdminReviewUpdate
+from schemas import AdminReviewUpdate, SetRoleRequest
 from services.email_service import send_approval_notification
 from utils import utcnow
 
@@ -105,41 +105,16 @@ def reject_user(user_id: int, background_tasks: BackgroundTasks, db: Session = D
     return {"message": f"{name}님의 가입을 거절했습니다."}
 
 
-@router.patch("/users/{user_id}/promote")
-def promote_user(user_id: int, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
-    user = _get_user_or_404(db, user_id)
-    if user.role == "admin":
-        raise HTTPException(400, "이미 운영진입니다")
-    user.role = "admin"
-    db.commit()
-    return {"message": f"{user.name}님을 운영진으로 승격했습니다."}
-
-
-@router.patch("/users/{user_id}/demote")
-def demote_user(user_id: int, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
-    user = _get_user_or_404(db, user_id)
-    if user.id == admin.id:
-        raise HTTPException(400, "자기 자신은 강등할 수 없습니다")
-    if user.role != "admin":
-        raise HTTPException(400, "운영진이 아닙니다")
-    user.role = "baby_lion"
-    db.commit()
-    return {"message": f"{user.name}님을 아기사자로 변경했습니다."}
-
-
 @router.patch("/users/{user_id}/set-role")
-def set_user_role(user_id: int, role: str = Query(...), db: Session = Depends(get_db), admin: User = Depends(require_admin)):
-    ALLOWED_ROLES = ("baby_lion", "admin", "tester")
-    if role not in ALLOWED_ROLES:
-        raise HTTPException(400, f"역할은 {', '.join(ALLOWED_ROLES)} 중 하나여야 합니다")
+def set_user_role(user_id: int, data: SetRoleRequest, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
     user = _get_user_or_404(db, user_id)
-    if user.id == admin.id and role != "admin":
+    if user.id == admin.id and data.role != "admin":
         raise HTTPException(400, "자기 자신의 운영진 권한은 변경할 수 없습니다")
     old_role = user.role
-    user.role = role
+    user.role = data.role
     db.commit()
     ROLE_LABELS = {"baby_lion": "아기사자", "admin": "운영진", "tester": "테스터"}
-    return {"message": f"{user.name}님의 역할을 {ROLE_LABELS.get(old_role, old_role)} → {ROLE_LABELS.get(role, role)}(으)로 변경했습니다."}
+    return {"message": f"{user.name}님의 역할을 {ROLE_LABELS.get(old_role, old_role)} → {ROLE_LABELS.get(data.role, data.role)}(으)로 변경했습니다."}
 
 
 @router.patch("/submissions/{submission_id}")
@@ -238,6 +213,7 @@ def list_submissions(
             "deploy_url": s.deploy_url,
             "figma_url": s.figma_url,
             "screenshot_path": s.screenshot_path,
+            "screenshot_paths": [p for p in [s.screenshot_path, s.screenshot_path2, s.screenshot_path3] if p],
             "description": s.description,
             "team": s.user.team,
             "submitted_at": s.submitted_at.isoformat(),
@@ -285,9 +261,11 @@ def progress_matrix(
         Submission.mission_id.in_(mission_ids),
     ).all()
 
-    # (user_id, mission_id) → 최신 제출 매핑
+    # (user_id, mission_id) → 최신 제출 매핑 (error 제외)
     sub_map = {}
     for s in all_subs:
+        if s.status == "error":
+            continue
         key = (s.user_id, s.mission_id)
         if key not in sub_map or s.attempt > sub_map[key].attempt:
             sub_map[key] = s
@@ -344,6 +322,7 @@ def get_warnings(db: Session = Depends(get_db), admin: User = Depends(require_ad
     submitted = db.query(Submission.user_id, Submission.mission_id).filter(
         Submission.user_id.in_(user_ids),
         Submission.mission_id.in_(mission_ids),
+        Submission.status != "error",
     ).distinct().all()
     submitted_set = set((s.user_id, s.mission_id) for s in submitted)
 

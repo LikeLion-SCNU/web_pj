@@ -95,7 +95,7 @@ document.getElementById('userManagementList').addEventListener('change', functio
     var userId = select.dataset.uid;
     var name = select.dataset.uname;
     var role = select.value;
-    fetchAPI('/admin/users/' + userId + '/set-role?role=' + role, { method: 'PATCH' }).then(function(res) {
+    fetchAPI('/admin/users/' + userId + '/set-role', { method: 'PATCH', body: JSON.stringify({role: role}) }).then(function(res) {
       showToast('success', res.message || '역할이 변경되었습니다.');
       loadUserManagement();
     }).catch(function(err) { showToast('error', err.message); });

@@ -69,15 +69,18 @@
     "track": "planning",
     "number": 1,
     "title": "IT 서비스 협업 구조 이해",
-    "description": "기획/디자인/프론트/백엔드 역할 구분 및 신규 서비스 주제 선정",
+    "description": "## 과제 목표\n- 서비스 주제를 선정하고 문제 정의(현황/원인/해결안)를 구체적으로 작성한다\n- 타겟 사용자 페르소나를 구체적인 1명으로 설정한다\n- As-Is/To-Be를 대비하여 서비스의 가치를 명확히 한다\n\n## 제출 안내\nGitHub URL과 스크린샷(최소 1장)을 제출하세요.",
     "checklist": [
-      "서비스 주제 및 한 줄 소개가 명확한가",
-      "문제 정의(현황/원인/해결안)가 논리적인가",
-      "타겟 사용자 페르소나가 구체적인가(이름,나이,직업,페인포인트,니즈)",
-      "As-Is/To-Be가 명확히 대비되는가"
+      "서비스 주제와 한 줄 소개가 명확하게 작성되었는가",
+      "문제 정의에서 현황/원인/해결안이 구체적으로 서술되었는가",
+      "As-Is(현재)와 To-Be(미래)가 명확히 대비되는가",
+      "타겟 사용자 페르소나가 구체적인 1명으로 설정되었는가(이름, 나이, 직업, 사진/이미지)",
+      "페르소나의 페인포인트(불편함)가 3가지 이상 서술되었는가",
+      "페르소나의 니즈가 구체적으로 정의되었는가",
+      "추상적 표현('편리한', '쉬운') 없이 구체적으로 작성되었는가"
     ],
     "submission_type": "mixed",
-    "estimated_hours": 4,
+    "estimated_hours": 8,
     "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481e1a985c48dcf850399",
     "order": 1
   },
@@ -85,15 +88,17 @@
     "track": "planning",
     "number": 2,
     "title": "사용자 시나리오 작성",
-    "description": "서비스 사용 시나리오를 텍스트로 구성",
+    "description": "## 과제 목표\n- 도입→계기→행동→결과 구조로 4~6단계 사용자 시나리오를 작성한다\n- 예외 상황(실패, 오류)을 포함하여 시나리오를 완성한다\n- Figma에서 시나리오 보드 형태로 시각화한다\n\n## 제출 안내\nGitHub URL과 스크린샷(최소 1장)을 제출하세요.",
     "checklist": [
-      "4~6단계 이상의 시나리오가 작성되었는가",
-      "각 단계에 상황 설명과 사용자 행동이 포함되는가",
-      "서비스 진입부터 목표 달성까지 흐름이 자연스러운가",
-      "예외 상황이 고려되었는가"
+      "사용자 시나리오가 4~6단계 이상으로 구성되었는가",
+      "도입(문제 상황) → 계기(서비스 진입) → 행동(핵심 동작 2~3단계) → 결과(목표 달성) 구조인가",
+      "각 단계에 상황 설명과 사용자 행동이 포함되어 있는가",
+      "서비스 진입부터 목표 달성까지 각 단계가 논리적으로 이어지는가",
+      "예외 상황(실패, 오류 등)이 고려되었는가",
+      "Figma에서 시나리오 보드 형태로 시각화되었는가"
     ],
     "submission_type": "mixed",
-    "estimated_hours": 3,
+    "estimated_hours": 6,
     "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4817c9d2ee5fe4bdbaf1a",
     "order": 2
   },
@@ -101,15 +106,18 @@
     "track": "planning",
     "number": 3,
     "title": "IA(정보 구조) 제작",
-    "description": "서비스의 전체 화면과 기능을 체계적으로 정리",
+    "description": "## 과제 목표\n- 시나리오 기반으로 필요한 페이지를 도출하고 3단계 이상 계층 구조로 정리한다\n- 10개 이상의 화면을 포함하며 예외 화면(에러, 빈 상태)도 반영한다\n- 유사 페이지를 논리적으로 그룹핑한다\n\n## 제출 안내\nGitHub URL과 스크린샷(최소 1장)을 제출하세요.",
     "checklist": [
-      "3단계 이상의 계층 구조로 되어있는가",
+      "시나리오 기반으로 필요한 페이지가 빠짐없이 도출되었는가",
+      "3단계(Depth 3) 이상의 계층 구조로 되어있는가",
       "화면(페이지) 수가 10개 이상인가",
       "각 노드에 화면 이름과 핵심 기능이 표기되었는가",
-      "메뉴 그룹핑이 사용자 동선을 고려했는가"
+      "유사 페이지가 논리적으로 그룹핑되었는가",
+      "메뉴 그룹핑이 사용자 동선을 고려했는가",
+      "예외 화면(에러, 빈 상태 등)이 포함되었는가"
     ],
     "submission_type": "mixed",
-    "estimated_hours": 4,
+    "estimated_hours": 8,
     "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4814082dce3e329232d90",
     "order": 3
   },
@@ -117,15 +125,17 @@
     "track": "planning",
     "number": 4,
     "title": "사용자 플로우 설계",
-    "description": "핵심 시나리오의 사용자 행동 경로를 시각화",
+    "description": "## 과제 목표\n- 핵심 시나리오 1~2개에 대한 사용자 플로우를 작성한다\n- 표준 기호(타원, 직사각형, 마름모)를 사용하여 시각화한다\n- 분기점과 예외 처리(Unhappy Path)를 포함한다\n\n## 제출 안내\nGitHub URL과 스크린샷(최소 1장)을 제출하세요.",
     "checklist": [
       "핵심 시나리오 1~2개에 대한 플로우가 작성되었는가",
-      "시작점과 종료점이 명확한가",
-      "분기점(판단)이 포함되었는가",
-      "예외 처리 흐름이 포함되었는가"
+      "시작점과 종료점(목표 달성)이 명확한가",
+      "표준 기호가 사용되었는가(타원=시작/종료, 직사각형=행동, 마름모=분기)",
+      "분기점(판단/조건)이 포함되었는가",
+      "예외 처리(Unhappy Path) 흐름이 포함되었는가",
+      "화살표로 흐름 방향이 명확하게 표시되었는가"
     ],
     "submission_type": "mixed",
-    "estimated_hours": 4,
+    "estimated_hours": 8,
     "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481ccb0a9f0df191f2558",
     "order": 4
   },
@@ -133,15 +143,17 @@
     "track": "planning",
     "number": 5,
     "title": "기능 명세서 작성",
-    "description": "화면별 기능을 개발자가 이해할 수 있도록 상세 기술",
+    "description": "## 과제 목표\n- 최소 5개 화면에 대해 화면 ID, UI 요소, Trigger/Action을 명세한다\n- 예외/제한 사항(글자 수 제한, 필수 입력 등)을 정의한다\n- 모호한 표현 없이 구체적인 동작을 명시한다\n\n## 제출 안내\nGitHub URL과 스크린샷(최소 1장)을 제출하세요.",
     "checklist": [
       "최소 5개 화면에 대한 기능 명세가 있는가",
-      "각 UI 요소의 Trigger와 Action이 명확한가",
-      "예외/제한 사항이 기재되었는가",
-      "화면-기능 매핑이 되어있는가"
+      "각 화면에 고유한 화면 ID가 부여되었는가",
+      "각 UI 요소의 Trigger(동작)와 Action(결과)이 명확하게 기재되었는가",
+      "예외/제한 사항(글자 수 제한, 필수 입력, 오류 대응 등)이 정의되었는가",
+      "화면-기능 매핑이 되어있는가",
+      "모호한 표현 없이 구체적인 동작이 명시되었는가"
     ],
     "submission_type": "mixed",
-    "estimated_hours": 5,
+    "estimated_hours": 8,
     "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481e28731d0db8a993fab",
     "order": 5
   },
@@ -149,15 +161,17 @@
     "track": "planning",
     "number": 6,
     "title": "와이어프레임 리뷰 & 피드백",
-    "description": "디자이너가 제작한 와이어프레임을 기획 관점에서 리뷰하고 피드백 정리",
+    "description": "## 과제 목표\n- 디자이너가 제작한 와이어프레임을 IA, 플로우, 명세서와 대조하여 리뷰한다\n- 누락된 화면이나 예외 상황을 점검한다\n- 사용자 동선 관점에서 구체적인 개선 피드백을 작성한다\n\n## 제출 안내\nGitHub URL과 스크린샷(최소 1장)을 제출하세요.",
     "checklist": [
-      "와이어프레임의 정보 구조가 IA와 일치하는가",
-      "사용자 플로우대로 화면 이동이 가능한가",
-      "기능 명세서의 요구사항이 반영되었는가",
-      "누락된 화면이나 예외 상황이 없는가"
+      "와이어프레임의 정보 구조가 IA(미션3)와 일치하는가",
+      "사용자 플로우(미션4)대로 화면 이동이 가능한가",
+      "기능 명세서(미션5)의 요구사항이 와이어프레임에 반영되었는가",
+      "누락된 화면이나 예외 상황 화면이 없는가",
+      "정보의 우선순위와 위계가 레이아웃에 반영되었는가",
+      "사용자 동선 관점에서 개선 피드백이 작성되었는가"
     ],
     "submission_type": "mixed",
-    "estimated_hours": 3,
+    "estimated_hours": 6,
     "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4810ab343fcd153cec06d",
     "order": 6
   },
@@ -165,31 +179,35 @@
     "track": "planning",
     "number": 7,
     "title": "서비스 기획서 통합 정리",
-    "description": "1~6주차 산출물을 하나의 기획서로 통합 정리",
+    "description": "## 과제 목표\n- 1~6주차 산출물을 하나의 통합 기획서로 정리한다\n- 문제 정의→페르소나→시나리오→IA→플로우→명세서→와이어프레임 간 일관성을 확보한다\n- 핵심 의사결정의 근거를 기록한다\n\n## 제출 안내\nGitHub URL과 스크린샷(최소 1장)을 제출하세요.",
     "checklist": [
-      "문제 정의~와이어프레임 피드백까지 일관성이 있는가",
-      "전체 기획서가 개발팀에 전달 가능한 수준인가",
+      "문제 정의 → 페르소나 → 시나리오 → IA → 플로우 → 명세서 → 와이어프레임까지 일관성이 있는가",
+      "전체 기획서에 화면 목록, 기능 명세, 와이어프레임이 모두 포함되었는가",
       "목차와 구조가 체계적인가",
-      "핵심 의사결정 근거가 기록되어 있는가"
+      "핵심 의사결정의 근거가 기록되어 있는가",
+      "각 산출물 간 연결(IA→플로우→명세서)이 논리적인가",
+      "누락된 항목 없이 전체 기획 과정이 문서화되었는가"
     ],
     "submission_type": "mixed",
-    "estimated_hours": 4,
-    "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481e28731d0db8a993fab",
+    "estimated_hours": 8,
+    "pbl_link": null,
     "order": 7
   },
   {
     "track": "planning",
     "number": 8,
     "title": "UX 테스트 설계 & 실행",
-    "description": "서비스 프로토타입을 대상으로 사용자 테스트 진행",
+    "description": "## 과제 목표\n- 테스트 목표와 검증 가설을 정의하고 태스크 시나리오를 작성한다\n- 최소 3명에게 UX 테스트를 진행하고 행동 데이터를 수집한다\n- 태스크 완료율/소요 시간을 측정한다\n\n## 제출 안내\nGitHub URL과 스크린샷(최소 1장)을 제출하세요.",
     "checklist": [
-      "테스트 목표와 시나리오가 명확한가",
-      "최소 3명에게 테스트를 진행했는가",
-      "태스크 완료율/시간이 측정되었는가",
-      "사용자 행동 관찰 결과가 정리되었는가"
+      "테스트 목표와 검증할 가설이 명확하게 정의되었는가",
+      "구체적인 태스크 시나리오가 작성되었는가",
+      "최소 3명에게 테스트를 진행했는가 (운영진 확인)",
+      "사용자 행동을 관찰했는가(멈추는 지점, 오조작, 반복 탐색 등) (운영진 확인)",
+      "태스크 완료율/소요 시간이 측정되었는가 (운영진 확인)",
+      "감상평이 아닌 행동 기반 데이터가 수집되었는가 (운영진 확인)"
     ],
     "submission_type": "mixed",
-    "estimated_hours": 5,
+    "estimated_hours": 10,
     "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481b2b527cb2998d88199",
     "order": 8
   },
@@ -197,15 +215,17 @@
     "track": "planning",
     "number": 9,
     "title": "테스트 결과 분석 & 개선안 도출",
-    "description": "UX 테스트 결과를 분석하고 개선 포인트 정리",
+    "description": "## 과제 목표\n- UX 테스트 결과를 정리하고 핵심 인사이트를 도출한다\n- Before/After 비교와 데이터 기반 개선 근거를 작성한다\n- 개선 우선순위를 정하고 논리적으로 설명한다\n\n## 제출 안내\nGitHub URL과 스크린샷(최소 1장)을 제출하세요.",
     "checklist": [
-      "테스트 결과 보고서가 작성되었는가",
-      "인사이트와 개선점이 도출되었는가",
-      "Before/After 개선안이 있는가",
-      "개선 우선순위가 정해졌는가"
+      "테스트 결과를 정리한 보고서가 작성되었는가",
+      "관찰 데이터에서 핵심 인사이트가 도출되었는가",
+      "Before(문제 화면)/After(개선 화면) 비교가 있는가",
+      "개선 근거(Rationale)가 데이터 기반으로 논리적으로 설명되었는가",
+      "개선 우선순위가 정해졌는가",
+      "예뻐서가 아닌 더 잘 작동하기 때문에 라는 관점으로 설명되었는가"
     ],
     "submission_type": "mixed",
-    "estimated_hours": 4,
+    "estimated_hours": 8,
     "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481b2b527cb2998d88199",
     "order": 9
   },
@@ -213,15 +233,17 @@
     "track": "planning",
     "number": 10,
     "title": "개발 협업을 위한 최종 정리",
-    "description": "개발팀에 전달할 최종 기획 패키지 정리 및 발표",
+    "description": "## 과제 목표\n- 최종 기획서/명세서를 개발 전달용으로 정리한다\n- MVP 범위와 개발 우선순위를 명확히 정한다\n- 프레젠테이션/발표 자료를 준비한다\n\n## 제출 안내\nGitHub URL과 스크린샷(최소 1장)을 제출하세요.",
     "checklist": [
-      "최종 기획서/명세서가 정리되었는가",
-      "개발 우선순위가 정해졌는가",
-      "MVP 범위가 명확한가",
-      "프레젠테이션이 준비되었는가"
+      "최종 기획서/명세서가 개발 전달용으로 정리되었는가",
+      "개발 우선순위(MVP 범위)가 명확하게 정해졌는가",
+      "와이어프레임과 기능 명세가 최종 버전으로 확정되었는가",
+      "예외 화면(에러, 빈 상태, 로딩)이 정의되었는가",
+      "기획서에 화면별 기능, 입출력 데이터, 예외 처리가 모두 명시되었는가",
+      "프레젠테이션/발표 자료가 준비되었는가"
     ],
     "submission_type": "mixed",
-    "estimated_hours": 5,
+    "estimated_hours": 10,
     "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481929b68daf2eb32f25f",
     "order": 10
   },
@@ -229,15 +251,18 @@
     "track": "design",
     "number": 1,
     "title": "Figma 입문 & 시나리오 보드",
-    "description": "Figma 기본기를 익히고 사용자 시나리오를 시각적으로 구성",
+    "description": "## 과제 목표\n- Figma Frame 기능으로 6~8컷 이상의 사용자 시나리오를 시각화한다\n- 기본 도형과 아이콘으로 도식화하고 화살표로 흐름을 연결한다\n- 도입→계기→행동→결과 구조로 시나리오를 구성한다\n\n## 제출 안내\nFigma 공유 링크와 스크린샷(최소 1장)을 제출하세요.",
     "checklist": [
-      "Figma에서 프레임과 도형을 활용했는가",
-      "6~8컷 이상의 시나리오가 구성되었는가",
-      "각 장면에 상황 설명 텍스트가 포함되었는가",
-      "화살표로 흐름이 연결되었는가"
+      "Figma에서 Frame 기능으로 시나리오의 각 컷이 구분되어 있는가",
+      "기본 도형과 아이콘 조합으로 도식화했는가(외부 이미지 의존 최소화)",
+      "도입(문제 상황) → 계기(서비스 진입) → 행동(핵심 동작 2~3단계) → 결과(목표 달성) 구조인가",
+      "각 단계 아래에 상황 설명 텍스트가 포함되어 있는가",
+      "화살표로 흐름이 순서대로 연결되어 있는가",
+      "색상 사용을 자제하고 내용 전달에 집중했는가",
+      "6~8컷 이상의 시나리오가 구성되었는가"
     ],
     "submission_type": "figma",
-    "estimated_hours": 4,
+    "estimated_hours": 8,
     "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4817c9d2ee5fe4bdbaf1a",
     "order": 1
   },
@@ -245,15 +270,18 @@
     "track": "design",
     "number": 2,
     "title": "IA(정보 구조) 다이어그램",
-    "description": "서비스의 정보 구조를 트리 형태로 시각화",
+    "description": "## 과제 목표\n- Figma에서 트리 구조 다이어그램으로 정보 구조(IA)를 제작한다\n- 3단계 이상, 10개 이상의 화면을 포함하며 예외 화면도 반영한다\n- 각 노드에 화면 이름과 핵심 기능을 표기한다\n\n## 제출 안내\nFigma 공유 링크와 스크린샷(최소 1장)을 제출하세요.",
     "checklist": [
-      "트리 구조로 되어있는가",
-      "3단계 이상의 계층인가",
-      "화면 10개 이상인가",
-      "각 노드에 화면명과 기능이 표기되었는가"
+      "Figma에서 트리 구조 다이어그램으로 제작되었는가",
+      "Depth 3단계 이상의 계층 구조로 되어있는가",
+      "화면(페이지) 수가 10개 이상인가",
+      "각 노드에 화면 이름과 핵심 기능이 표기되었는가",
+      "유사 페이지가 논리적으로 그룹핑되었는가",
+      "시나리오 기반으로 예외 화면(에러, 빈 상태)이 포함되었는가",
+      "IA에 화면 수, 계층 구조, 핵심 기능이 한눈에 파악되는가"
     ],
     "submission_type": "figma",
-    "estimated_hours": 3,
+    "estimated_hours": 8,
     "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4814082dce3e329232d90",
     "order": 2
   },
@@ -261,15 +289,17 @@
     "track": "design",
     "number": 3,
     "title": "사용자 플로우 다이어그램",
-    "description": "핵심 시나리오의 User Flow를 Figma에서 제작",
+    "description": "## 과제 목표\n- 핵심 시나리오 1~2개에 대한 User Flow를 Figma에서 제작한다\n- 표준 기호(타원, 직사각형, 마름모)를 사용하고 분기점을 포함한다\n- 예외 처리(Unhappy Path) 흐름을 반영한다\n\n## 제출 안내\nFigma 공유 링크와 스크린샷(최소 1장)을 제출하세요.",
     "checklist": [
-      "핵심 시나리오 1~2개의 플로우가 있는가",
-      "표준 기호(타원,직사각형,마름모)를 사용했는가",
-      "예외 처리 흐름이 포함되었는가",
-      "IA와 정합성이 맞는가"
+      "핵심 시나리오 1~2개에 대한 플로우 차트가 작성되었는가",
+      "표준 기호를 사용했는가(타원=시작/종료, 직사각형=행동/화면, 마름모=분기)",
+      "시작점과 종료점(목표 달성)이 명확한가",
+      "분기점에서 Yes/No 경로가 모두 표시되었는가",
+      "예외 처리(Unhappy Path) 흐름이 포함되었는가",
+      "화살표 방향이 명확하고 IA(미션2)와 정합성이 맞는가"
     ],
     "submission_type": "figma",
-    "estimated_hours": 3,
+    "estimated_hours": 8,
     "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481ccb0a9f0df191f2558",
     "order": 3
   },
@@ -277,15 +307,18 @@
     "track": "design",
     "number": 4,
     "title": "컴포넌트 & Auto Layout",
-    "description": "재사용 가능한 UI 컴포넌트 라이브러리 제작",
+    "description": "## 과제 목표\n- Auto Layout과 Variant를 활용하여 재사용 가능한 UI 컴포넌트를 제작한다\n- 로컬 스타일에 색상을 등록하고 4의 배수 간격 체계를 적용한다\n- 3개 이상의 Variant가 있는 컴포넌트를 2종 이상 만든다\n\n## 제출 안내\nFigma 공유 링크와 스크린샷(최소 1장)을 제출하세요.",
     "checklist": [
-      "버튼 컴포넌트에 Auto Layout이 적용되었는가",
-      "3개 이상의 Variant가 있는 컴포넌트가 2종 이상인가",
-      "로컬 스타일(Color,Typography)이 등록되었는가",
-      "네이밍 규칙이 일관적인가"
+      "로컬 스타일에 Primary/Gray/System 색상이 등록되었는가",
+      "버튼 컴포넌트에 Auto Layout(Shift+A)이 적용되었는가",
+      "패딩(좌우 16px, 상하 12px 등)과 Gap이 수치로 설정되었는가",
+      "컴포넌트(Ctrl+Alt+K)로 등록하여 원본 수정 시 복제본이 동시 변경되는가",
+      "3개 이상의 Variant(기본/클릭/비활성 등)가 있는 컴포넌트가 2종 이상인가",
+      "Detach Instance 없이 컴포넌트 연결이 유지되었는가 (운영진 확인)",
+      "간격에 4의 배수(8, 16, 24 등)가 사용되었는가"
     ],
     "submission_type": "figma",
-    "estimated_hours": 5,
+    "estimated_hours": 12,
     "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f48112a7c5f9bd85c491b4",
     "order": 4
   },
@@ -293,15 +326,18 @@
     "track": "design",
     "number": 5,
     "title": "와이어프레임 제작",
-    "description": "서비스 핵심 화면을 Mid-Fi 와이어프레임으로 제작",
+    "description": "## 과제 목표\n- 핵심 화면 10장 이상을 Mid-Fi 와이어프레임으로 제작한다\n- 흑백+회색만 사용하고 정보 위계를 텍스트 크기/굵기로 표현한다\n- 유저 플로우대로 화면 간 이동 경로를 화살표로 연결한다\n\n## 제출 안내\nFigma 공유 링크와 스크린샷(최소 1장)을 제출하세요.",
     "checklist": [
-      "10화면 이상 제작되었는가",
-      "흑백+회색만 사용했는가",
-      "정보 위계가 텍스트 크기/굵기로 표현되었는가",
-      "화면 간 플로우가 연결되었는가"
+      "핵심 화면 10장 이상이 와이어프레임으로 제작되었는가",
+      "흑백+회색(#FFF, #000, 3~4단계 회색)만 사용했는가",
+      "이미지 자리에 회색 박스+X Placeholder를 사용했는가",
+      "정보 위계가 텍스트 크기와 굵기로 표현되었는가",
+      "유저 플로우대로 화면 간 이동 경로가 화살표로 연결되었는가",
+      "IA(미션2)의 모든 핵심 화면이 포함되었는가",
+      "정보 위계(제목→부제→본문)에 따라 상→하, 좌→우로 배치되었는가"
     ],
     "submission_type": "figma",
-    "estimated_hours": 6,
+    "estimated_hours": 12,
     "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f4810ab343fcd153cec06d",
     "order": 5
   },
@@ -309,15 +345,17 @@
     "track": "design",
     "number": 6,
     "title": "기능 명세서 작성",
-    "description": "와이어프레임 기반 상세 기능 명세서",
+    "description": "## 과제 목표\n- 와이어프레임 기반으로 화면별 기능 명세서를 작성한다\n- 각 UI 요소의 Trigger/Action과 예외/제한 사항을 정의한다\n- 화면 ID와 넘버링된 캡처를 포함한다\n\n## 제출 안내\nGitHub URL과 스크린샷(최소 1장)을 제출하세요.",
     "checklist": [
-      "화면 ID가 부여되었는가",
-      "각 UI 요소의 동작이 Trigger/Action으로 기술되었는가",
-      "예외/제한 사항이 기재되었는가",
-      "개발자가 읽고 구현 가능한 수준인가"
+      "화면에 고유한 화면 ID가 부여되었는가",
+      "넘버링된 화면 캡처가 포함되었는가",
+      "각 UI 요소의 Trigger(동작)와 Action(결과)이 명확하게 기재되었는가",
+      "예외/제한 사항(글자 수 제한, 필수 입력, 오류 대응)이 정의되었는가",
+      "화면의 모든 요소(버튼, 툴팁 등)가 빠짐없이 설명되었는가",
+      "모든 UI 요소에 Trigger/Action/예외 사항이 빠짐없이 기재되었는가"
     ],
     "submission_type": "mixed",
-    "estimated_hours": 4,
+    "estimated_hours": 8,
     "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481e28731d0db8a993fab",
     "order": 6
   },
@@ -325,15 +363,18 @@
     "track": "design",
     "number": 7,
     "title": "디자인 시스템 기초",
-    "description": "컬러, 타이포그래피, 간격 등 디자인 토큰 정의",
+    "description": "## 과제 목표\n- 컬러 팔레트, 타이포그래피, 간격 시스템 등 디자인 토큰을 정의한다\n- 모든 색상과 폰트를 Figma 스타일/변수로 등록한다\n- 목적 중심 네이밍(Primary-Default, Heading-1 등)을 사용한다\n\n## 제출 안내\nFigma 공유 링크와 스크린샷(최소 1장)을 제출하세요.",
     "checklist": [
-      "컬러 팔레트(Primary,Neutral,Semantic)가 정의되었는가",
-      "타이포그래피 체계(Heading,Body,Caption)가 있는가",
-      "4px 배수 간격 시스템이 적용되었는가",
-      "Figma 스타일/변수로 등록되었는가"
+      "컬러 팔레트(Primary, Secondary, Grayscale, Semantic)가 단계별로 정의되었는가",
+      "타이포그래피 체계(Heading, Body, Caption)가 역할별로 정의되었는가",
+      "4px 또는 8px 배수의 간격(Spacing) 시스템이 적용되었는가",
+      "Border Radius 값이 정의되었는가",
+      "모든 색상과 폰트가 Figma 스타일/변수로 등록되었는가(스포이트 금지)",
+      "목적 중심 네이밍(Primary-Default, Heading-1 등)이 사용되었는가",
+      "색상 대비가 접근성 기준(WCAG AA, 4.5:1 이상)을 충족하는가 (운영진 확인)"
     ],
     "submission_type": "figma",
-    "estimated_hours": 5,
+    "estimated_hours": 12,
     "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481ab9cbbe80c0d3375d7",
     "order": 7
   },
@@ -341,15 +382,17 @@
     "track": "design",
     "number": 8,
     "title": "High-Fi UI 디자인",
-    "description": "디자인 시스템 적용한 완성도 높은 UI",
+    "description": "## 과제 목표\n- 디자인 시스템 토큰을 적용하여 10~15화면 High-Fi UI를 완성한다\n- 상태별 화면(기본, 로딩, 에러, 빈 상태)을 포함한다\n- 와이어프레임 구조를 충실히 반영하고 시각적 위계를 구성한다\n\n## 제출 안내\nFigma 공유 링크와 스크린샷(최소 1장)을 제출하세요.",
     "checklist": [
-      "핵심 화면 10장 이상이 High-Fi로 완성되었는가",
-      "디자인 시스템 토큰이 일관되게 적용되었는가",
-      "상태별 화면(기본,로딩,에러,빈상태)이 있는가",
-      "접근성 기준(명도 대비,터치 영역)을 충족하는가"
+      "핵심 유저 플로우 10~15화면이 High-Fi로 완성되었는가",
+      "디자인 시스템(미션7) 토큰이 일관되게 적용되었는가(임의 스타일 금지)",
+      "상태별 화면(기본, 로딩, 에러, 빈 상태)이 포함되었는가",
+      "접근성 기준을 충족하는가(명도 대비 4.5:1 이상, 터치 영역 44x44px 이상) (운영진 확인)",
+      "제목/본문/캡션의 크기 차이가 2단계 이상이고 여백으로 섹션이 구분되는가",
+      "와이어프레임(미션5)의 구조가 충실히 반영되었는가"
     ],
     "submission_type": "figma",
-    "estimated_hours": 8,
+    "estimated_hours": 15,
     "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481b2b527cb2998d88199",
     "order": 8
   },
@@ -357,15 +400,17 @@
     "track": "design",
     "number": 9,
     "title": "UX 테스트 & 개선",
-    "description": "사용자 테스트 진행 후 디자인 개선",
+    "description": "## 과제 목표\n- 최소 3명에게 UX 테스트를 진행하고 행동 데이터를 수집한다\n- Before/After 비교와 데이터 기반 개선 근거를 작성한다\n- 테스트 결과 보고서를 정리한다\n\n## 제출 안내\nGitHub URL과 스크린샷(최소 1장)을 제출하세요.",
     "checklist": [
-      "최소 3명에게 테스트를 진행했는가",
-      "Before/After 비교가 있는가",
-      "개선 근거가 논리적인가",
+      "최소 3명에게 구체적 태스크 시나리오로 UX 테스트를 진행했는가 (운영진 확인)",
+      "사용자 행동 관찰 결과가 정리되었는가(멈추는 지점, 오조작, 반복 탐색) (운영진 확인)",
+      "태스크 완료율/소요 시간이 측정되었는가 (운영진 확인)",
+      "Before(AS-IS 문제 화면)/After(TO-BE 개선 화면) 비교가 있는가",
+      "개선 근거(Rationale)가 사용자 데이터 기반으로 논리적으로 설명되었는가",
       "테스트 결과 보고서가 작성되었는가"
     ],
     "submission_type": "mixed",
-    "estimated_hours": 5,
+    "estimated_hours": 10,
     "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481b2b527cb2998d88199",
     "order": 9
   },
@@ -373,15 +418,18 @@
     "track": "design",
     "number": 10,
     "title": "개발 핸드오프 정리",
-    "description": "개발팀에 전달할 최종 디자인 패키지 정리",
+    "description": "## 과제 목표\n- 레이어/프레임 네이밍을 정리하고 Variables/Styles 연결을 확인한다\n- 에셋에 SVG/PNG Export 설정을 완료하고 동적 요소에 디자인 주석을 단다\n- 완성 화면만 정렬하여 개발 핸드오프 패키지를 정리한다\n\n## 제출 안내\nFigma 공유 링크와 스크린샷(최소 1장)을 제출하세요.",
     "checklist": [
-      "레이어/프레임 네이밍이 정리되었는가",
-      "에셋에 Export 설정이 완료되었는가",
-      "디자인 주석(동적 요소,예외)이 달려있는가",
-      "디자인 토큰이 Dev Mode에서 확인 가능한가"
+      "레이어/프레임 네이밍이 직관적으로 정리되었는가(Frame 1234 금지)",
+      "모든 컬러와 폰트가 Variables/Styles에 연결되어 있는가(Detach 없음)",
+      "에셋(아이콘, 이미지)에 SVG/PNG Export 설정이 완료되었는가",
+      "동적 요소에 디자인 주석(스크롤, 글자 수 제한, 에러 화면 등)이 달려있는가",
+      "숨김 레이어가 삭제되었는가",
+      "중간 과정(스케치, 기획서)이 분리되고 완성 화면만 정렬되었는가",
+      "Dev Mode에서 디자인 토큰이 확인 가능한가 (운영진 확인)"
     ],
     "submission_type": "figma",
-    "estimated_hours": 4,
+    "estimated_hours": 10,
     "pbl_link": "https://likelion-pbl-five.vercel.app/design/2f044860a4f481929b68daf2eb32f25f",
     "order": 10
   },
@@ -389,16 +437,18 @@
     "track": "frontend",
     "number": 1,
     "title": "HTML/CSS 기초",
-    "description": "아기사자 자기소개 정적 웹페이지 만들기",
+    "description": "## 과제 목표\n- 시맨틱 HTML 태그로 구조를 잡고 외부 CSS 파일로 스타일링한다\n- Flexbox로 레이아웃을 배치하고 박스 모델(margin/padding/border)을 적용한다\n- 프로필 이미지, 이름, 파트, 한줄소개가 포함된 자기소개 페이지를 완성한다\n\n## 제출 안내\nGitHub 레포지토리 URL을 제출하세요.",
     "checklist": [
-      "index.html + style.css 파일이 분리되었는가",
-      "시맨틱 HTML 태그를 사용했는가",
-      "Flexbox를 활용한 레이아웃인가",
-      "프로필 이미지,이름,파트,한줄소개가 포함되었는가",
-      "인라인 스타일이 없는가"
+      "index.html과 style.css 파일이 분리되어 있는가",
+      "시맨틱 HTML 태그(header, main, section, footer 등)를 사용했는가",
+      "Flexbox를 활용한 레이아웃 배치가 적용되었는가",
+      "요약 카드에 프로필 이미지, 이름, 파트, 한줄소개가 포함되었는가",
+      "상세 정보 영역에 자기소개, 관심 기술(3개+), 연락처가 포함되었는가",
+      "margin, padding, border로 박스 모델이 적절히 적용되었는가",
+      "인라인 스타일 없이 외부 CSS만 사용했는가"
     ],
     "submission_type": "github",
-    "estimated_hours": 4,
+    "estimated_hours": 10,
     "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f4819890dfced14fd7097b",
     "order": 1
   },
@@ -406,15 +456,18 @@
     "track": "frontend",
     "number": 2,
     "title": "CSS 레이아웃 & 반응형",
-    "description": "아기사자 명단 대시보드를 반응형으로 제작",
+    "description": "## 과제 목표\n- CSS Grid로 카드를 그리드 배치하고 Media Query로 반응형(1/2/3열)을 구현한다\n- 프로필 이미지 위 배지 오버레이, 내 카드 강조 등 시각적 효과를 적용한다\n- Flexbox와 Grid를 용도에 맞게 구분하여 사용한다\n\n## 제출 안내\nGitHub 레포지토리 URL을 제출하세요.",
     "checklist": [
-      "Grid 레이아웃이 적용되었는가",
-      "모바일/태블릿/데스크톱 반응형이 동작하는가",
-      "Media Query가 사용되었는가",
-      "여러 명의 카드가 그리드로 배치되는가"
+      "CSS Grid로 여러 명의 카드가 그리드 배치되는가",
+      "모바일(1열), 태블릿(2열), 데스크톱(3열) 반응형이 동작하는가",
+      "Media Query가 적절히 사용되었는가",
+      "프로필 이미지 위에 배지가 오버레이 형태로 표시되는가",
+      "내 카드가 시각적으로 구분되는가",
+      "하단에 상세 자기소개 1열 목록 영역이 있는가",
+      "Flexbox와 Grid를 용도에 맞게 구분하여 사용했는가"
     ],
     "submission_type": "github",
-    "estimated_hours": 5,
+    "estimated_hours": 10,
     "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f481fe943ef27144a26fd7",
     "order": 2
   },
@@ -422,15 +475,18 @@
     "track": "frontend",
     "number": 3,
     "title": "JavaScript 기초",
-    "description": "명단 추가/삭제가 가능한 인터랙티브 대시보드",
+    "description": "## 과제 목표\n- addEventListener로 이벤트를 등록하고 DOM 조작으로 카드를 동적 생성한다\n- 추가/삭제 기능과 입력값 유효성 검사를 구현한다\n- 데이터를 배열/객체로 관리하고 UI를 렌더링하는 구조를 익힌다\n\n## 제출 안내\nGitHub 레포지토리 URL을 제출하세요.",
     "checklist": [
-      "DOM 조작으로 요소를 동적 생성하는가",
-      "이벤트 리스너가 addEventListener로 등록되었는가",
-      "추가/삭제 기능이 동작하는가",
-      "인라인 이벤트 핸들러가 없는가"
+      "addEventListener로 이벤트 리스너가 등록되었는가(인라인 핸들러 없음)",
+      "DOM 조작으로 카드 요소를 동적 생성하는가",
+      "아기사자 추가 폼이 토글(열기/닫기) 방식으로 동작하는가",
+      "이름, 파트, 관심기술, 한줄소개 입력 필드가 있는가",
+      "추가/삭제 시 총 인원 수가 동적으로 업데이트되는가",
+      "입력값 유효성 검사(빈 값 등)가 있는가",
+      "데이터를 배열/객체로 관리하고 UI를 렌더링하는 구조인가"
     ],
     "submission_type": "github",
-    "estimated_hours": 6,
+    "estimated_hours": 12,
     "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f481fa8a52eec6ae08b4d9",
     "order": 3
   },
@@ -438,15 +494,19 @@
     "track": "frontend",
     "number": 4,
     "title": "JS 비동기와 데이터",
-    "description": "외부 API 데이터를 불러와 명단 갱신",
+    "description": "## 과제 목표\n- fetch API와 async/await로 외부 데이터를 비동기 로딩한다\n- 로딩/에러/재시도 상태를 UI로 표시한다\n- 파트별 필터, 이름 검색, 정렬 기능을 구현한다\n\n## 제출 안내\nGitHub 레포지토리 URL을 제출하세요.",
     "checklist": [
-      "fetch API를 사용했는가",
-      "async/await 문법을 사용했는가",
-      "로딩/에러 상태가 표시되는가",
-      "필터/검색 기능이 동작하는가"
+      "fetch API로 외부 데이터를 가져오는가",
+      "async/await 문법이 사용되었는가",
+      "로딩 상태(불러오는 중...)가 표시되는가",
+      "실패 시 에러 메시지와 재시도 UI가 제공되는가",
+      "로딩 중 버튼 비활성화로 중복 요청을 방지하는가",
+      "파트별 필터(전체/Frontend/Backend/Design)가 동작하는가",
+      "이름 검색 기능이 동작하는가",
+      "정렬 기능(최신순/이름순 등)이 동작하는가"
     ],
     "submission_type": "github",
-    "estimated_hours": 6,
+    "estimated_hours": 15,
     "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f481ebacbdd5cdbf060f6e",
     "order": 4
   },
@@ -454,15 +514,18 @@
     "track": "frontend",
     "number": 5,
     "title": "React 시작하기",
-    "description": "대시보드 UI를 React 컴포넌트로 재구성",
+    "description": "## 과제 목표\n- 함수형 컴포넌트와 Props로 UI를 분리하고 단방향 데이터 흐름을 구성한다\n- Header, ProfileCard, DetailList 등 역할 기준으로 컴포넌트를 분리한다\n- map()을 활용한 리스트 렌더링과 반응형 레이아웃을 유지한다\n\n## 제출 안내\nGitHub 레포지토리 URL을 제출하세요.",
     "checklist": [
       "함수형 컴포넌트로 작성되었는가",
-      "Props로 데이터가 전달되는가",
-      "컴포넌트가 적절히 분리되었는가",
-      "map을 활용한 리스트 렌더링이 있는가"
+      "Props로 부모→자식 데이터가 전달되는가",
+      "Header, ProfileCard, DetailList 등 역할 기준으로 컴포넌트가 분리되었는가",
+      "map()을 활용한 리스트 렌더링이 있는가",
+      "JSX 문법이 올바르게 사용되었는가",
+      "부모→자식 방향의 단방향 데이터 흐름(props)으로 구성되었는가",
+      "반응형 레이아웃(1~3열)이 유지되는가"
     ],
     "submission_type": "github",
-    "estimated_hours": 7,
+    "estimated_hours": 15,
     "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f48140a95dc73343b00434",
     "order": 5
   },
@@ -470,15 +533,18 @@
     "track": "frontend",
     "number": 6,
     "title": "상태와 Effect",
-    "description": "useState/useEffect를 활용한 동적 기능",
+    "description": "## 과제 목표\n- useState로 상태를 관리하고 useEffect로 초기 데이터를 로딩한다\n- controlled component로 폼 입력값을 관리한다\n- 필터/정렬/검색/추가/삭제가 상태 업데이트로 동작하도록 구현한다\n\n## 제출 안내\nGitHub 레포지토리 URL을 제출하세요.",
     "checklist": [
-      "useState로 상태 관리가 되는가",
-      "useEffect로 데이터 로딩이 구현되었는가",
-      "폼 입력이 상태로 관리되는가",
-      "추가/삭제가 실제로 동작하는가"
+      "useState로 명단 데이터 상태를 관리하는가",
+      "useEffect로 초기 데이터 로딩이 구현되었는가",
+      "폼 입력값이 상태(controlled component)로 관리되는가",
+      "추가/삭제 기능이 상태 업데이트로 동작하는가",
+      "외부 데이터 fetch 시 로딩/실패/재시도 상태가 표시되는가",
+      "파트 필터/정렬/검색이 상태 기반으로 동작하는가",
+      "랜덤 1명/5명 추가, 전체 새로고침 기능이 있는가"
     ],
     "submission_type": "github",
-    "estimated_hours": 8,
+    "estimated_hours": 20,
     "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f4819089c9f2230641f701",
     "order": 6
   },
@@ -486,15 +552,18 @@
     "track": "frontend",
     "number": 7,
     "title": "React Router",
-    "description": "목록/상세 페이지 SPA 라우팅",
+    "description": "## 과제 목표\n- React Router v6으로 목록/상세 페이지 SPA 라우팅을 구현한다\n- URL 파라미터(/lions/:id)로 상세 데이터를 표시한다\n- 필터/정렬/검색 상태를 URL 쿼리 파라미터에 반영한다\n\n## 제출 안내\nGitHub 레포지토리 URL을 제출하세요.",
     "checklist": [
-      "React Router v6을 사용했는가",
-      "목록→상세 페이지 이동이 되는가",
-      "URL 파라미터로 상세 데이터를 표시하는가",
-      "뒤로가기/앞으로가기가 동작하는가"
+      "React Router v6이 적용되었는가",
+      "목록 페이지와 상세 프로필 페이지가 분리되었는가",
+      "요약 카드 클릭 시 상세 페이지로 이동하는가",
+      "URL 파라미터(/lions/:id)로 상세 데이터를 표시하는가",
+      "브라우저 뒤로가기/앞으로가기가 정상 동작하는가",
+      "필터/정렬/검색이 URL 쿼리 파라미터에 반영되는가",
+      "상세 페이지에서 목록으로 돌아가는 UI가 있는가"
     ],
     "submission_type": "github",
-    "estimated_hours": 5,
+    "estimated_hours": 15,
     "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f481ddac76e92fdef2fee2",
     "order": 7
   },
@@ -502,15 +571,19 @@
     "track": "frontend",
     "number": 8,
     "title": "TypeScript 기초",
-    "description": "기존 프로젝트를 TypeScript로 마이그레이션",
+    "description": "## 과제 목표\n- 기존 React 프로젝트를 TypeScript(.tsx/.ts)로 마이그레이션한다\n- Props, 상태, 이벤트 객체에 적절한 타입을 정의한다\n- 공통 타입을 별도 파일로 분리하고 any 사용을 최소화한다\n\n## 제출 안내\nGitHub 레포지토리 URL을 제출하세요.",
     "checklist": [
-      ".tsx/.ts 파일로 변환되었는가",
-      "컴포넌트 Props에 타입이 지정되었는가",
+      "모든 컴포넌트가 .tsx 확장자로 작성되었는가",
+      "유틸리티/훅/데이터 파일이 .ts 확장자인가",
+      "컴포넌트 Props에 interface/type으로 타입이 정의되었는가",
+      "useState에 제네릭으로 상태 타입이 명시되었는가",
+      "이벤트 핸들러의 이벤트 객체에 적절한 타입이 지정되었는가",
+      "공통 타입이 별도 파일(types/)로 분리되었는가",
       "any 타입이 최소화되었는가",
-      "tsc 빌드가 에러 없이 통과하는가"
+      "빌드(tsc) 시 타입 에러 없이 통과하는가"
     ],
     "submission_type": "github",
-    "estimated_hours": 6,
+    "estimated_hours": 15,
     "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f481c0b69bce5e8eebfadb",
     "order": 8
   },
@@ -518,15 +591,18 @@
     "track": "frontend",
     "number": 9,
     "title": "Supabase 연동",
-    "description": "실제 DB 연동 명단 관리 앱",
+    "description": "## 과제 목표\n- Supabase 테이블을 생성하고 CRUD를 DB와 연동한다\n- 회원가입/로그인 기능과 Row Level Security(RLS)를 설정한다\n- 환경변수(.env)로 API 키를 관리한다\n\n## 제출 안내\nGitHub URL과 배포 URL을 제출하세요. 스크린샷(최소 1장)도 함께 첨부하세요.",
     "checklist": [
-      "Supabase 테이블이 생성되었는가",
-      "CRUD 기능이 DB와 연동되는가",
-      "로그인/회원가입이 구현되었는가",
-      "환경변수로 API 키가 관리되는가"
+      "Supabase 테이블이 생성되고 CRUD가 DB와 연동되는가",
+      "회원가입/로그인 페이지가 구현되었는가",
+      "로그인 시 사용자 이메일이 표시되고 로그아웃이 가능한가",
+      "비로그인 사용자는 조회만, 로그인 사용자만 추가/삭제 가능한가",
+      "Row Level Security(RLS)가 설정되었는가",
+      "환경변수(.env)로 Supabase API 키가 관리되는가",
+      "새로고침/다른 기기에서도 동일 데이터가 유지되는가"
     ],
-    "submission_type": "deploy",
-    "estimated_hours": 8,
+    "submission_type": "mixed",
+    "estimated_hours": 25,
     "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f4817f8622f527d0fe5e10",
     "order": 9
   },
@@ -534,15 +610,19 @@
     "track": "frontend",
     "number": 10,
     "title": "최종 서비스 완성 & 배포",
-    "description": "Vercel 배포 + 코드 정리 + 동료 리뷰",
+    "description": "## 과제 목표\n- Vercel에 배포하고 GitHub 연결로 자동 배포(CD)를 구성한다\n- 빌드 에러, 콘솔 에러, 미사용 코드를 정리한다\n- 동료 피드백을 받아 최소 1개 이상 반영한다\n\n## 제출 안내\n배포 URL과 GitHub URL을 제출하세요. 스크린샷(최소 1장)도 함께 첨부하세요.",
     "checklist": [
-      "Vercel/Netlify에 배포되었는가",
-      "빌드 에러가 없는가",
-      "콘솔에 불필요한 로그가 없는가",
-      "README가 작성되었는가"
+      "Vercel에 배포되어 URL로 접근 가능한가",
+      "GitHub 연결로 자동 배포(CD)가 구성되었는가",
+      "빌드(yarn build) 에러 없이 통과하는가",
+      "브라우저 콘솔에 불필요한 console.log/에러가 없는가",
+      "모바일/태블릿/데스크톱 반응형이 정상 동작하는가",
+      "환경변수가 Vercel에 올바르게 설정되었는가",
+      "사용하지 않는 변수/import/컴포넌트가 제거되었는가",
+      "동료 2명 이상의 피드백을 받고 1개 이상 반영했는가 (운영진 확인)"
     ],
-    "submission_type": "deploy",
-    "estimated_hours": 4,
+    "submission_type": "mixed",
+    "estimated_hours": 15,
     "pbl_link": "https://likelion-pbl-five.vercel.app/react/2f044860a4f4813c8187dc6a1d0082d9",
     "order": 10
   },
@@ -550,15 +630,17 @@
     "track": "backend",
     "number": 1,
     "title": "Java 핵심 문법 & 흐름",
-    "description": "콘솔 기반 아기사자 명단 관리 프로그램",
+    "description": "## 과제 목표\n- Java 기본 문법(변수, 조건문, 반복문, 배열)을 활용하여 콘솔 프로그램을 작성한다\n- Scanner를 이용한 사용자 입력 처리와 유효성 검사를 구현한다\n- 배열에 데이터를 저장하고 순회하며 출력하는 흐름을 익힌다\n\n## 제출 안내\nGitHub 레포지토리 URL을 제출하세요.",
     "checklist": [
-      "Scanner로 입력을 받는가",
-      "배열에 이름이 저장되는가",
-      "5 미만 입력 시 재입력을 요청하는가",
-      "최종 명단이 출력되는가"
+      "Scanner로 아기사자 수를 입력받는가",
+      "5 미만 입력 시 재입력을 요청하는 반복 처리가 있는가",
+      "입력받은 수만큼 배열을 생성하는가",
+      "반복문으로 아기사자 이름을 입력받아 배열에 저장하는가",
+      "최종 명단을 순회하며 출력하는가",
+      "변수, 조건문, 반복문, 배열이 모두 사용되었는가"
     ],
     "submission_type": "github",
-    "estimated_hours": 4,
+    "estimated_hours": 8,
     "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481878cbdd66f54b19ce9",
     "order": 1
   },
@@ -566,15 +648,17 @@
     "track": "backend",
     "number": 2,
     "title": "객체지향 I - 클래스와 캡슐화",
-    "description": "클래스 기반으로 리팩토링된 명단 관리",
+    "description": "## 과제 목표\n- 클래스를 정의하고 필드, 생성자, getter/setter를 구현한다\n- private 접근 제어자로 캡슐화를 적용한다\n- 비즈니스 로직을 main에서 분리하여 클래스 메서드로 이동한다\n\n## 제출 안내\nGitHub 레포지토리 URL을 제출하세요.",
     "checklist": [
-      "Member 클래스에 private 필드가 있는가",
-      "getter/setter가 구현되었는가",
-      "생성자에서 유효성 검증이 있는가",
-      "main에 로직이 직접 작성되지 않았는가"
+      "Lion 클래스가 별도 파일로 분리되어 있는가",
+      "필드가 private으로 선언되어 있는가",
+      "getter/setter 메서드가 구현되어 있는가",
+      "생성자에서 유효성 검증(이름 null/빈값 등)이 있는가",
+      "main 메서드에 비즈니스 로직이 직접 작성되지 않았는가",
+      "public/private 접근 제어자의 차이를 이해하고 적용했는가"
     ],
     "submission_type": "github",
-    "estimated_hours": 5,
+    "estimated_hours": 10,
     "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481869998cc607120d4c4",
     "order": 2
   },
@@ -582,15 +666,17 @@
     "track": "backend",
     "number": 3,
     "title": "객체지향 II - 상속/다형성/추상화",
-    "description": "파트별 멤버 계층 구조 구현",
+    "description": "## 과제 목표\n- 추상 클래스/인터페이스를 정의하고 상속 구조를 설계한다\n- 역할별 하위 클래스를 만들어 다형성을 활용한다\n- instanceof 대신 오버라이딩으로 분기를 처리한다\n\n## 제출 안내\nGitHub 레포지토리 URL을 제출하세요.",
     "checklist": [
-      "추상 클래스 또는 인터페이스가 사용되었는가",
-      "상속 구조가 적절한가",
-      "다형성으로 조건문이 최소화되었는가",
-      "instanceof 대신 다형성을 활용했는가"
+      "추상 클래스 또는 인터페이스가 정의되어 있는가",
+      "공통 속성을 부모 클래스로 분리한 상속 구조가 있는가",
+      "역할별(백엔드/프론트엔드/디자인 등) 하위 클래스가 있는가",
+      "다형성을 활용하여 역할별 동작이 구현되었는가",
+      "instanceof 대신 오버라이딩으로 분기 처리했는가",
+      "정책 인터페이스를 통한 기능 분리가 있는가"
     ],
     "submission_type": "github",
-    "estimated_hours": 6,
+    "estimated_hours": 12,
     "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481638d0cf4aad3314d98",
     "order": 3
   },
@@ -598,15 +684,17 @@
     "track": "backend",
     "number": 4,
     "title": "Java Collections & 설계 확장",
-    "description": "List, Map을 활용한 멤버 관리 확장",
+    "description": "## 과제 목표\n- 배열 대신 ArrayList, Map 등 컬렉션을 활용하여 데이터를 관리한다\n- 제네릭을 올바르게 사용하고 검색/필터링 기능을 구현한다\n- 중복 확인 등 데이터 무결성 로직을 추가한다\n\n## 제출 안내\nGitHub 레포지토리 URL을 제출하세요.",
     "checklist": [
-      "ArrayList가 사용되었는가",
-      "Map으로 파트별 그룹핑이 되는가",
-      "제네릭이 사용되었는가",
-      "이름 검색 기능이 있는가"
+      "배열 대신 ArrayList로 멤버를 관리하는가",
+      "Map을 사용하여 파트별 멤버를 그룹핑하는가",
+      "제네릭(List<Lion> 등)이 올바르게 사용되었는가",
+      "멤버 등록 시 중복 확인 로직이 있는가",
+      "이름으로 멤버를 검색하는 기능이 있는가",
+      "파트별 멤버 필터링 기능이 있는가"
     ],
     "submission_type": "github",
-    "estimated_hours": 5,
+    "estimated_hours": 10,
     "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f48151a4cac98414514b2b",
     "order": 4
   },
@@ -614,15 +702,17 @@
     "track": "backend",
     "number": 5,
     "title": "자바로 배우는 IoC/DI",
-    "description": "순수 Java로 DI 패턴 구현",
+    "description": "## 과제 목표\n- Repository 인터페이스와 다수의 구현체를 만들어 DI 패턴을 이해한다\n- 생성자 주입으로 의존성을 외부에서 결정하는 구조를 구현한다\n- AppConfig 설정 클래스로 객체 조립을 분리한다\n\n## 제출 안내\nGitHub 레포지토리 URL을 제출하세요.",
     "checklist": [
-      "Repository 인터페이스가 정의되었는가",
-      "두 개 이상의 구현체가 있는가",
-      "생성자 주입이 사용되었는가",
-      "AppConfig 클래스가 있는가"
+      "Repository 인터페이스가 정의되어 있는가",
+      "두 개 이상의 구현체(MemoryRepository, MockRepository 등)가 있는가",
+      "Service 클래스가 Repository에 의존하는 구조인가",
+      "생성자를 통한 의존성 주입이 사용되었는가",
+      "AppConfig 등 설정 클래스에서 객체를 조립하는가",
+      "main에서 직접 new 하지 않고 AppConfig를 통해 객체를 생성하는가"
     ],
     "submission_type": "github",
-    "estimated_hours": 5,
+    "estimated_hours": 10,
     "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f48110b935cf9dc900b42b",
     "order": 5
   },
@@ -630,15 +720,17 @@
     "track": "backend",
     "number": 6,
     "title": "Spring Boot 전환",
-    "description": "Spring Boot 기반으로 전환",
+    "description": "## 과제 목표\n- Spring Initializr로 Spring Boot 프로젝트를 생성한다\n- 기존 순수 Java 코드를 Spring Bean으로 전환한다\n- @Service, @Repository 어노테이션과 생성자 주입을 적용한다\n\n## 제출 안내\nGitHub 레포지토리 URL을 제출하세요.",
     "checklist": [
-      "Spring Boot 프로젝트가 생성되었는가",
-      "@Service/@Repository 어노테이션이 사용되었는가",
-      "생성자 주입이 적용되었는가",
-      "GET /hello API가 동작하는가"
+      "Spring Boot 프로젝트(Spring Initializr)가 생성되었는가",
+      "5주차 코드가 Spring Boot 구조로 이전되었는가",
+      "@Service, @Repository 어노테이션이 사용되었는가",
+      "생성자 주입이 적용되어 있는가",
+      "GET /hello API가 정상 동작하는가",
+      "@Configuration + @Bean 수동 등록 또는 자동 등록 방식을 사용했는가"
     ],
     "submission_type": "github",
-    "estimated_hours": 5,
+    "estimated_hours": 10,
     "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481cfb0fad0418e9c04a5",
     "order": 6
   },
@@ -646,15 +738,18 @@
     "track": "backend",
     "number": 7,
     "title": "REST API 설계(CRUD)",
-    "description": "아기사자 CRUD REST API 구현",
+    "description": "## 과제 목표\n- RESTful 규칙에 따라 CRUD API(POST/GET/PUT/DELETE)를 설계한다\n- 요청/응답용 DTO를 Entity와 분리하여 구현한다\n- ResponseEntity로 적절한 HTTP 상태 코드를 반환한다\n\n## 제출 안내\nGitHub 레포지토리 URL을 제출하세요.",
     "checklist": [
-      "POST/GET/PUT/DELETE API가 구현되었는가",
-      "DTO가 Entity와 분리되었는가",
-      "적절한 HTTP 상태 코드를 반환하는가",
-      "RESTful URL 설계인가"
+      "POST /members API로 멤버를 생성할 수 있는가",
+      "GET /members API로 전체 멤버를 조회할 수 있는가",
+      "PUT /members/{id} API로 멤버를 수정할 수 있는가",
+      "DELETE /members/{id} API로 멤버를 삭제할 수 있는가",
+      "요청/응답용 DTO가 Entity와 분리되어 있는가",
+      "ResponseEntity로 적절한 HTTP 상태 코드를 반환하는가",
+      "RESTful URL 설계 규칙을 따르는가"
     ],
     "submission_type": "github",
-    "estimated_hours": 6,
+    "estimated_hours": 12,
     "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f4818ea0e6ebeb22ef09ad",
     "order": 7
   },
@@ -662,15 +757,18 @@
     "track": "backend",
     "number": 8,
     "title": "JPA 기초 & 영속성 컨텍스트",
-    "description": "JPA + DB 연동 API",
+    "description": "## 과제 목표\n- JPA @Entity로 엔티티를 정의하고 DB와 매핑한다\n- JpaRepository를 활용하여 CRUD를 DB에 연동한다\n- application.properties에 DB 연결 및 Hibernate 로그 설정을 구성한다\n\n## 제출 안내\nGitHub 레포지토리 URL을 제출하세요.",
     "checklist": [
-      "@Entity 어노테이션이 사용되었는가",
-      "JpaRepository를 상속했는가",
-      "application.properties에 DB 설정이 있는가",
-      "CRUD가 DB에 반영되는가"
+      "@Entity 어노테이션으로 JPA 엔티티가 정의되었는가",
+      "@Id와 @GeneratedValue 전략이 설정되었는가",
+      "JpaRepository를 상속한 Repository 인터페이스가 있는가",
+      "application.properties에 DB 연결 설정이 있는가",
+      "CRUD 기능이 실제 DB에 반영되는가",
+      "@Enumerated(EnumType.STRING)으로 Enum 타입을 사용했는가",
+      "Hibernate SQL 로그가 출력되도록 설정했는가"
     ],
     "submission_type": "github",
-    "estimated_hours": 7,
+    "estimated_hours": 15,
     "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481fb9dd3ea247d83d657",
     "order": 8
   },
@@ -678,15 +776,17 @@
     "track": "backend",
     "number": 9,
     "title": "연관관계 & 트랜잭션",
-    "description": "Team-Member 1:N 관계 매핑",
+    "description": "## 과제 목표\n- @ManyToOne/@OneToMany로 Team-Member 1:N 연관관계를 매핑한다\n- @Transactional을 Service 계층에 적용하여 트랜잭션을 관리한다\n- 팀별 멤버 조회 등 연관관계 기반 API를 구현한다\n\n## 제출 안내\nGitHub 레포지토리 URL을 제출하세요.",
     "checklist": [
-      "@ManyToOne/@OneToMany가 사용되었는가",
-      "@Transactional이 적용되었는가",
+      "@ManyToOne/@OneToMany로 연관관계가 매핑되었는가",
+      "@JoinColumn으로 외래키가 올바르게 설정되었는가",
+      "연관관계의 주인(N쪽)이 올바르게 설정되었는가",
+      "@Transactional이 Service 계층에 적용되었는가",
       "팀별 멤버 조회 API가 있는가",
-      "외래키가 올바르게 생성되는가"
+      "과제(Assignment) 엔티티와 멤버 간 1:N 관계가 구현되었는가"
     ],
     "submission_type": "github",
-    "estimated_hours": 5,
+    "estimated_hours": 10,
     "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f48108b793f72c8a7146e7",
     "order": 9
   },
@@ -694,15 +794,18 @@
     "track": "backend",
     "number": 10,
     "title": "미니 프로젝트: 예외 처리 & FE 연동",
-    "description": "전역 예외 처리 + 프론트엔드 연동",
+    "description": "## 과제 목표\n- @RestControllerAdvice로 전역 예외 처리를 구현한다\n- 커스텀 예외와 통일된 에러 응답 형식을 정의한다\n- 프론트엔드에서 API를 호출하여 CRUD가 브라우저에서 동작하도록 연동한다\n\n## 제출 안내\nGitHub 레포지토리 URL을 제출하세요.",
     "checklist": [
-      "@RestControllerAdvice가 사용되었는가",
-      "커스텀 예외 클래스가 있는가",
-      "통일된 에러 응답 형식인가",
-      "프론트엔드에서 API 호출이 동작하는가"
+      "@RestControllerAdvice로 전역 예외 처리가 구현되었는가",
+      "커스텀 예외 클래스가 정의되어 있는가",
+      "통일된 에러 응답 형식(ErrorResponse 등)이 사용되는가",
+      "Service에서 예외를 던지는 방식으로 리팩토링되었는가",
+      "검색 기능 API가 추가되었는가",
+      "프론트엔드에서 fetch()로 API를 호출하고 결과를 표시하는가",
+      "GET/POST/PUT/DELETE가 브라우저에서 동작하는가"
     ],
     "submission_type": "github",
-    "estimated_hours": 7,
+    "estimated_hours": 15,
     "pbl_link": "https://likelion-pbl-five.vercel.app/springboot/2f044860a4f481e6a824ca2a9f06099b",
     "order": 10
   }

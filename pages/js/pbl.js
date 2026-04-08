@@ -211,7 +211,7 @@ function escapeHTML(str) {
 }
 
 function statusLabel(status) {
-  const map = { passed: '합격', rejected: '반려', pending: '대기', reviewing: '검토중', none: '미제출' };
+  const map = { passed: '합격', rejected: '반려', pending: '대기', reviewing: '검토중', error: '오류', none: '미제출' };
   return map[status] || '미제출';
 }
 
@@ -314,7 +314,38 @@ function closeModal(id) {
 }
 
 // ---- Render submission fields by track ----
+function _screenshotFieldHTML(name, label, required) {
+  return `<div class="form-group screenshot-field" data-name="${name}">
+    <label class="form-label">${label}${required ? ' *' : ''}</label>
+    <div class="file-upload"><input type="file" name="${name}" accept="image/*"${required ? ' required' : ''}><p>클릭 또는 드래그하여 업로드</p></div>
+  </div>`;
+}
+
+function _initScreenshotGroup(container) {
+  const group = container.querySelector('.screenshot-group');
+  if (!group) return;
+  const addBtn = group.querySelector('.screenshot-add-btn');
+  if (!addBtn) return;
+  let count = 1;
+  addBtn.addEventListener('click', () => {
+    if (count >= 3) return;
+    count++;
+    const name = count === 2 ? 'screenshot2' : 'screenshot3';
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = _screenshotFieldHTML(name, `스크린샷 ${count}`, false);
+    group.insertBefore(wrapper.firstElementChild, addBtn);
+    initFileUpload();
+    if (count >= 3) addBtn.style.display = 'none';
+  });
+}
+
 function renderSubmitFields(track, container) {
+  const screenshotGroup = (required) => `
+    <div class="screenshot-group">
+      ${_screenshotFieldHTML('screenshot', '스크린샷 1' + (required ? '' : ' (선택)'), required)}
+      <button type="button" class="screenshot-add-btn btn btn-outline btn-sm" style="margin-bottom:12px;">+ 스크린샷 추가 (최대 3장)</button>
+    </div>`;
+
   const fields = {
     frontend: `
       <div class="form-group"><label class="form-label">GitHub URL</label>
@@ -329,16 +360,19 @@ function renderSubmitFields(track, container) {
     design: `
       <div class="form-group"><label class="form-label">Figma URL</label>
       <input type="url" name="figma_url" class="form-input" placeholder="https://figma.com/..." required></div>
-      <div class="form-group"><label class="form-label">스크린샷</label>
-      <div class="file-upload"><input type="file" name="screenshot" accept="image/*"><p>클릭 또는 드래그하여 업로드</p></div></div>`,
+      ${screenshotGroup(true)}`,
     planning: `
+      <div class="form-group"><label class="form-label">GitHub URL (선택)</label>
+      <input type="url" name="github_url" class="form-input" placeholder="https://github.com/..."></div>
+      <div class="form-group"><label class="form-label">Figma URL (선택)</label>
+      <input type="url" name="figma_url" class="form-input" placeholder="https://figma.com/..."></div>
       <div class="form-group"><label class="form-label">설명</label>
-      <textarea name="description" class="form-textarea" placeholder="과제 설명을 입력하세요..." required></textarea></div>
-      <div class="form-group"><label class="form-label">스크린샷 (선택)</label>
-      <div class="file-upload"><input type="file" name="screenshot" accept="image/*"><p>클릭 또는 드래그하여 업로드</p></div></div>`,
+      <textarea name="description" class="form-textarea" placeholder="과제 설명을 입력하세요..."></textarea></div>
+      ${screenshotGroup(true)}`,
   };
   container.innerHTML = fields[track] || fields.planning;
   initFileUpload();
+  _initScreenshotGroup(container);
 }
 
 // ---- Init on DOMContentLoaded ----

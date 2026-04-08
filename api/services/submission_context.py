@@ -58,9 +58,17 @@ def _sanitize_student_input(text: str) -> str:
     return re.sub(r'</?student_submission\s*>', '[태그 제거됨]', text, flags=re.IGNORECASE)
 
 
-def build_submission_context(submission: Submission, mission: Mission) -> str:
-    """제출물 정보를 AI에게 전달할 컨텍스트로 구성"""
+def build_submission_context(submission: Submission, mission: Mission) -> tuple[str, bool]:
+    """제출물 정보를 AI에게 전달할 컨텍스트로 구성.
+
+    Returns:
+        (context_str, github_fetch_ok):
+        - context_str: AI에 전달할 텍스트
+        - github_fetch_ok: GitHub URL이 있는 경우 코드를 성공적으로 가져왔는지 여부.
+          GitHub URL이 없으면 True (해당 없음).
+    """
     parts = ["<student_submission>"]
+    github_fetch_ok = True  # GitHub URL이 없으면 True (해당 없음)
 
     if submission.github_url:
         parts.append(f"\n### GitHub 레포지토리\nURL: {_sanitize_student_input(submission.github_url)}")
@@ -97,9 +105,10 @@ def build_submission_context(submission: Submission, mission: Mission) -> str:
                 for path, content in repo_data["code_files"].items():
                     parts.append(f"\n--- {path} ---")
                     parts.append(content)
-        elif repo_data and "error" in repo_data:
-            parts.append(f"⚠️ {repo_data['error']}")
-            parts.append("GitHub 코드를 가져올 수 없어 URL과 설명만으로 평가합니다.")
+        else:
+            github_fetch_ok = False
+            error_msg = repo_data["error"] if repo_data else "GitHub API 접근 실패"
+            parts.append(f"⚠️ {error_msg}")
 
     if submission.deploy_url:
         parts.append(f"\n### 배포 URL\n{_sanitize_student_input(submission.deploy_url)}")
@@ -114,12 +123,14 @@ def build_submission_context(submission: Submission, mission: Mission) -> str:
         parts.append(f"\n### Figma URL\n{_sanitize_student_input(submission.figma_url)}")
         parts.append("(Figma 내용은 직접 확인할 수 없으므로 URL 존재 여부와 설명을 참고)")
 
-    if submission.screenshot_path:
-        parts.append("\n### 스크린샷\n첨부된 스크린샷 이미지를 시각적으로 분석하세요. "
+    screenshot_paths = [p for p in [submission.screenshot_path, submission.screenshot_path2, submission.screenshot_path3] if p]
+    if screenshot_paths:
+        count = len(screenshot_paths)
+        parts.append(f"\n### 스크린샷 ({count}장)\n첨부된 스크린샷 {count}장을 시각적으로 분석하세요. "
                      "디자인/기획 트랙의 경우 스크린샷이 핵심 평가 자료입니다.")
 
     if submission.description:
         parts.append(f"\n### 학생 설명\n{_sanitize_student_input(submission.description)}")
 
     parts.append("\n</student_submission>")
-    return "\n".join(parts)
+    return "\n".join(parts), github_fetch_ok

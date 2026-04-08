@@ -87,7 +87,8 @@
         const mission = await loadMissionDetail(missionId);
 
         // 미션 상세 표시
-        const pblLink = mission.pbl_link || 'https://likelion-pbl-five.vercel.app';
+        const _rawPbl = mission.pbl_link;
+        const pblLink = _rawPbl && /^https?:\/\//.test(_rawPbl) ? _rawPbl : null;
 
         const startDate = mission.start_date ? new Date(mission.start_date) : null;
         const endDate = mission.end_date ? new Date(mission.end_date) : null;
@@ -108,9 +109,9 @@
             <h1 style="font-size:1.8rem;font-weight:800;color:#fff;margin:0;">
               Mission ${String(mission.number).padStart(2, '0')}
             </h1>
-            <a href="${pblLink}" target="_blank" class="btn btn-outline btn-sm" style="font-size:.8rem;">
+            ${pblLink ? `<a href="${pblLink}" target="_blank" class="btn btn-outline btn-sm" style="font-size:.8rem;">
               <i class="fa-solid fa-arrow-up-right-from-square"></i> PBL 과제 페이지 이동
-            </a>
+            </a>` : ''}
           </div>
           <h2 style="font-size:1.3rem;font-weight:700;color:#fff;margin-top:8px;">${escapeHTML(mission.title)}</h2>
           <div class="mission-desc">${typeof marked !== 'undefined' ? DOMPurify.sanitize(marked.parse(mission.description || '')) : escapeHTML(mission.description || '')}</div>
@@ -182,6 +183,11 @@
                   </span>
                   <time style="color:#666;font-size:.8rem;">${new Date(s.submitted_at).toLocaleString('ko-KR')}</time>
                 </div>
+                ${s.screenshot_paths && s.screenshot_paths.length > 0 ? `
+                  <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+                    ${s.screenshot_paths.map((p, i) => `<a href="${escapeHTML(p)}" target="_blank" style="display:block;width:80px;height:80px;border-radius:6px;overflow:hidden;border:1px solid #333;"><img src="${escapeHTML(p)}" alt="스크린샷 ${i+1}" style="width:100%;height:100%;object-fit:cover;"></a>`).join('')}
+                  </div>
+                ` : ''}
                 ${s.review ? `
                   <div style="background:#111;padding:12px;border-radius:8px;margin-top:8px;">
                     ${s.review.ai_score !== null ? `<div style="color:#FF7710;font-weight:600;margin-bottom:4px;">AI 점수: ${s.review.ai_score}/100</div>` : ''}
@@ -205,9 +211,20 @@
             `).join('')}
           `;
 
-          // 합격했거나 2회 제출했으면 폼 숨김
-          const done = submissions.some(s => s.status === 'passed') || submissions.length >= 2;
+          // 합격했거나 최대 횟수 제출했으면 폼 숨김 (admin/tester 제외, error 제외)
+          const maxSub = mission.max_submissions || 5;
+          const validSubs = submissions.filter(s => s.status !== 'error');
+          const done = !bypassDate && (validSubs.some(s => s.status === 'passed') || validSubs.length >= maxSub);
           if (done) document.getElementById('submitSection').style.display = 'none';
+
+          // 남은 기회 경고 배너 (error 제외)
+          const remaining = maxSub - validSubs.length;
+          if (!done && remaining <= 2 && remaining > 0 && !bypassDate) {
+            const warningEl = document.createElement('div');
+            warningEl.style.cssText = 'margin-top:12px;padding:14px 18px;background:#1a1a1a;border:1px solid #f59e0b;border-radius:8px;color:#f59e0b;font-weight:600;font-size:.9rem;';
+            warningEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> 남은 제출 기회가 ${remaining}번입니다. 신중하게 제출하세요!`;
+            document.getElementById('submitSection').prepend(warningEl);
+          }
         }
 
       } catch (err) {
@@ -224,7 +241,11 @@
       btn.innerHTML = '<span class="spinner"></span> 제출 중...';
       try {
         const fd = new FormData(e.target);
-        await submitAssignment(fd);
+        const result = await submitAssignment(fd);
+        if (result && result.warning) {
+          showToast('warning', result.warning);
+          await new Promise(r => setTimeout(r, 1500));
+        }
         showToast('success', '과제가 제출되었습니다! AI 검사가 진행됩니다.');
         setTimeout(() => location.reload(), 1500);
       } catch (err) {

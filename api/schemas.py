@@ -60,3 +60,15 @@ class Token(BaseModel):
 class AdminReviewUpdate(BaseModel):
     approved: bool
     comment: Optional[str] = None
+
+
+class SetRoleRequest(BaseModel):
+    role: str
+
+    @field_validator("role")
+    @classmethod
+    def validate_role(cls, v: str) -> str:
+        allowed = ("baby_lion", "admin", "tester")
+        if v not in allowed:
+            raise ValueError(f"역할은 {', '.join(allowed)} 중 하나여야 합니다")
+        return v

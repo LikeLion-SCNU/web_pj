@@ -185,6 +185,7 @@ img { max-width: 100%; display: block; }
 .badge-rejected{ background: rgba(239,68,68,.15); color: var(--error); }
 .badge-pending { background: rgba(245,158,11,.15); color: var(--warning); }
 .badge-reviewing { background: rgba(59,130,246,.15); color: var(--info); }
+.badge-error     { background: rgba(239,68,68,.15); color: #f87171; }
 
 /* ---- Forms ---- */
 .form-group { margin-bottom: 1.25rem; }
@@ -381,6 +382,7 @@ img { max-width: 100%; display: block; }
 }
 .toast-success { background: var(--success); }
 .toast-error   { background: var(--error); }
+.toast-warning { background: #f59e0b; color: #000; }
 @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
 /* ---- Mission Card States ---- */
