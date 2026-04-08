@@ -81,3 +81,49 @@ def send_approval_notification(to_email: str, name: str, approved: bool) -> bool
         """
 
     return _send_html_email(to_email, f"[멋쟁이사자처럼 순천대] 회원가입이 {status}되었습니다", body)
+
+
+def send_review_notification(
+    to_email: str, name: str, mission_number: int, mission_title: str,
+    passed: bool, comment: str | None = None,
+) -> bool:
+    safe_name = html_lib.escape(name)
+    safe_title = html_lib.escape(mission_title)
+    safe_comment = html_lib.escape(comment) if comment else ""
+    status = "합격" if passed else "반려"
+    color = "#4ade80" if passed else "#f87171"
+    icon = "🎉" if passed else "📝"
+
+    comment_section = ""
+    if safe_comment:
+        comment_section = f"""
+            <div style="background: #0d0d0d; padding: 16px; border-radius: 8px; margin-top: 16px; border-left: 3px solid {color};">
+                <p style="color: #888; font-size: 13px; margin: 0 0 8px;">운영진 코멘트</p>
+                <p style="color: #ccc; margin: 0;">{safe_comment}</p>
+            </div>
+        """
+
+    action_text = "다음 미션도 화이팅!" if passed else "피드백을 확인하고 다시 제출해보세요!"
+
+    html = f"""
+    <div style="font-family: 'Pretendard', sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #0d0d0d; color: #fff; border-radius: 16px;">
+        <div style="text-align: center; margin-bottom: 24px;">
+            <h1 style="color: #FF7710; margin: 0; font-size: 24px;">LIKELION UNIV. x SCNU</h1>
+            <p style="color: #888; margin-top: 8px;">PBL 과제 검사 결과</p>
+        </div>
+        <div style="background: #1a1a1a; padding: 24px; border-radius: 12px; text-align: center;">
+            <p style="font-size: 32px; margin: 0;">{icon}</p>
+            <h2 style="color: {color}; margin: 12px 0 8px;">Mission {str(mission_number).zfill(2)} {status}</h2>
+            <p style="color: #fff; font-weight: 600; margin: 0;">{safe_title}</p>
+            <p style="color: #ccc; margin-top: 16px;">{safe_name}님, 제출하신 과제가 <strong style="color: {color};">{status}</strong> 처리되었습니다.</p>
+            {comment_section}
+            <p style="color: #888; margin-top: 16px; font-size: 14px;">{action_text}</p>
+        </div>
+        <div style="text-align: center; margin-top: 24px;">
+            <a href="{SITE_URL}/pages/my" style="background: #FF7710; color: #fff; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 600;">내 현황 확인하기</a>
+        </div>
+        <p style="color: #555; font-size: 12px; text-align: center; margin-top: 16px;">본 메일은 발신 전용입니다.</p>
+    </div>
+    """
+
+    return _send_html_email(to_email, f"[멋쟁이사자처럼 순천대] Mission {str(mission_number).zfill(2)} {status} 알림", html)

@@ -8,7 +8,7 @@ from auth import require_admin
 from database import get_db
 from models import User, Mission, Submission, Review
 from schemas import AdminReviewUpdate, SetRoleRequest
-from services.email_service import send_approval_notification
+from services.email_service import send_approval_notification, send_review_notification
 from utils import utcnow
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
@@ -121,10 +121,16 @@ def set_user_role(user_id: int, data: SetRoleRequest, db: Session = Depends(get_
 def admin_review_submission(
     submission_id: int,
     data: AdminReviewUpdate,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     admin: User = Depends(require_admin),
 ):
-    submission = db.query(Submission).filter(Submission.id == submission_id).first()
+    submission = (
+        db.query(Submission)
+        .options(joinedload(Submission.user), joinedload(Submission.mission))
+        .filter(Submission.id == submission_id)
+        .first()
+    )
     if not submission:
         raise HTTPException(404, "제출을 찾을 수 없습니다")
 
@@ -138,6 +144,17 @@ def admin_review_submission(
     review.reviewed_at = utcnow()
     submission.status = "passed" if data.approved else "rejected"
     db.commit()
+
+    # 합격/반려 이메일 알림
+    background_tasks.add_task(
+        send_review_notification,
+        to_email=submission.user.email,
+        name=submission.user.name,
+        mission_number=submission.mission.number,
+        mission_title=submission.mission.title,
+        passed=data.approved,
+        comment=data.comment,
+    )
 
     return {"message": "합격 처리 완료" if data.approved else "반려 처리 완료"}
 
