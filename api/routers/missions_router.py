@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, joinedload
 
 from auth import get_current_user
+from config import MAX_SUBMISSIONS_PER_MISSION
 from database import get_db
 from models import User, Mission, Submission
 from utils import utcnow
@@ -87,6 +88,7 @@ def get_mission(mission_id: int, db: Session = Depends(get_db), user: User = Dep
         "pbl_link": mission.pbl_link,
         "start_date": mission.start_date.isoformat() if mission.start_date else None,
         "end_date": mission.end_date.isoformat() if mission.end_date else None,
+        "max_submissions": MAX_SUBMISSIONS_PER_MISSION,
         "submissions": [
             {
                 "id": s.id,

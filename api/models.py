@@ -55,7 +55,7 @@ class Submission(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     mission_id = Column(Integer, ForeignKey("missions.id"), nullable=False)
-    attempt = Column(Integer, default=1)  # 1 or 2
+    attempt = Column(Integer, default=1)  # 1~5
     github_url = Column(String(500))
     deploy_url = Column(String(500))
     figma_url = Column(String(500))

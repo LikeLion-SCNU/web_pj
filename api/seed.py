@@ -27,9 +27,29 @@ MISSION_SCHEDULE = {
 }
 
 
+def update_mission_schedule(db):
+    """기존 미션의 시작일/종료일을 MISSION_SCHEDULE에 맞게 업데이트"""
+    missions = db.query(Mission).all()
+    updated = 0
+    for m in missions:
+        schedule = MISSION_SCHEDULE.get(m.number)
+        if not schedule:
+            continue
+        start_date = datetime.strptime(schedule[0], "%Y-%m-%d")
+        end_date = datetime.strptime(schedule[1], "%Y-%m-%d").replace(hour=23, minute=59, second=59)
+        if m.start_date != start_date or m.end_date != end_date:
+            m.start_date = start_date
+            m.end_date = end_date
+            updated += 1
+    if updated:
+        db.commit()
+        print(f"{updated}개 미션 스케줄이 업데이트되었습니다.")
+
+
 def seed_missions(db):
     if db.query(Mission).count() > 0:
-        print("미션 데이터가 이미 존재합니다. 건너뜁니다.")
+        print("미션 데이터가 이미 존재합니다. 스케줄만 업데이트합니다.")
+        update_mission_schedule(db)
         return
 
     data_path = os.path.join(os.path.dirname(__file__), "missions.json")

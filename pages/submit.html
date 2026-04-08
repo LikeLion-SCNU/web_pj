@@ -205,9 +205,19 @@
             `).join('')}
           `;
 
-          // 합격했거나 2회 제출했으면 폼 숨김
-          const done = submissions.some(s => s.status === 'passed') || submissions.length >= 2;
+          // 합격했거나 최대 횟수 제출했으면 폼 숨김 (admin/tester 제외)
+          const maxSub = mission.max_submissions || 5;
+          const done = !bypassDate && (submissions.some(s => s.status === 'passed') || submissions.length >= maxSub);
           if (done) document.getElementById('submitSection').style.display = 'none';
+
+          // 남은 기회 경고 배너
+          const remaining = maxSub - submissions.length;
+          if (!done && remaining <= 2 && remaining > 0 && !bypassDate) {
+            const warningEl = document.createElement('div');
+            warningEl.style.cssText = 'margin-top:12px;padding:14px 18px;background:#1a1a1a;border:1px solid #f59e0b;border-radius:8px;color:#f59e0b;font-weight:600;font-size:.9rem;';
+            warningEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> 남은 제출 기회가 ${remaining}번입니다. 신중하게 제출하세요!`;
+            document.getElementById('submitSection').prepend(warningEl);
+          }
         }
 
       } catch (err) {
@@ -224,7 +234,11 @@
       btn.innerHTML = '<span class="spinner"></span> 제출 중...';
       try {
         const fd = new FormData(e.target);
-        await submitAssignment(fd);
+        const result = await submitAssignment(fd);
+        if (result && result.warning) {
+          showToast('warning', result.warning);
+          await new Promise(r => setTimeout(r, 1500));
+        }
         showToast('success', '과제가 제출되었습니다! AI 검사가 진행됩니다.');
         setTimeout(() => location.reload(), 1500);
       } catch (err) {

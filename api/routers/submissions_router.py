@@ -56,7 +56,7 @@ def create_submission(
         .filter(Submission.user_id == user.id, Submission.mission_id == mission_id)
         .count()
     )
-    if existing >= MAX_SUBMISSIONS_PER_MISSION:
+    if existing >= MAX_SUBMISSIONS_PER_MISSION and user.role not in ("admin", "tester"):
         raise HTTPException(400, f"미션당 최대 {MAX_SUBMISSIONS_PER_MISSION}번까지 제출할 수 있습니다")
 
     screenshot_path = None
@@ -123,7 +123,11 @@ def create_submission(
 
     background_tasks.add_task(run_ai_review, submission.id)
 
-    return {"id": submission.id, "status": submission.status, "attempt": submission.attempt}
+    remaining = MAX_SUBMISSIONS_PER_MISSION - submission.attempt
+    result = {"id": submission.id, "status": submission.status, "attempt": submission.attempt, "remaining": remaining}
+    if remaining <= 2:
+        result["warning"] = f"⚠️ 남은 제출 기회가 {remaining}번입니다. 신중하게 제출하세요!"
+    return result
 
 
 @router.get("/my")
