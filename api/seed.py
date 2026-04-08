@@ -73,12 +73,18 @@ def update_mission_content(db):
         if m.pbl_link != src.get("pbl_link"):
             m.pbl_link = src.get("pbl_link")
             changed = True
+        if m.submission_type != src.get("submission_type", "github"):
+            m.submission_type = src.get("submission_type", "github")
+            changed = True
+        if m.estimated_hours != src.get("estimated_hours", 20):
+            m.estimated_hours = src.get("estimated_hours", 20)
+            changed = True
         if changed:
             updated += 1
 
     if updated:
         db.commit()
-        print(f"{updated}개 미션 콘텐츠(체크리스트/설명)가 업데이트되었습니다.")
+        print(f"{updated}개 미션 콘텐츠가 업데이트되었습니다.")
 
 
 def seed_missions(db):

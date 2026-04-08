@@ -60,6 +60,8 @@ class Submission(Base):
     deploy_url = Column(String(500))
     figma_url = Column(String(500))
     screenshot_path = Column(String(500))
+    screenshot_path2 = Column(String(500))
+    screenshot_path3 = Column(String(500))
     description = Column(Text)
     status = Column(String(20), default="pending")  # pending, reviewing, passed, rejected
     submitted_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))

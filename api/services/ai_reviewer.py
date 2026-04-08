@@ -103,9 +103,10 @@ def run_ai_review(submission_id: int):
 
         # 메시지 조립 (스크린샷이 있으면 Vision 멀티모달)
         user_content_parts = [{"type": "text", "text": user_prompt}]
-        screenshot_data = encode_screenshot(submission.screenshot_path)
-        if screenshot_data:
-            user_content_parts.append(screenshot_data)
+        for path in [submission.screenshot_path, submission.screenshot_path2, submission.screenshot_path3]:
+            screenshot_data = encode_screenshot(path)
+            if screenshot_data:
+                user_content_parts.append(screenshot_data)
 
         messages = [
             {"role": "system", "content": system_content},

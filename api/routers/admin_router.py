@@ -213,6 +213,7 @@ def list_submissions(
             "deploy_url": s.deploy_url,
             "figma_url": s.figma_url,
             "screenshot_path": s.screenshot_path,
+            "screenshot_paths": [p for p in [s.screenshot_path, s.screenshot_path2, s.screenshot_path3] if p],
             "description": s.description,
             "team": s.user.team,
             "submitted_at": s.submitted_at.isoformat(),

@@ -101,6 +101,7 @@ def get_mission(mission_id: int, db: Session = Depends(get_db), user: User = Dep
                 "deploy_url": s.deploy_url,
                 "figma_url": s.figma_url,
                 "screenshot_path": s.screenshot_path,
+                "screenshot_paths": [p for p in [s.screenshot_path, s.screenshot_path2, s.screenshot_path3] if p],
                 "review": {
                     "ai_score": s.review.ai_score,
                     "ai_summary": s.review.ai_summary,

@@ -123,8 +123,10 @@ def build_submission_context(submission: Submission, mission: Mission) -> tuple[
         parts.append(f"\n### Figma URL\n{_sanitize_student_input(submission.figma_url)}")
         parts.append("(Figma 내용은 직접 확인할 수 없으므로 URL 존재 여부와 설명을 참고)")
 
-    if submission.screenshot_path:
-        parts.append("\n### 스크린샷\n첨부된 스크린샷 이미지를 시각적으로 분석하세요. "
+    screenshot_paths = [p for p in [submission.screenshot_path, submission.screenshot_path2, submission.screenshot_path3] if p]
+    if screenshot_paths:
+        count = len(screenshot_paths)
+        parts.append(f"\n### 스크린샷 ({count}장)\n첨부된 스크린샷 {count}장을 시각적으로 분석하세요. "
                      "디자인/기획 트랙의 경우 스크린샷이 핵심 평가 자료입니다.")
 
     if submission.description:
