@@ -391,11 +391,13 @@
     "title": "HTML/CSS 기초",
     "description": "아기사자 자기소개 정적 웹페이지 만들기",
     "checklist": [
-      "index.html + style.css 파일이 분리되었는가",
-      "시맨틱 HTML 태그를 사용했는가",
-      "Flexbox를 활용한 레이아웃인가",
-      "프로필 이미지,이름,파트,한줄소개가 포함되었는가",
-      "인라인 스타일이 없는가"
+      "index.html과 style.css 파일이 분리되어 있는가",
+      "시맨틱 HTML 태그(header, main, section, footer 등)를 사용했는가",
+      "Flexbox를 활용한 레이아웃 배치가 적용되었는가",
+      "요약 카드에 프로필 이미지, 이름, 파트, 한줄소개가 포함되었는가",
+      "상세 정보 영역에 자기소개, 관심 기술(3개+), 연락처가 포함되었는가",
+      "margin, padding, border로 박스 모델이 적절히 적용되었는가",
+      "인라인 스타일 없이 외부 CSS만 사용했는가"
     ],
     "submission_type": "github",
     "estimated_hours": 4,
@@ -408,10 +410,13 @@
     "title": "CSS 레이아웃 & 반응형",
     "description": "아기사자 명단 대시보드를 반응형으로 제작",
     "checklist": [
-      "Grid 레이아웃이 적용되었는가",
-      "모바일/태블릿/데스크톱 반응형이 동작하는가",
-      "Media Query가 사용되었는가",
-      "여러 명의 카드가 그리드로 배치되는가"
+      "CSS Grid로 여러 명의 카드가 그리드 배치되는가",
+      "모바일(1열), 태블릿(2열), 데스크톱(3열) 반응형이 동작하는가",
+      "Media Query가 적절히 사용되었는가",
+      "프로필 이미지 위에 배지가 오버레이 형태로 표시되는가",
+      "내 카드가 시각적으로 구분되는가",
+      "하단에 상세 자기소개 1열 목록 영역이 있는가",
+      "Flexbox와 Grid를 용도에 맞게 구분하여 사용했는가"
     ],
     "submission_type": "github",
     "estimated_hours": 5,
@@ -424,10 +429,13 @@
     "title": "JavaScript 기초",
     "description": "명단 추가/삭제가 가능한 인터랙티브 대시보드",
     "checklist": [
-      "DOM 조작으로 요소를 동적 생성하는가",
-      "이벤트 리스너가 addEventListener로 등록되었는가",
-      "추가/삭제 기능이 동작하는가",
-      "인라인 이벤트 핸들러가 없는가"
+      "addEventListener로 이벤트 리스너가 등록되었는가(인라인 핸들러 없음)",
+      "DOM 조작으로 카드 요소를 동적 생성하는가",
+      "아기사자 추가 폼이 토글(열기/닫기) 방식으로 동작하는가",
+      "이름, 파트, 관심기술, 한줄소개 입력 필드가 있는가",
+      "추가/삭제 시 총 인원 수가 동적으로 업데이트되는가",
+      "입력값 유효성 검사(빈 값 등)가 있는가",
+      "데이터를 배열/객체로 관리하고 UI를 렌더링하는 구조인가"
     ],
     "submission_type": "github",
     "estimated_hours": 6,
@@ -440,10 +448,14 @@
     "title": "JS 비동기와 데이터",
     "description": "외부 API 데이터를 불러와 명단 갱신",
     "checklist": [
-      "fetch API를 사용했는가",
-      "async/await 문법을 사용했는가",
-      "로딩/에러 상태가 표시되는가",
-      "필터/검색 기능이 동작하는가"
+      "fetch API로 외부 데이터를 가져오는가",
+      "async/await 문법이 사용되었는가",
+      "로딩 상태(불러오는 중...)가 표시되는가",
+      "실패 시 에러 메시지와 재시도 UI가 제공되는가",
+      "로딩 중 버튼 비활성화로 중복 요청을 방지하는가",
+      "파트별 필터(전체/Frontend/Backend/Design)가 동작하는가",
+      "이름 검색 기능이 동작하는가",
+      "정렬 기능(최신순/이름순 등)이 동작하는가"
     ],
     "submission_type": "github",
     "estimated_hours": 6,
@@ -457,9 +469,12 @@
     "description": "대시보드 UI를 React 컴포넌트로 재구성",
     "checklist": [
       "함수형 컴포넌트로 작성되었는가",
-      "Props로 데이터가 전달되는가",
-      "컴포넌트가 적절히 분리되었는가",
-      "map을 활용한 리스트 렌더링이 있는가"
+      "Props로 부모→자식 데이터가 전달되는가",
+      "Header, ProfileCard, DetailList 등 역할 기준으로 컴포넌트가 분리되었는가",
+      "map()을 활용한 리스트 렌더링이 있는가",
+      "JSX 문법이 올바르게 사용되었는가",
+      "컴포넌트 간 데이터 흐름이 명확한가(단방향)",
+      "반응형 레이아웃(1~3열)이 유지되는가"
     ],
     "submission_type": "github",
     "estimated_hours": 7,
@@ -472,10 +487,13 @@
     "title": "상태와 Effect",
     "description": "useState/useEffect를 활용한 동적 기능",
     "checklist": [
-      "useState로 상태 관리가 되는가",
-      "useEffect로 데이터 로딩이 구현되었는가",
-      "폼 입력이 상태로 관리되는가",
-      "추가/삭제가 실제로 동작하는가"
+      "useState로 명단 데이터 상태를 관리하는가",
+      "useEffect로 초기 데이터 로딩이 구현되었는가",
+      "폼 입력값이 상태(controlled component)로 관리되는가",
+      "추가/삭제 기능이 상태 업데이트로 동작하는가",
+      "외부 데이터 fetch 시 로딩/실패/재시도 상태가 표시되는가",
+      "파트 필터/정렬/검색이 상태 기반으로 동작하는가",
+      "랜덤 1명/5명 추가, 전체 새로고침 기능이 있는가"
     ],
     "submission_type": "github",
     "estimated_hours": 8,
@@ -488,10 +506,13 @@
     "title": "React Router",
     "description": "목록/상세 페이지 SPA 라우팅",
     "checklist": [
-      "React Router v6을 사용했는가",
-      "목록→상세 페이지 이동이 되는가",
-      "URL 파라미터로 상세 데이터를 표시하는가",
-      "뒤로가기/앞으로가기가 동작하는가"
+      "React Router v6이 적용되었는가",
+      "목록 페이지와 상세 프로필 페이지가 분리되었는가",
+      "요약 카드 클릭 시 상세 페이지로 이동하는가",
+      "URL 파라미터(/lions/:id)로 상세 데이터를 표시하는가",
+      "브라우저 뒤로가기/앞으로가기가 정상 동작하는가",
+      "필터/정렬/검색이 URL 쿼리 파라미터에 반영되는가",
+      "상세 페이지에서 목록으로 돌아가는 UI가 있는가"
     ],
     "submission_type": "github",
     "estimated_hours": 5,
@@ -504,10 +525,14 @@
     "title": "TypeScript 기초",
     "description": "기존 프로젝트를 TypeScript로 마이그레이션",
     "checklist": [
-      ".tsx/.ts 파일로 변환되었는가",
-      "컴포넌트 Props에 타입이 지정되었는가",
+      "모든 컴포넌트가 .tsx 확장자로 작성되었는가",
+      "유틸리티/훅/데이터 파일이 .ts 확장자인가",
+      "컴포넌트 Props에 interface/type으로 타입이 정의되었는가",
+      "useState에 제네릭으로 상태 타입이 명시되었는가",
+      "이벤트 핸들러의 이벤트 객체에 적절한 타입이 지정되었는가",
+      "공통 타입이 별도 파일(types/)로 분리되었는가",
       "any 타입이 최소화되었는가",
-      "tsc 빌드가 에러 없이 통과하는가"
+      "빌드(tsc) 시 타입 에러 없이 통과하는가"
     ],
     "submission_type": "github",
     "estimated_hours": 6,
@@ -520,10 +545,13 @@
     "title": "Supabase 연동",
     "description": "실제 DB 연동 명단 관리 앱",
     "checklist": [
-      "Supabase 테이블이 생성되었는가",
-      "CRUD 기능이 DB와 연동되는가",
-      "로그인/회원가입이 구현되었는가",
-      "환경변수로 API 키가 관리되는가"
+      "Supabase 테이블이 생성되고 CRUD가 DB와 연동되는가",
+      "회원가입/로그인 페이지가 구현되었는가",
+      "로그인 시 사용자 이메일이 표시되고 로그아웃이 가능한가",
+      "비로그인 사용자는 조회만, 로그인 사용자만 추가/삭제 가능한가",
+      "Row Level Security(RLS)가 설정되었는가",
+      "환경변수(.env)로 Supabase API 키가 관리되는가",
+      "새로고침/다른 기기에서도 동일 데이터가 유지되는가"
     ],
     "submission_type": "deploy",
     "estimated_hours": 8,
@@ -536,10 +564,14 @@
     "title": "최종 서비스 완성 & 배포",
     "description": "Vercel 배포 + 코드 정리 + 동료 리뷰",
     "checklist": [
-      "Vercel/Netlify에 배포되었는가",
-      "빌드 에러가 없는가",
-      "콘솔에 불필요한 로그가 없는가",
-      "README가 작성되었는가"
+      "Vercel에 배포되어 URL로 접근 가능한가",
+      "GitHub 연결로 자동 배포(CD)가 구성되었는가",
+      "빌드(yarn build) 에러 없이 통과하는가",
+      "브라우저 콘솔에 불필요한 console.log/에러가 없는가",
+      "모바일/태블릿/데스크톱 반응형이 정상 동작하는가",
+      "환경변수가 Vercel에 올바르게 설정되었는가",
+      "사용하지 않는 변수/import/컴포넌트가 제거되었는가",
+      "동료 2명 이상의 피드백을 받고 1개 이상 반영했는가"
     ],
     "submission_type": "deploy",
     "estimated_hours": 4,
