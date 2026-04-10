@@ -130,7 +130,9 @@ def resend_code(data: UserLogin, db: Session = Depends(get_db)):
     user.verification_expires_at = utcnow() + timedelta(minutes=VERIFY_CODE_EXPIRE_MINUTES)
     db.commit()
 
-    send_verification_email(user.email, user.name, code)
+    success = send_verification_email(user.email, user.name, code)
+    if not success:
+        raise HTTPException(500, "이메일 발송에 실패했습니다. 운영진에게 문의해주세요.")
     return {"message": "인증 코드가 재전송되었습니다."}
 
 

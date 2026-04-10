@@ -15,8 +15,8 @@ def generate_verification_code() -> str:
 def _send_html_email(to_email: str, subject: str, html_body: str) -> bool:
     """SMTP로 HTML 이메일을 전송하는 공통 헬퍼"""
     if not SMTP_PASSWORD:
-        print(f"[SMTP] 비밀번호 미설정. 이메일 발송 건너뜀: {subject}")
-        return True
+        print(f"[SMTP] ⚠️ SMTP_PASSWORD 환경변수 미설정. 이메일 발송 불가: to={to_email}, subject={subject}")
+        return False
 
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
@@ -25,13 +25,20 @@ def _send_html_email(to_email: str, subject: str, html_body: str) -> bool:
     msg.attach(MIMEText(html_body, "html"))
 
     try:
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=15) as server:
             server.starttls()
             server.login(SMTP_USER, SMTP_PASSWORD)
             server.sendmail(SMTP_USER, to_email, msg.as_string())
+        print(f"[SMTP] ✓ 이메일 발송 성공: to={to_email}, subject={subject}")
         return True
+    except smtplib.SMTPAuthenticationError as e:
+        print(f"[SMTP] ✗ 인증 실패 (SMTP_USER/SMTP_PASSWORD 확인 필요): {e}")
+        return False
+    except smtplib.SMTPException as e:
+        print(f"[SMTP] ✗ SMTP 오류: {type(e).__name__}: {e}")
+        return False
     except Exception as e:
-        print(f"[SMTP] 이메일 발송 실패: {type(e).__name__}")
+        print(f"[SMTP] ✗ 발송 실패: {type(e).__name__}: {e}")
         return False
 
 
