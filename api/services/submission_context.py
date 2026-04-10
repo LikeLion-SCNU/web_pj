@@ -8,6 +8,7 @@ from config import UPLOAD_DIR, MAX_SCREENSHOT_SIZE
 from models import Submission, Mission
 from services.github_fetcher import fetch_repo_code
 from services.deploy_analyzer import fetch_deploy_preview
+from services.figma_fetcher import fetch_figma_file
 
 
 def encode_screenshot(screenshot_path: str) -> dict | None:
@@ -58,17 +59,60 @@ def _sanitize_student_input(text: str) -> str:
     return re.sub(r'</?student_submission\s*>', '[태그 제거됨]', text, flags=re.IGNORECASE)
 
 
-def build_submission_context(submission: Submission, mission: Mission) -> tuple[str, bool]:
+def _sanitize_figma_text(text: str) -> str:
+    """Figma 레이어/컴포넌트 이름의 프롬프트 인젝션 방어.
+
+    학생이 레이어 이름으로 프롬프트 인젝션을 시도할 수 있으므로 강하게 방어:
+    - XML/HTML 태그 제거
+    - 마크다운 헤더(###) 제거
+    - 역할 지시어(system:, assistant: 등) 제거
+    - 제어 문자 제거
+    - 길이 100자 제한
+    """
+    if not text:
+        return ""
+    # 1. student_submission 태그 탈출 방지
+    text = re.sub(r'</?student_submission\s*>', '[제거됨]', text, flags=re.IGNORECASE)
+    # 2. 다른 구조 태그 중화 (<, > → 전각 문자로 치환)
+    text = text.replace('<', '＜').replace('>', '＞')
+    # 3. 마크다운 헤더/구분선 중화 (# → 전각)
+    text = re.sub(r'(?m)^[#\-=*]{2,}', '', text)
+    # 4. 역할 지시어 중화 (대소문자 무관)
+    text = re.sub(
+        r'(?i)\b(system|assistant|user|instruction)\s*:',
+        '[제거됨]:',
+        text,
+    )
+    # 5. 인젝션 패턴 중화
+    text = re.sub(
+        r'(?i)(ignore\s+(all\s+)?previous|disregard\s+(all\s+)?(previous|instructions)|forget\s+everything)',
+        '[제거됨]',
+        text,
+    )
+    # 6. 제어 문자 및 줄바꿈 제거
+    text = re.sub(r'[\x00-\x1f\x7f]', ' ', text)
+    # 7. 길이 제한
+    return text[:100]
+
+
+def build_submission_context(submission: Submission, mission: Mission) -> tuple[str, dict]:
     """제출물 정보를 AI에게 전달할 컨텍스트로 구성.
 
     Returns:
-        (context_str, github_fetch_ok):
+        (context_str, fetch_status):
         - context_str: AI에 전달할 텍스트
-        - github_fetch_ok: GitHub URL이 있는 경우 코드를 성공적으로 가져왔는지 여부.
-          GitHub URL이 없으면 True (해당 없음).
+        - fetch_status: {
+            "github_ok": bool,   # GitHub URL 없으면 True
+            "figma_ok": bool,    # Figma URL 없으면 True
+            "figma_images": list # Vision API에 전달할 Figma 썸네일 이미지
+          }
     """
     parts = ["<student_submission>"]
-    github_fetch_ok = True  # GitHub URL이 없으면 True (해당 없음)
+    fetch_status = {
+        "github_ok": True,
+        "figma_ok": True,
+        "figma_images": [],
+    }
 
     if submission.github_url:
         parts.append(f"\n### GitHub 레포지토리\nURL: {_sanitize_student_input(submission.github_url)}")
@@ -106,7 +150,7 @@ def build_submission_context(submission: Submission, mission: Mission) -> tuple[
                     parts.append(f"\n--- {path} ---")
                     parts.append(content)
         else:
-            github_fetch_ok = False
+            fetch_status["github_ok"] = False
             error_msg = repo_data["error"] if repo_data else "GitHub API 접근 실패"
             parts.append(f"⚠️ {error_msg}")
 
@@ -121,7 +165,55 @@ def build_submission_context(submission: Submission, mission: Mission) -> tuple[
 
     if submission.figma_url:
         parts.append(f"\n### Figma URL\n{_sanitize_student_input(submission.figma_url)}")
-        parts.append("(Figma 내용은 직접 확인할 수 없으므로 URL 존재 여부와 설명을 참고)")
+        figma_data = fetch_figma_file(submission.figma_url)
+        if figma_data and "error" not in figma_data:
+            # 파일명은 _summarize_document에서 이미 200자로 제한됨
+            file_name_raw = figma_data.get('file_name', '')
+            parts.append(f"파일명: {_sanitize_figma_text(file_name_raw)}")
+            parts.append(f"최종 수정일: {_sanitize_figma_text(figma_data.get('last_modified', '?'))}")
+            parts.append(f"페이지 수: {figma_data.get('page_count', 0)}개")
+            parts.append(f"총 프레임: {figma_data.get('total_frames', 0)}개")
+            parts.append(f"텍스트 레이어: {figma_data.get('text_layers', 0)}개")
+            parts.append(f"컴포넌트: {figma_data.get('total_components', 0)}개")
+            parts.append(f"컴포넌트 세트(Variants): {figma_data.get('total_component_sets', 0)}개")
+            parts.append(f"Auto Layout 사용: {'예' if figma_data.get('has_auto_layout') else '아니오'} ({figma_data.get('auto_layout_count', 0)}개 노드)")
+
+            style_counts = figma_data.get("style_counts", {})
+            parts.append(
+                f"로컬 스타일 — 색상:{style_counts.get('FILL', 0)}, "
+                f"텍스트:{style_counts.get('TEXT', 0)}, "
+                f"효과:{style_counts.get('EFFECT', 0)}, "
+                f"그리드:{style_counts.get('GRID', 0)}"
+            )
+
+            # 페이지 목록
+            pages = figma_data.get("pages", [])
+            if pages:
+                parts.append(f"\n### 페이지 목록 ({len(pages)}개)")
+                for p in pages[:15]:
+                    page_name = _sanitize_figma_text(p.get("name", ""))
+                    parts.append(f"- {page_name} (프레임 {p.get('frame_count', 0)}개)")
+
+            # 샘플 프레임
+            sampled = figma_data.get("sampled_frames", [])
+            if sampled:
+                parts.append(f"\n### 주요 프레임 샘플 (상위 {min(len(sampled), 15)}개)")
+                for fr in sampled[:15]:
+                    fr_name = _sanitize_figma_text(fr.get("name", ""))
+                    parts.append(
+                        f"- {fr_name} [{fr.get('page', '')}] "
+                        f"{fr.get('width', 0)}x{fr.get('height', 0)} "
+                        f"자식 {fr.get('children_count', 0)}개"
+                    )
+
+            # 썸네일은 별도로 Vision API에 전달
+            fetch_status["figma_images"] = figma_data.get("thumbnails_encoded", [])
+            if fetch_status["figma_images"]:
+                parts.append(f"\n(Figma 주요 화면 {len(fetch_status['figma_images'])}장이 이미지로 첨부되어 시각 분석 가능)")
+        else:
+            fetch_status["figma_ok"] = False
+            error_msg = figma_data["error"] if figma_data else "Figma URL 형식이 올바르지 않거나 파싱에 실패했습니다."
+            parts.append(f"⚠️ {error_msg}")
 
     screenshot_paths = [p for p in [submission.screenshot_path, submission.screenshot_path2, submission.screenshot_path3] if p]
     if screenshot_paths:
@@ -133,4 +225,4 @@ def build_submission_context(submission: Submission, mission: Mission) -> tuple[
         parts.append(f"\n### 학생 설명\n{_sanitize_student_input(submission.description)}")
 
     parts.append("\n</student_submission>")
-    return "\n".join(parts), github_fetch_ok
+    return "\n".join(parts), fetch_status
