@@ -8,6 +8,14 @@ if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL 환경변수가 설정되지 않았습니다. .env 파일을 확인하세요.")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
+FIGMA_TOKEN = os.getenv("FIGMA_TOKEN", "")
+
+# Figma fetch 설정
+FIGMA_MAX_NODES_SAMPLED = 30   # 샘플링할 최대 프레임/컴포넌트 수
+FIGMA_MAX_THUMBNAILS = 3       # Vision API 전달 최대 썸네일 수
+FIGMA_MAX_FILE_DEPTH = 4       # 문서 트리 탐색 최대 깊이
+FIGMA_MAX_NODES_VISITED = 2000 # 트리 순회 시 최대 방문 노드 수
+FIGMA_REQUEST_TIMEOUT = 15     # 초
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24시간
 ALGORITHM = "HS256"

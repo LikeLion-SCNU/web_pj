@@ -79,11 +79,11 @@ def run_ai_review(submission_id: int):
         # 프롬프트 조립
         track_guide = TRACK_PROMPTS.get(mission.track, "")
         mission_context = build_mission_context(mission)
-        submission_context, github_fetch_ok = build_submission_context(submission, mission)
+        submission_context, fetch_status = build_submission_context(submission, mission)
 
         # GitHub 제출인데 코드를 못 가져왔으면 AI 호출 없이 에러 처리
         needs_github = mission.submission_type in ("github", "mixed") and submission.github_url
-        if needs_github and not github_fetch_ok:
+        if needs_github and not fetch_status["github_ok"]:
             review = Review(
                 submission_id=submission_id,
                 ai_score=None,
@@ -98,15 +98,38 @@ def run_ai_review(submission_id: int):
             print(f"[AI Review] Submission #{submission_id}: GitHub fetch 실패 → error 처리")
             return
 
+        # Figma 제출인데 API로 가져오지 못한 경우
+        # - submission_type="figma": 하드 에러 (Figma가 제출물의 전부)
+        # - submission_type="mixed": 경고만 (GitHub/스크린샷으로 보완 평가 가능)
+        needs_figma_strict = mission.submission_type == "figma" and submission.figma_url
+        if needs_figma_strict and not fetch_status["figma_ok"]:
+            review = Review(
+                submission_id=submission_id,
+                ai_score=None,
+                ai_summary="Figma 파일 정보를 가져올 수 없어 검사를 진행하지 못했습니다. "
+                           "Figma 파일의 공유 설정을 '링크가 있는 모든 사람 - 볼 수 있음'으로 "
+                           "변경한 후 다시 제출해주세요. 이 제출은 횟수에 포함되지 않습니다.",
+                ai_feedback=None,
+            )
+            db.add(review)
+            submission.status = "error"
+            db.commit()
+            print(f"[AI Review] Submission #{submission_id}: Figma fetch 실패 → error 처리")
+            return
+
         user_prompt = f"{mission_context}\n\n{submission_context}\n\n{RESPONSE_FORMAT}"
         system_content = SYSTEM_PROMPT + "\n\n" + track_guide
 
-        # 메시지 조립 (스크린샷이 있으면 Vision 멀티모달)
+        # 메시지 조립 (스크린샷 + Figma 썸네일 → Vision 멀티모달)
         user_content_parts = [{"type": "text", "text": user_prompt}]
+        # 학생이 업로드한 스크린샷
         for path in [submission.screenshot_path, submission.screenshot_path2, submission.screenshot_path3]:
             screenshot_data = encode_screenshot(path)
             if screenshot_data:
                 user_content_parts.append(screenshot_data)
+        # Figma API에서 가져온 프레임 썸네일
+        for figma_image in fetch_status.get("figma_images", []):
+            user_content_parts.append(figma_image)
 
         messages = [
             {"role": "system", "content": system_content},
