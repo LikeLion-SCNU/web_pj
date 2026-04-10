@@ -21,9 +21,13 @@ async function fetchAPI(endpoint, options = {}) {
 
   const data = await res.json();
 
-  if (res.status === 401 && !endpoint.startsWith('/auth/')) {
+  // 401 처리: 로그인/회원가입/이메일 인증 같은 public 엔드포인트는 제외
+  const PUBLIC_AUTH_ENDPOINTS = ['/auth/login', '/auth/register', '/auth/verify-email', '/auth/resend-verification'];
+  const isPublicAuth = PUBLIC_AUTH_ENDPOINTS.some(e => endpoint.startsWith(e));
+  if (res.status === 401 && !isPublicAuth) {
     localStorage.removeItem('pbl_token');
     localStorage.removeItem('pbl_user');
+    alert('로그인이 만료되었습니다. 다시 로그인해주세요.');
     window.location.href = '/pages/login';
     throw new Error('인증이 만료되었습니다');
   }
@@ -166,19 +170,10 @@ async function loadMissionDetail(missionId) {
 }
 
 async function submitAssignment(formData) {
-  const token = localStorage.getItem('pbl_token');
-  const res = await fetch(`${API_BASE}/submissions`, {
+  return fetchAPI('/submissions', {
     method: 'POST',
-    headers: { 'Authorization': `Bearer ${token}` },
     body: formData,
   });
-  const contentType = res.headers.get('content-type') || '';
-  if (!contentType.includes('application/json')) {
-    throw new Error('서버 응답 오류');
-  }
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.detail || 'API 오류');
-  return data;
 }
 
 // ---- My Page ----

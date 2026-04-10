@@ -50,16 +50,14 @@
     const trackNames = { planning: '기획', design: '디자인', frontend: '프론트엔드', backend: '백엔드' };
 
     (async () => {
-      // user 정보가 없으면 서버에서 가져오기
+      // 페이지 진입 시 세션 유효성 확인
       let user = getUser();
-      if (!user && isLoggedIn()) {
-        try {
-          user = await fetchAPI('/auth/me');
-          localStorage.setItem('pbl_user', JSON.stringify(user));
-          updateNav();
-        } catch (e) {
-          console.error('Failed to fetch user:', e);
-        }
+      try {
+        user = await fetchAPI('/auth/me');
+        localStorage.setItem('pbl_user', JSON.stringify(user));
+        updateNav();
+      } catch (e) {
+        return; // fetchAPI가 이미 로그인 페이지로 이동
       }
       const grid = document.getElementById('missionGrid');
       const select = document.getElementById('adminTrackSelect');

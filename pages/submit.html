@@ -74,13 +74,14 @@
     // PBL 링크는 DB에서 가져옴
 
     (async () => {
+      // 페이지 진입 시 세션 유효성 확인 (만료 토큰이면 fetchAPI가 자동 로그아웃)
       let user = getUser();
-      if (!user && isLoggedIn()) {
-        try {
-          user = await fetchAPI('/auth/me');
-          localStorage.setItem('pbl_user', JSON.stringify(user));
-          updateNav();
-        } catch (e) {}
+      try {
+        user = await fetchAPI('/auth/me');
+        localStorage.setItem('pbl_user', JSON.stringify(user));
+        updateNav();
+      } catch (e) {
+        return; // fetchAPI가 이미 로그인 페이지로 이동시킴
       }
 
       try {
