@@ -152,11 +152,7 @@
         // 제출 폼 설정 (기간 내만 표시)
         if (isOpen) {
           document.getElementById('missionIdField').value = missionId;
-          const track = mission.submission_type === 'github' ? (user?.track || 'backend')
-                      : mission.submission_type === 'figma' ? 'design'
-                      : mission.submission_type === 'deploy' ? 'frontend'
-                      : (user?.track || 'planning');
-          renderSubmitFields(track, document.getElementById('dynamicFields'));
+          renderSubmitFields(mission.submission_type, document.getElementById('dynamicFields'), mission.track);
           document.getElementById('submitSection').style.display = 'block';
         } else {
           document.getElementById('submitSection').innerHTML = `

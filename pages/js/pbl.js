@@ -334,38 +334,54 @@ function _initScreenshotGroup(container) {
   });
 }
 
-function renderSubmitFields(track, container) {
+function renderSubmitFields(submissionType, container, track) {
   const screenshotGroup = (required) => `
     <div class="screenshot-group">
       ${_screenshotFieldHTML('screenshot', '스크린샷 1' + (required ? '' : ' (선택)'), required)}
       <button type="button" class="screenshot-add-btn btn btn-outline btn-sm" style="margin-bottom:12px;">+ 스크린샷 추가 (최대 3장)</button>
     </div>`;
 
-  const fields = {
-    frontend: `
-      <div class="form-group"><label class="form-label">GitHub URL</label>
-      <input type="url" name="github_url" class="form-input" placeholder="https://github.com/..." required></div>
-      <div class="form-group"><label class="form-label">배포 URL (선택)</label>
-      <input type="url" name="deploy_url" class="form-input" placeholder="https://..."></div>`,
-    backend: `
-      <div class="form-group"><label class="form-label">GitHub URL</label>
-      <input type="url" name="github_url" class="form-input" placeholder="https://github.com/..." required></div>
-      <div class="form-group"><label class="form-label">배포 URL (선택)</label>
-      <input type="url" name="deploy_url" class="form-input" placeholder="https://..."></div>`,
-    design: `
-      <div class="form-group"><label class="form-label">Figma URL</label>
-      <input type="url" name="figma_url" class="form-input" placeholder="https://figma.com/..." required></div>
-      ${screenshotGroup(true)}`,
-    planning: `
-      <div class="form-group"><label class="form-label">GitHub URL (선택)</label>
-      <input type="url" name="github_url" class="form-input" placeholder="https://github.com/..."></div>
-      <div class="form-group"><label class="form-label">Figma URL (선택)</label>
-      <input type="url" name="figma_url" class="form-input" placeholder="https://figma.com/..."></div>
-      <div class="form-group"><label class="form-label">설명</label>
-      <textarea name="description" class="form-textarea" placeholder="과제 설명을 입력하세요..."></textarea></div>
-      ${screenshotGroup(true)}`,
-  };
-  container.innerHTML = fields[track] || fields.planning;
+  const githubField = (required) => `
+    <div class="form-group"><label class="form-label">GitHub URL${required ? '' : ' (선택)'}</label>
+    <input type="url" name="github_url" class="form-input" placeholder="https://github.com/..."${required ? ' required' : ''}></div>`;
+
+  const deployField = `
+    <div class="form-group"><label class="form-label">배포 URL (선택)</label>
+    <input type="url" name="deploy_url" class="form-input" placeholder="https://..."></div>`;
+
+  const figmaField = (required) => `
+    <div class="form-group"><label class="form-label">Figma URL${required ? '' : ' (선택)'}</label>
+    <input type="url" name="figma_url" class="form-input" placeholder="https://figma.com/..."${required ? ' required' : ''}></div>`;
+
+  const descField = `
+    <div class="form-group"><label class="form-label">설명 (선택)</label>
+    <textarea name="description" class="form-textarea" placeholder="과제 설명을 입력하세요..."></textarea></div>`;
+
+  // submission_type 기반 폼 구성
+  let html = '';
+  if (submissionType === 'github') {
+    // 백엔드/프론트엔드: GitHub 필수 + 배포 선택
+    html = githubField(true) + deployField + screenshotGroup(false);
+  } else if (submissionType === 'deploy') {
+    // 배포 중심: GitHub 필수 + 배포 필수
+    html = githubField(true) +
+      `<div class="form-group"><label class="form-label">배포 URL</label>
+       <input type="url" name="deploy_url" class="form-input" placeholder="https://..." required></div>` +
+      screenshotGroup(false);
+  } else if (submissionType === 'figma') {
+    // 디자인: Figma 필수 + 스크린샷 필수
+    html = figmaField(true) + screenshotGroup(true);
+  } else if (submissionType === 'mixed') {
+    // 기획/디자인 미션 0 등: GitHub + Figma + 스크린샷 (트랙별 필수 여부 조정)
+    const githubRequired = track === 'planning' || track === 'design';
+    const figmaRequired = track === 'design';
+    html = githubField(githubRequired) + figmaField(figmaRequired) + descField + screenshotGroup(true);
+  } else {
+    // fallback
+    html = githubField(false) + figmaField(false) + descField + screenshotGroup(false);
+  }
+
+  container.innerHTML = html;
   initFileUpload();
   _initScreenshotGroup(container);
 }
