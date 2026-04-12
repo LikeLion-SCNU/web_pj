@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from auth import hash_password, verify_password, create_access_token, get_current_user
-from config import CURRENT_GENERATION, IS_DEV, TURNSTILE_SECRET_KEY
+from config import CURRENT_GENERATION, IS_DEV, REGISTRATION_OPEN, TURNSTILE_SECRET_KEY
 from utils import utcnow
 from database import get_db
 from models import User
@@ -39,6 +39,9 @@ def verify_turnstile(token: str) -> bool:
 
 @router.post("/register", status_code=201)
 def register(data: UserRegister, db: Session = Depends(get_db)):
+    if not REGISTRATION_OPEN:
+        raise HTTPException(403, "현재 회원가입이 마감되었습니다. 운영진에게 문의해주세요.")
+
     if TURNSTILE_SECRET_KEY and not verify_turnstile(data.turnstile_token or ""):
         raise HTTPException(400, "봇 검증에 실패했습니다. 다시 시도해주세요.")
 
