@@ -50,3 +50,5 @@ IS_DEV = (
     os.getenv("ENV", "production") == "development"
     or os.getenv("IS_DEV", "").lower() in ("1", "true", "yes")
 )
+
+REGISTRATION_OPEN = os.getenv("REGISTRATION_OPEN", "false").lower() in ("1", "true", "yes")
