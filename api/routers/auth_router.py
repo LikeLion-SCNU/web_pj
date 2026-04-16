@@ -111,6 +111,9 @@ def verify_email(data: EmailVerify, db: Session = Depends(get_db)):
 
 @router.post("/resend-code")
 def resend_code(data: UserLogin, db: Session = Depends(get_db)):
+    if not REGISTRATION_OPEN:
+        raise HTTPException(403, "현재 회원가입이 마감되어 인증 코드 재전송이 불가합니다. 운영진에게 문의해주세요.")
+
     user = db.query(User).filter(User.email == data.email).first()
     if not user or not verify_password(data.password, user.password_hash):
         raise HTTPException(401, "이메일 또는 비밀번호가 올바르지 않습니다")
