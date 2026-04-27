@@ -1,3 +1,4 @@
+import json
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -7,16 +8,53 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
 from auth import get_current_user
-from config import CORS_ORIGINS, IS_DEV, UPLOAD_DIR
+from config import CORS_ORIGINS, IS_DEV, REGISTRATION_OPEN, UPLOAD_DIR
 from database import engine, Base
 from routers import auth_router, missions_router, submissions_router, admin_router
 from seed import run_seed
 
 
+def _validate_track_progression() -> None:
+    """missions.json의 모든 (track, number)에 대응하는 TRACK_PROGRESSION 엔트리가 있는지 검사.
+
+    누락 시 startup에서 명시적으로 경고 — 미션 추가/순서 변경으로 인한 silent
+    드리프트를 즉시 발견하여 AI 평가 품질 저하를 예방. 검증은 advisory이며,
+    파일 손상/형식 오류로 인해 서버 기동을 막지 않는다.
+    """
+    try:
+        from services.prompts import TRACK_PROGRESSION
+
+        missions_path = Path(__file__).parent / "missions.json"
+        if not missions_path.exists():
+            print("[STARTUP] missions.json을 찾을 수 없어 progression 검증을 건너뜁니다.")
+            return
+
+        with open(missions_path, encoding="utf-8") as f:
+            missions = json.load(f)
+
+        missing = [
+            f"{m['track']}/{m['number']}"
+            for m in missions
+            if not TRACK_PROGRESSION.get(m["track"], {}).get(m["number"])
+        ]
+        if missing:
+            print(
+                f"[STARTUP WARNING] TRACK_PROGRESSION 누락 ({len(missing)}개): {missing}\n"
+                f"  → api/services/prompts.py의 TRACK_PROGRESSION에 누락 항목 추가 필요. "
+                f"AI 평가 시 해당 미션의 학습 맥락이 비어 평가 품질 저하 가능."
+            )
+        else:
+            print(f"[STARTUP] TRACK_PROGRESSION 검증 OK ({len(missions)}개 미션 모두 매칭)")
+    except (json.JSONDecodeError, KeyError, OSError, ImportError) as e:
+        print(f"[STARTUP WARNING] TRACK_PROGRESSION 검증 실패 (advisory, 무시하고 진행): {type(e).__name__}: {e}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    print(f"[STARTUP] REGISTRATION_OPEN={REGISTRATION_OPEN}")
     Base.metadata.create_all(bind=engine)
     run_seed()
+    _validate_track_progression()
     yield
 
 
@@ -59,4 +97,4 @@ app.include_router(admin_router.router)
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok"}
+    return {"status": "ok", "registration_open": REGISTRATION_OPEN}

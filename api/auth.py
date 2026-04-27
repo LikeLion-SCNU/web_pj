@@ -11,8 +11,15 @@ from config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 from database import get_db
 from models import User
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# bcrypt rounds를 명시적으로 고정 — 더미 해시와 실제 해시의 비용이 항상 동일하도록 보장
+# (rounds 변경 시 이 상수와 _DUMMY_PASSWORD_HASH도 동시에 갱신해야 함)
+_BCRYPT_ROUNDS = 12
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=_BCRYPT_ROUNDS)
 security = HTTPBearer()
+
+# 미존재 사용자 분기에서도 bcrypt 비용을 동일하게 소모하기 위한 더미 해시
+# (사용자 enumeration timing attack 방어)
+_DUMMY_PASSWORD_HASH = pwd_context.hash("not_a_real_password_just_for_timing_equalization")
 
 
 def hash_password(password: str) -> str:
@@ -21,6 +28,11 @@ def hash_password(password: str) -> str:
 
 def verify_password(plain: str, hashed: str) -> bool:
     return pwd_context.verify(plain, hashed)
+
+
+def verify_password_dummy() -> None:
+    """사용자가 존재하지 않을 때 호출. 실제 verify와 동일한 시간을 소모해 enumeration 방어."""
+    pwd_context.verify("dummy", _DUMMY_PASSWORD_HASH)
 
 
 def create_access_token(user_id: int) -> str:
