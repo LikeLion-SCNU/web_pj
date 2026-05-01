@@ -342,7 +342,7 @@ function renderSubmitFields(submissionType, container, track) {
     </div>`;
 
   const githubField = (required) => `
-    <div class="form-group"><label class="form-label">GitHub URL${required ? '' : ' (선택)'}</label>
+    <div class="form-group"><label class="form-label">GitHub URL${required ? ' *' : ' (선택)'}</label>
     <input type="url" name="github_url" class="form-input" placeholder="https://github.com/..."${required ? ' required' : ''}></div>`;
 
   const deployField = `
@@ -350,8 +350,27 @@ function renderSubmitFields(submissionType, container, track) {
     <input type="url" name="deploy_url" class="form-input" placeholder="https://..."></div>`;
 
   const figmaField = (required) => `
-    <div class="form-group"><label class="form-label">Figma URL${required ? '' : ' (선택)'}</label>
+    <div class="form-group"><label class="form-label">Figma URL${required ? ' *' : ' (선택)'}</label>
     <input type="url" name="figma_url" class="form-input" placeholder="https://figma.com/..."${required ? ' required' : ''}></div>`;
+
+  // 작성자 검증 안내 — 부정행위 방지를 위해 본인 이름 포함 필수
+  const authorshipNotice = (needFigma, needGithub) => {
+    const items = [];
+    if (needFigma) {
+      items.push('Figma 파일명에 본인 이름 포함 (예: <code style="background:#222;padding:2px 6px;border-radius:4px;">LIKELION PBL - [홍길동]</code>)');
+    }
+    if (needGithub) {
+      items.push('GitHub <code style="background:#222;padding:2px 6px;border-radius:4px;">README.md</code>에 본인 이름 포함 (예: <code style="background:#222;padding:2px 6px;border-radius:4px;">작성자: 홍길동</code>)');
+    }
+    if (!items.length) return '';
+    return `<div style="background:#1a1a1a;border-left:3px solid #FF7710;padding:12px 16px;border-radius:6px;margin-bottom:16px;font-size:.9rem;color:#ccc;">
+      <div style="font-weight:600;color:#FF7710;margin-bottom:6px;">⚠️ 본인 확인 필수</div>
+      <ul style="margin:0;padding-left:18px;line-height:1.6;">
+        ${items.map(t => `<li>${t}</li>`).join('')}
+      </ul>
+      <div style="font-size:.8rem;color:#888;margin-top:6px;">본인 이름이 없으면 자동 검사가 진행되지 않습니다 (제출 횟수 미차감).</div>
+    </div>`;
+  };
 
   const descField = `
     <div class="form-group"><label class="form-label">설명 (선택)</label>
@@ -359,27 +378,35 @@ function renderSubmitFields(submissionType, container, track) {
 
   // submission_type 기반 폼 구성
   let html = '';
+  let needFigmaAuth = false;
+  let needGithubAuth = false;
   if (submissionType === 'github') {
     // 백엔드/프론트엔드: GitHub 필수 + 배포 선택
+    needGithubAuth = true;
     html = githubField(true) + deployField + screenshotGroup(false);
   } else if (submissionType === 'deploy') {
     // 배포 중심: GitHub 필수 + 배포 필수
+    needGithubAuth = true;
     html = githubField(true) +
       `<div class="form-group"><label class="form-label">배포 URL</label>
        <input type="url" name="deploy_url" class="form-input" placeholder="https://..." required></div>` +
       screenshotGroup(false);
   } else if (submissionType === 'figma') {
     // 디자인: Figma 필수 + 스크린샷 필수
+    needFigmaAuth = true;
     html = figmaField(true) + screenshotGroup(true);
   } else if (submissionType === 'mixed') {
     // 기획/디자인 미션 0 등: GitHub + Figma + 스크린샷 (트랙별 필수 여부 조정)
     const githubRequired = track === 'planning' || track === 'design';
     const figmaRequired = track === 'design';
+    needGithubAuth = githubRequired;
+    needFigmaAuth = figmaRequired;
     html = githubField(githubRequired) + figmaField(figmaRequired) + descField + screenshotGroup(true);
   } else {
     // fallback
     html = githubField(false) + figmaField(false) + descField + screenshotGroup(false);
   }
+  html = authorshipNotice(needFigmaAuth, needGithubAuth) + html;
 
   container.innerHTML = html;
   initFileUpload();

@@ -112,6 +112,9 @@ def build_submission_context(submission: Submission, mission: Mission) -> tuple[
         "github_ok": True,
         "figma_ok": True,
         "figma_images": [],
+        # 작성자 검증용 surface (authorship_verifier에서 사용)
+        "figma_file_name": "",
+        "github_readme": "",
     }
 
     if submission.github_url:
@@ -149,6 +152,12 @@ def build_submission_context(submission: Submission, mission: Mission) -> tuple[
                 for path, content in repo_data["code_files"].items():
                     parts.append(f"\n--- {path} ---")
                     parts.append(content)
+                # 작성자 검증용 — README 내용을 fetch_status에 노출 (대소문자 변형 키 모두 시도)
+                code_files = repo_data["code_files"]
+                for k in ("README.md", "readme.md", "Readme.md", "README"):
+                    if k in code_files:
+                        fetch_status["github_readme"] = code_files[k] or ""
+                        break
         else:
             fetch_status["github_ok"] = False
             error_msg = repo_data["error"] if repo_data else "GitHub API 접근 실패"
@@ -169,6 +178,8 @@ def build_submission_context(submission: Submission, mission: Mission) -> tuple[
         if figma_data and "error" not in figma_data:
             # 파일명은 _summarize_document에서 이미 200자로 제한됨
             file_name_raw = figma_data.get('file_name', '')
+            # 작성자 검증용 — 원본 파일명(sanitize 전)을 fetch_status에 노출
+            fetch_status["figma_file_name"] = file_name_raw or ""
             parts.append(f"파일명: {_sanitize_figma_text(file_name_raw)}")
             parts.append(f"최종 수정일: {_sanitize_figma_text(figma_data.get('last_modified', '?'))}")
             parts.append(f"페이지 수: {figma_data.get('page_count', 0)}개")

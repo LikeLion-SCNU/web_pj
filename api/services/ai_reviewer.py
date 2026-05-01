@@ -7,7 +7,8 @@ from sqlalchemy.orm import Session
 
 from config import OPENAI_API_KEY, AI_MODEL, AI_MAX_TOKENS, AI_TEMPERATURE
 from database import SessionLocal
-from models import Submission, Mission, Review
+from models import Submission, Mission, Review, User
+from services.authorship_verifier import verify_figma_authorship, verify_github_authorship
 from services.prompts import SYSTEM_PROMPT, TRACK_PROMPTS, RESPONSE_FORMAT, build_mission_context
 from services.submission_context import build_submission_context, encode_screenshot
 
@@ -116,6 +117,39 @@ def run_ai_review(submission_id: int):
             db.commit()
             print(f"[AI Review] Submission #{submission_id}: Figma fetch 실패 → error 처리")
             return
+
+        # 작성자 검증 — 본인 작업물인지 Figma 파일명/GitHub README에 학생 이름 포함 여부 확인.
+        # admin/tester는 우회. fetch 실패한 채널은 위에서 이미 처리됐으므로 여기선 fetch 성공한
+        # 채널만 검증 가능. 실패 시 status="error" + attempt 미차감.
+        user = db.query(User).filter(User.id == submission.user_id).first()
+        if user and user.role not in ("admin", "tester"):
+            auth_msg = None
+            # Figma 파일명 검증 — figma URL이 있고 fetch 성공한 경우만
+            if submission.figma_url and fetch_status.get("figma_ok"):
+                ok, msg = verify_figma_authorship(
+                    fetch_status.get("figma_file_name", ""), user.name
+                )
+                if not ok:
+                    auth_msg = msg
+            # GitHub README 검증 — github URL이 있고 fetch 성공한 경우만 (Figma가 통과했어도 둘 다 검사)
+            if not auth_msg and submission.github_url and fetch_status.get("github_ok"):
+                ok, msg = verify_github_authorship(
+                    fetch_status.get("github_readme", ""), user.name
+                )
+                if not ok:
+                    auth_msg = msg
+            if auth_msg:
+                review = Review(
+                    submission_id=submission_id,
+                    ai_score=None,
+                    ai_summary=auth_msg,
+                    ai_feedback=None,
+                )
+                db.add(review)
+                submission.status = "error"
+                db.commit()
+                print(f"[AI Review] Submission #{submission_id}: 작성자 검증 실패 → error 처리 (user={user.name})")
+                return
 
         user_prompt = f"{mission_context}\n\n{submission_context}\n\n{RESPONSE_FORMAT}"
         system_content = SYSTEM_PROMPT + "\n\n" + track_guide
