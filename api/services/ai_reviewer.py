@@ -51,8 +51,11 @@ def validate_review_output(result: dict, checklist_count: int) -> dict:
         # 즉시 수동 검토 대상 — 다른 항목 보정 분기 건너뜀
         return {"score": score, "flags": flags, "needs_manual": True}
 
-    # 점수와 체크리스트 통과율 불일치 탐지
-    if score >= 80 and pass_rate < 0.4:
+    # 점수와 체크리스트 통과율 불일치 탐지 — 모든 점수 범위에 대해 검사.
+    # AI가 통과율이 낮은데도 후한 점수를 주는 경향(예: 22% 통과 → 50점)을 막기 위해
+    # "점수가 통과율 100배보다 크고 통과율이 50% 미만"이면 강제 하향한다.
+    # (이전엔 score>=80일 때만 검사해 중간 점수대 후함이 그대로 통과됐음)
+    if pass_rate < 0.5 and score > int(pass_rate * 100):
         flags.append(f"점수({score})가 체크리스트 통과율({pass_rate:.0%})에 비해 과도하게 높음")
         score = int(pass_rate * 80)
     elif score <= 40 and pass_rate > 0.7:
