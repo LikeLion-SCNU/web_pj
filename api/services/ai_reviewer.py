@@ -8,7 +8,11 @@ from sqlalchemy.orm import Session
 from config import OPENAI_API_KEY, AI_MODEL, AI_MAX_TOKENS, AI_TEMPERATURE
 from database import SessionLocal
 from models import Submission, Mission, Review, User
-from services.authorship_verifier import verify_figma_authorship, verify_github_authorship
+from services.authorship_verifier import (
+    verify_figma_authorship,
+    verify_github_authorship,
+    override_authorship_in_checklist,
+)
 from services.prompts import SYSTEM_PROMPT, TRACK_PROMPTS, RESPONSE_FORMAT, build_mission_context
 from services.submission_context import build_submission_context, encode_screenshot
 
@@ -207,6 +211,17 @@ def run_ai_review(submission_id: int):
             content = content.split("\n", 1)[1].rsplit("```", 1)[0].strip()
 
         result = json.loads(content)
+
+        # 작성자 검증 체크리스트 결과를 우리 substring 검사로 강제 override.
+        # AI가 파일명/README에 *어떤 이름이라도* 있으면 통과로 게으르게 판정하는 사례 있음 —
+        # 본인 이름과 일치 여부를 결정적으로 다시 계산.
+        if user_name and result.get("checklist_results"):
+            result["checklist_results"] = override_authorship_in_checklist(
+                result["checklist_results"],
+                user_name=user_name,
+                figma_file_name=fetch_status.get("figma_file_name", ""),
+                github_readme=fetch_status.get("github_readme", ""),
+            )
 
         # 출력 검증
         checklist_count = len(mission.checklist) if mission.checklist else 0

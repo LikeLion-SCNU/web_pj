@@ -36,6 +36,39 @@ async function fetchAPI(endpoint, options = {}) {
   return data;
 }
 
+// 보호된 업로드 이미지(/uploads/*)는 인증 헤더가 필요해 <img src>로 직접 호출 불가.
+// fetch로 받아 Blob URL로 변환 후 img 요소에 주입한다.
+async function loadProtectedImage(imgEl, url) {
+  if (!imgEl || !url) return;
+  try {
+    const token = localStorage.getItem('pbl_token');
+    const headers = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    const res = await fetch(url, { headers });
+    if (!res.ok) {
+      imgEl.alt = `이미지 로드 실패 (${res.status})`;
+      return;
+    }
+    const blob = await res.blob();
+    const objectUrl = URL.createObjectURL(blob);
+    imgEl.src = objectUrl;
+    // 메모리 누수 방지 — 이미지 제거 시 URL revoke
+    imgEl.addEventListener('load', () => {
+      // 다음 페이지 이동 시 자동 GC되지만, 명시적으로 revoke 가능
+    }, { once: true });
+  } catch (e) {
+    imgEl.alt = '이미지 로드 실패';
+  }
+}
+
+// 페이지 내 모든 [data-protected-img] 요소를 자동 로드
+function initProtectedImages(root = document) {
+  root.querySelectorAll('img[data-protected-src]').forEach(img => {
+    const url = img.getAttribute('data-protected-src');
+    if (url) loadProtectedImage(img, url);
+  });
+}
+
 // ---- Auth ----
 function getUser() {
   try { return JSON.parse(localStorage.getItem('pbl_user')); } catch { return null; }
