@@ -95,8 +95,13 @@ def _sanitize_figma_text(text: str) -> str:
     return text[:100]
 
 
-def build_submission_context(submission: Submission, mission: Mission) -> tuple[str, dict]:
+def build_submission_context(submission: Submission, mission: Mission, user_name: str = "") -> tuple[str, dict]:
     """제출물 정보를 AI에게 전달할 컨텍스트로 구성.
+
+    Args:
+        submission: 제출 레코드
+        mission: 미션 레코드
+        user_name: 제출자(학생) 이름 — AI가 본인 확인 체크리스트를 평가할 때 사용
 
     Returns:
         (context_str, fetch_status):
@@ -105,13 +110,24 @@ def build_submission_context(submission: Submission, mission: Mission) -> tuple[
             "github_ok": bool,   # GitHub URL 없으면 True
             "figma_ok": bool,    # Figma URL 없으면 True
             "figma_images": list # Vision API에 전달할 Figma 썸네일 이미지
+            "figma_file_name": str  # 작성자 검증용 (원본 파일명)
+            "github_readme": str    # 작성자 검증용 (README 본문)
           }
     """
     parts = ["<student_submission>"]
+    if user_name:
+        parts.append(f"\n### 제출자 정보\n제출자 이름: {_sanitize_student_input(user_name)}")
+        parts.append(
+            "(체크리스트에 '본인 이름 포함' 항목이 있으면, 위 제출자 이름이 "
+            "Figma 파일명 또는 README 본문에 실제로 포함되었는지 확인하여 판정)"
+        )
     fetch_status = {
         "github_ok": True,
         "figma_ok": True,
         "figma_images": [],
+        # 작성자 검증용 surface (authorship_verifier에서 사용)
+        "figma_file_name": "",
+        "github_readme": "",
     }
 
     if submission.github_url:
@@ -149,6 +165,12 @@ def build_submission_context(submission: Submission, mission: Mission) -> tuple[
                 for path, content in repo_data["code_files"].items():
                     parts.append(f"\n--- {path} ---")
                     parts.append(content)
+                # 작성자 검증용 — README 내용을 fetch_status에 노출 (대소문자 변형 키 모두 시도)
+                code_files = repo_data["code_files"]
+                for k in ("README.md", "readme.md", "Readme.md", "README"):
+                    if k in code_files:
+                        fetch_status["github_readme"] = code_files[k] or ""
+                        break
         else:
             fetch_status["github_ok"] = False
             error_msg = repo_data["error"] if repo_data else "GitHub API 접근 실패"
@@ -169,6 +191,8 @@ def build_submission_context(submission: Submission, mission: Mission) -> tuple[
         if figma_data and "error" not in figma_data:
             # 파일명은 _summarize_document에서 이미 200자로 제한됨
             file_name_raw = figma_data.get('file_name', '')
+            # 작성자 검증용 — 원본 파일명(sanitize 전)을 fetch_status에 노출
+            fetch_status["figma_file_name"] = file_name_raw or ""
             parts.append(f"파일명: {_sanitize_figma_text(file_name_raw)}")
             parts.append(f"최종 수정일: {_sanitize_figma_text(figma_data.get('last_modified', '?'))}")
             parts.append(f"페이지 수: {figma_data.get('page_count', 0)}개")
