@@ -77,10 +77,14 @@ def run_ai_review(submission_id: int):
             db.commit()
             return
 
-        # 프롬프트 조립
+        # 제출자 정보 조회 — 작성자 검증 + AI 컨텍스트 주입에 사용
+        user = db.query(User).filter(User.id == submission.user_id).first()
+        user_name = user.name if user else ""
+
+        # 프롬프트 조립 — 제출자 이름을 컨텍스트에 주입해 체크리스트 평가에 활용
         track_guide = TRACK_PROMPTS.get(mission.track, "")
         mission_context = build_mission_context(mission)
-        submission_context, fetch_status = build_submission_context(submission, mission)
+        submission_context, fetch_status = build_submission_context(submission, mission, user_name=user_name)
 
         # GitHub 제출인데 코드를 못 가져왔으면 AI 호출 없이 에러 처리
         needs_github = mission.submission_type in ("github", "mixed") and submission.github_url
@@ -121,7 +125,6 @@ def run_ai_review(submission_id: int):
         # 작성자 검증 — 본인 작업물인지 Figma 파일명/GitHub README에 학생 이름 포함 여부 확인.
         # admin/tester는 우회. fetch 실패한 채널은 위에서 이미 처리됐으므로 여기선 fetch 성공한
         # 채널만 검증 가능. 실패 시 status="error" + attempt 미차감.
-        user = db.query(User).filter(User.id == submission.user_id).first()
         if user and user.role not in ("admin", "tester"):
             auth_msg = None
             # Figma 파일명 검증 — figma URL이 있고 fetch 성공한 경우만
