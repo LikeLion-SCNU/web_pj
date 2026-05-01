@@ -13,6 +13,13 @@ from services.prompts import SYSTEM_PROMPT, TRACK_PROMPTS, RESPONSE_FORMAT, buil
 from services.submission_context import build_submission_context, encode_screenshot
 
 
+def _is_authorship_item(item: str) -> bool:
+    """체크리스트 항목이 '본인 이름 포함' 검증 항목인지 판별."""
+    if not item:
+        return False
+    return "본인 이름이 포함" in item
+
+
 def validate_review_output(result: dict, checklist_count: int) -> dict:
     """AI 출력의 일관성을 검증하고 필요 시 보정"""
     original_score = min(100, max(0, int(result.get("score", 0))))
@@ -27,6 +34,18 @@ def validate_review_output(result: dict, checklist_count: int) -> dict:
     pass_rate = passed_count / total_items if total_items > 0 else 0
 
     flags = []
+
+    # 본인 이름 체크리스트 항목이 fail이면 다른 항목 통과 여부와 무관하게 0점 강제.
+    # 부정행위 방지 — 타인의 작업물을 제출하는 경우 형식적으로 통과 못 하도록.
+    authorship_failed = any(
+        _is_authorship_item(cr.get("item", "")) and not cr.get("passed")
+        for cr in checklist_results
+    )
+    if authorship_failed:
+        score = 0
+        flags.append("본인 이름이 Figma 파일명/README에 포함되지 않아 점수 0점 처리")
+        # 즉시 수동 검토 대상 — 다른 항목 보정 분기 건너뜀
+        return {"score": score, "flags": flags, "needs_manual": True}
 
     # 점수와 체크리스트 통과율 불일치 탐지
     if score >= 80 and pass_rate < 0.4:
