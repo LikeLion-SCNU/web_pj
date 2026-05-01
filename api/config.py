@@ -10,6 +10,13 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
 FIGMA_TOKEN = os.getenv("FIGMA_TOKEN", "")
 
+# Figma API 베이스 URL — 기본은 직접 호출이지만, NAS 외부 IP가 Figma 인프라(AWS CloudFront WAF)에
+# 차단된 경우 Cloudflare Worker 프록시 URL로 오버라이드한다.
+# 예) https://scnufigma-proxy.<account>.workers.dev/v1
+FIGMA_API_BASE = os.getenv("FIGMA_API_BASE", "https://api.figma.com/v1")
+# Worker 프록시 사용 시 인증 헤더(X-Proxy-Auth)에 실릴 비밀값. Worker의 PROXY_SECRET과 동일해야 한다.
+FIGMA_PROXY_SECRET = os.getenv("FIGMA_PROXY_SECRET", "")
+
 # Figma fetch 설정
 FIGMA_MAX_NODES_SAMPLED = 30   # 샘플링할 최대 프레임/컴포넌트 수
 FIGMA_MAX_THUMBNAILS = 3       # Vision API 전달 최대 썸네일 수

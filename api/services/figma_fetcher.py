@@ -8,6 +8,8 @@ import httpx
 
 from config import (
     FIGMA_TOKEN,
+    FIGMA_API_BASE,
+    FIGMA_PROXY_SECRET,
     FIGMA_MAX_NODES_SAMPLED,
     FIGMA_MAX_THUMBNAILS,
     FIGMA_MAX_FILE_DEPTH,
@@ -15,7 +17,6 @@ from config import (
     FIGMA_REQUEST_TIMEOUT,
 )
 
-FIGMA_API_BASE = "https://api.figma.com/v1"
 _ALLOWED_FIGMA_HOSTS = {"www.figma.com", "figma.com"}
 _VALID_FILE_KEY = re.compile(r"^[a-zA-Z0-9]{10,64}$")
 _FIGMA_PATH_PATTERN = re.compile(r"^/(?:file|design|proto)/([a-zA-Z0-9]{10,64})(?:/|$)")
@@ -50,9 +51,19 @@ def parse_figma_url(url: str) -> str | None:
 
 
 def _get_headers() -> dict:
+    """Figma API 호출용 헤더 조립.
+
+    - 기본: X-Figma-Token
+    - 프록시 사용 시(FIGMA_PROXY_SECRET 설정): X-Proxy-Auth 추가.
+      이 경우 X-Figma-Token은 Worker가 덮어쓰지만, 코드 분기상 토큰이 비면
+      빈 dict를 반환하므로 .env에 더미 값이라도 유지해야 한다.
+    """
     if not FIGMA_TOKEN:
         return {}
-    return {"X-Figma-Token": FIGMA_TOKEN}
+    h = {"X-Figma-Token": FIGMA_TOKEN}
+    if FIGMA_PROXY_SECRET:
+        h["X-Proxy-Auth"] = FIGMA_PROXY_SECRET
+    return h
 
 
 def _sanitize_error_message(msg: str) -> str:
@@ -211,6 +222,14 @@ def _fetch_file_once(file_key: str) -> dict:
             if resp.status_code == 200:
                 return _summarize_document(resp.json())
             elif resp.status_code == 403:
+                # Figma 정상 권한 거부 = JSON. CloudFront/WAF의 IP 차단 = HTML 페이지.
+                # body로 구분해 학생에게 잘못된 안내(공유 설정 변경)가 나가지 않도록 한다.
+                body_preview = (resp.text or "")[:300]
+                if "Request blocked" in body_preview or "<HTML" in body_preview.upper():
+                    return {
+                        "error": "Figma API 일시 차단(인프라 측). 잠시 후 다시 시도하거나 운영진에게 문의해주세요.",
+                        "retriable": True,
+                    }
                 return {
                     "error": "Figma 파일 접근 권한이 없습니다. 공유 설정에서 '링크가 있는 모든 사람 - 볼 수 있음'으로 변경해주세요.",
                     "retriable": False,
