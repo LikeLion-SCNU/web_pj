@@ -67,3 +67,58 @@ def verify_github_authorship(readme_content: str, user_name: str) -> tuple[bool,
             f"이 제출은 횟수에 포함되지 않습니다."
         )
     return False, msg
+
+
+def is_authorship_checklist_item(item: str) -> bool:
+    """체크리스트 항목 텍스트가 '본인 이름 포함' 검증 항목인지 판별."""
+    if not item:
+        return False
+    return "본인 이름이 포함" in item
+
+
+def override_authorship_in_checklist(
+    checklist_results: list,
+    user_name: str,
+    figma_file_name: str,
+    github_readme: str,
+) -> list:
+    """AI가 반환한 checklist_results에서 작성자 검증 항목들을 결정적으로 override.
+
+    AI가 파일명에 다른 사람 이름이 들어있어도 통과로 잘못 판정하는 경우가 있어
+    (게으른 매칭), 우리 substring 검사 결과로 강제 덮어쓴다.
+
+    이는 admin/tester가 하드 게이트를 우회한 경우에도 동일하게 적용된다.
+    """
+    if not checklist_results:
+        return checklist_results
+    out = []
+    for cr in checklist_results:
+        item = cr.get("item", "") or ""
+        if not is_authorship_checklist_item(item):
+            out.append(cr)
+            continue
+        # 항목이 Figma용인지 GitHub용인지 구분 — 키워드로 판별
+        if "Figma" in item or "figma" in item:
+            haystack = figma_file_name
+            target = "Figma 파일명"
+        elif "README" in item or "readme" in item or "GitHub" in item:
+            haystack = github_readme
+            target = "README"
+        else:
+            # 미상 — 둘 다 시도
+            haystack = (figma_file_name or "") + "\n" + (github_readme or "")
+            target = "제출물"
+
+        passed = contains_name(haystack, user_name)
+        new_cr = dict(cr)
+        new_cr["passed"] = passed
+        if passed:
+            new_cr["comment"] = f"{target}에 본인 이름 '{user_name}'이 포함됨 (substring 검증)"
+        else:
+            preview = (haystack or "(비어있음)")[:80]
+            new_cr["comment"] = (
+                f"본인 이름 '{user_name}'이 {target}에 포함되지 않음. "
+                f"실제 내용 일부: '{preview}'"
+            )
+        out.append(new_cr)
+    return out

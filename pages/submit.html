@@ -182,7 +182,7 @@
                 </div>
                 ${s.screenshot_paths && s.screenshot_paths.length > 0 ? `
                   <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
-                    ${s.screenshot_paths.map((p, i) => `<a href="${escapeHTML(p)}" target="_blank" style="display:block;width:80px;height:80px;border-radius:6px;overflow:hidden;border:1px solid #333;"><img src="${escapeHTML(p)}" alt="스크린샷 ${i+1}" style="width:100%;height:100%;object-fit:cover;"></a>`).join('')}
+                    ${s.screenshot_paths.map((p, i) => `<button type="button" class="protected-img-link" data-protected-src="${escapeHTML(p)}" style="padding:0;border:1px solid #333;background:#111;display:block;width:80px;height:80px;border-radius:6px;overflow:hidden;cursor:pointer;"><img data-protected-src="${escapeHTML(p)}" alt="스크린샷 ${i+1}" style="width:100%;height:100%;object-fit:cover;background:#222;"></button>`).join('')}
                   </div>
                 ` : ''}
                 ${s.review ? `
@@ -207,6 +207,26 @@
               </div>
             `).join('')}
           `;
+
+          // 보호된 스크린샷 이미지 로드 (인증 헤더 필요 — fetch + Blob URL)
+          if (typeof initProtectedImages === 'function') {
+            initProtectedImages(historyEl);
+          }
+          // 썸네일 클릭 시 새 탭에서 큰 이미지 (Blob URL 재발급)
+          historyEl.querySelectorAll('.protected-img-link').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              const url = btn.getAttribute('data-protected-src');
+              if (!url) return;
+              try {
+                const token = localStorage.getItem('pbl_token');
+                const r = await fetch(url, { headers: token ? { 'Authorization': `Bearer ${token}` } : {} });
+                if (!r.ok) return alert('이미지 로드 실패');
+                const blob = await r.blob();
+                const objUrl = URL.createObjectURL(blob);
+                window.open(objUrl, '_blank');
+              } catch { alert('이미지 로드 실패'); }
+            });
+          });
 
           // 합격했거나 최대 횟수 제출했으면 폼 숨김 (admin/tester 제외, error 제외)
           const maxSub = mission.max_submissions || 5;
