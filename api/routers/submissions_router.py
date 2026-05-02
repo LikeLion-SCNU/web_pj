@@ -11,7 +11,7 @@ from auth import get_current_user
 from config import MAX_SUBMISSIONS_PER_MISSION, MAX_UPLOAD_SIZE, UPLOAD_DIR
 from utils import utcnow
 from database import get_db
-from models import User, Mission, Submission, Review
+from models import User, Mission, Submission, Review, MissionDeadlineExtension
 from services.ai_reviewer import run_ai_review
 
 router = APIRouter(prefix="/api/submissions", tags=["submissions"])
@@ -102,8 +102,18 @@ def create_submission(
             start_str = mission.start_date.strftime("%m/%d")
             raise HTTPException(400, f"아직 제출 기간이 아닙니다. {start_str}부터 제출 가능합니다.")
         if mission.end_date and now > mission.end_date:
-            end_str = mission.end_date.strftime("%m/%d")
-            raise HTTPException(400, f"제출 기한이 마감되었습니다. (마감: {end_str})")
+            # 운영진이 부여한 개별 마감 연장이 있고 그 기한 내라면 통과시킨다.
+            ext = (
+                db.query(MissionDeadlineExtension)
+                .filter(
+                    MissionDeadlineExtension.user_id == user.id,
+                    MissionDeadlineExtension.mission_id == mission_id,
+                )
+                .first()
+            )
+            if not (ext and now <= ext.extended_until):
+                end_str = mission.end_date.strftime("%m/%d")
+                raise HTTPException(400, f"제출 기한이 마감되었습니다. (마감: {end_str})")
 
     existing = (
         db.query(Submission)

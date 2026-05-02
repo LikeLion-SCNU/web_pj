@@ -71,6 +71,28 @@ class Submission(Base):
     review = relationship("Review", back_populates="submission", uselist=False)
 
 
+class MissionDeadlineExtension(Base):
+    """특정 학생에게 특정 미션의 마감 기한을 연장.
+
+    운영진이 사유(병원/가족 경조사 등)를 받아 임시 부여. (user_id, mission_id) unique —
+    한 학생-미션 쌍당 활성 연장은 1개. 다시 부여하면 기존 row를 갱신한다.
+    """
+    __tablename__ = "mission_deadline_extensions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    mission_id = Column(Integer, ForeignKey("missions.id"), nullable=False, index=True)
+    extended_until = Column(DateTime, nullable=False)
+    reason = Column(Text, nullable=True)
+    created_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
+
+    user = relationship("User", foreign_keys=[user_id])
+    mission = relationship("Mission")
+
+    __table_args__ = (UniqueConstraint("user_id", "mission_id", name="uq_extension_user_mission"),)
+
+
 class Review(Base):
     __tablename__ = "reviews"
 

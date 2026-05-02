@@ -6,8 +6,8 @@ from sqlalchemy.orm import Session, contains_eager, joinedload
 
 from auth import require_admin
 from database import get_db
-from models import User, Mission, Submission, Review
-from schemas import AdminReviewUpdate, SetRoleRequest
+from models import User, Mission, Submission, Review, MissionDeadlineExtension
+from schemas import AdminReviewUpdate, SetRoleRequest, DeadlineExtensionCreate
 from services.email_service import send_approval_notification, send_review_notification
 from utils import utcnow
 
@@ -313,6 +313,107 @@ def progress_matrix(
         })
 
     return result
+
+
+@router.get("/deadline-extensions")
+def list_deadline_extensions(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    """모든 마감 연장 목록 (최신순)"""
+    rows = (
+        db.query(MissionDeadlineExtension)
+        .options(joinedload(MissionDeadlineExtension.user), joinedload(MissionDeadlineExtension.mission))
+        .order_by(MissionDeadlineExtension.created_at.desc())
+        .all()
+    )
+    now = utcnow()
+    return [
+        {
+            "id": r.id,
+            "user_id": r.user_id,
+            "user_name": r.user.name if r.user else "(삭제됨)",
+            "user_track": r.user.track if r.user else "",
+            "mission_id": r.mission_id,
+            "mission_track": r.mission.track if r.mission else "",
+            "mission_number": r.mission.number if r.mission else None,
+            "mission_title": r.mission.title if r.mission else "",
+            "extended_until": r.extended_until.isoformat(),
+            "reason": r.reason,
+            "active": r.extended_until >= now,
+            "created_at": r.created_at.isoformat() if r.created_at else None,
+        }
+        for r in rows
+    ]
+
+
+@router.post("/deadline-extensions", status_code=201)
+def create_deadline_extension(
+    data: DeadlineExtensionCreate,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    """특정 학생-미션 쌍에 대한 마감 연장 부여(없으면 생성, 있으면 갱신).
+
+    extended_until은 클라이언트에서 ISO datetime으로 전달. UTC 또는 로컬 어떤 형식이든
+    파싱되며, naive datetime으로 정규화하여 저장.
+    """
+    user = db.query(User).filter(User.id == data.user_id).first()
+    if not user:
+        raise HTTPException(404, "사용자를 찾을 수 없습니다")
+    mission = db.query(Mission).filter(Mission.id == data.mission_id).first()
+    if not mission:
+        raise HTTPException(404, "미션을 찾을 수 없습니다")
+    if user.track != mission.track:
+        raise HTTPException(400, "학생의 트랙과 미션의 트랙이 일치하지 않습니다")
+
+    # tz-aware → naive UTC 정규화 (DB는 naive로 저장)
+    eu = data.extended_until
+    if eu.tzinfo is not None:
+        eu = eu.astimezone(timezone.utc).replace(tzinfo=None)
+
+    if eu <= utcnow():
+        raise HTTPException(400, "연장 기한은 현재 시각 이후여야 합니다")
+
+    existing = (
+        db.query(MissionDeadlineExtension)
+        .filter(
+            MissionDeadlineExtension.user_id == data.user_id,
+            MissionDeadlineExtension.mission_id == data.mission_id,
+        )
+        .first()
+    )
+    if existing:
+        existing.extended_until = eu
+        existing.reason = data.reason
+        existing.created_by = admin.id
+        existing.created_at = utcnow()
+        db.commit()
+        return {"message": f"{user.name}님의 미션 {mission.number} 마감 연장을 갱신했습니다.", "id": existing.id}
+
+    ext = MissionDeadlineExtension(
+        user_id=data.user_id,
+        mission_id=data.mission_id,
+        extended_until=eu,
+        reason=data.reason,
+        created_by=admin.id,
+    )
+    db.add(ext)
+    db.commit()
+    db.refresh(ext)
+    return {"message": f"{user.name}님의 미션 {mission.number} 마감을 연장했습니다.", "id": ext.id}
+
+
+@router.delete("/deadline-extensions/{extension_id}")
+def delete_deadline_extension(
+    extension_id: int,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    """마감 연장 취소"""
+    ext = db.query(MissionDeadlineExtension).filter(MissionDeadlineExtension.id == extension_id).first()
+    if not ext:
+        raise HTTPException(404, "연장 항목을 찾을 수 없습니다")
+    db.delete(ext)
+    db.commit()
+    return {"message": "마감 연장이 취소되었습니다."}
 
 
 @router.get("/warnings")

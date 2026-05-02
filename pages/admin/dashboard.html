@@ -57,6 +57,50 @@
       <div id="userManagementList" style="display:grid;gap:8px;"></div>
     </div>
 
+    <!-- Deadline Extensions -->
+    <div style="margin-bottom:32px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+        <h2 style="font-size:1.2rem;font-weight:700;color:#fff;">개별 마감 연장</h2>
+        <button type="button" id="extOpenBtn" class="btn btn-primary btn-sm">+ 연장 부여</button>
+      </div>
+      <div id="extensionList" style="display:grid;gap:8px;">
+        <p style="color:#888;font-size:.85rem;">로딩중...</p>
+      </div>
+    </div>
+
+    <!-- Extension Modal -->
+    <div class="modal-overlay" id="extModal">
+      <div class="modal">
+        <div class="modal-header">
+          <h3>마감 연장 부여</h3>
+          <button class="modal-close" id="extCloseBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div style="display:grid;gap:12px;">
+            <div>
+              <label style="display:block;color:#aaa;font-size:.85rem;margin-bottom:4px;">학생</label>
+              <select id="extUserSelect" class="form-select" style="width:100%;"></select>
+            </div>
+            <div>
+              <label style="display:block;color:#aaa;font-size:.85rem;margin-bottom:4px;">미션</label>
+              <select id="extMissionSelect" class="form-select" style="width:100%;"><option value="">학생 선택 시 로드됩니다</option></select>
+            </div>
+            <div>
+              <label style="display:block;color:#aaa;font-size:.85rem;margin-bottom:4px;">연장 마감 (학생 기준 시각)</label>
+              <input type="datetime-local" id="extUntilInput" class="form-input" style="width:100%;">
+            </div>
+            <div>
+              <label style="display:block;color:#aaa;font-size:.85rem;margin-bottom:4px;">사유 (선택)</label>
+              <input type="text" id="extReasonInput" class="form-input" placeholder="예: 병원 입원" style="width:100%;" maxlength="500">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="extSubmitBtn" class="btn btn-primary">부여</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Progress Matrix -->
     <div style="margin-bottom:32px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
@@ -138,6 +182,6 @@
   </div>
 
   <script src="../js/pbl.js?v=6"></script>
-  <script src="../js/admin-dashboard.js?v=1"></script>
+  <script src="../js/admin-dashboard.js?v=2"></script>
 </body>
 </html>

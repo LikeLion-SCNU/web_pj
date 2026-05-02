@@ -250,3 +250,111 @@ document.getElementById('modalFooter').addEventListener('click', function(e) {
     loadMatrix(document.getElementById('matrixTrackFilter').value);
   }).catch(function(err) { showToast('error', err.message); });
 });
+
+// ---- Deadline Extensions ----
+var _extUsersCache = null;
+
+function loadExtensions() {
+  fetchAPI('/admin/deadline-extensions').then(function(rows) {
+    var container = document.getElementById('extensionList');
+    if (!rows || rows.length === 0) {
+      container.innerHTML = '<p style="color:#888;font-size:.85rem;">현재 부여된 마감 연장이 없습니다.</p>';
+      return;
+    }
+    container.innerHTML = rows.map(function(r) {
+      var until = new Date(r.extended_until).toLocaleString('ko-KR', { dateStyle:'short', timeStyle:'short' });
+      var stateColor = r.active ? '#4ade80' : '#888';
+      var stateLabel = r.active ? '활성' : '만료';
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#1a1a1a;border-radius:8px;flex-wrap:wrap;gap:8px;">'
+        +'<div style="flex:1;min-width:240px;">'
+        +'<strong style="color:#fff;">'+escapeHTML(r.user_name)+'</strong> '
+        +'<span style="color:#aaa;font-size:.8rem;">('+(TRACK_LABELS[r.user_track]||r.user_track)+')</span> '
+        +'<span style="color:#FF7710;font-weight:600;margin-left:8px;">미션 '+(r.mission_number!=null?r.mission_number:'-')+'</span>'
+        +'<br><span style="color:#aaa;font-size:.8rem;">→ '+until+' 까지</span>'
+        +(r.reason ? ' <span style="color:#888;font-size:.8rem;">· '+escapeHTML(r.reason)+'</span>' : '')
+        +'</div>'
+        +'<div style="display:flex;gap:8px;align-items:center;">'
+        +'<span style="color:'+stateColor+';font-size:.75rem;font-weight:600;">'+stateLabel+'</span>'
+        +'<button type="button" class="btn-ext-revoke" data-id="'+r.id+'" data-name="'+escapeHTML(r.user_name)+'" style="font-size:.75rem;color:#f87171;border:1px solid #f87171;background:transparent;padding:6px 12px;border-radius:6px;cursor:pointer;">취소</button>'
+        +'</div></div>';
+    }).join('');
+  }).catch(function(err) { console.error('Extensions error:', err); });
+}
+
+document.getElementById('extensionList').addEventListener('click', function(e) {
+  var btn = e.target.closest('.btn-ext-revoke');
+  if (!btn) return;
+  if (!confirm(btn.dataset.name + '님의 마감 연장을 취소하시겠습니까?')) return;
+  fetchAPI('/admin/deadline-extensions/' + btn.dataset.id, { method: 'DELETE' }).then(function(res) {
+    showToast('success', res.message || '취소되었습니다.');
+    loadExtensions();
+  }).catch(function(err) { showToast('error', err.message); });
+});
+
+document.getElementById('extOpenBtn').addEventListener('click', function() {
+  // 학생 목록 로드 (캐시) — 운영진/탈퇴 제외
+  var promise = _extUsersCache
+    ? Promise.resolve(_extUsersCache)
+    : fetchAPI('/admin/users').then(function(users) {
+        _extUsersCache = users.filter(function(u) { return u.role !== 'admin'; });
+        return _extUsersCache;
+      });
+  promise.then(function(users) {
+    var sel = document.getElementById('extUserSelect');
+    sel.innerHTML = '<option value="">학생 선택</option>'
+      + users.map(function(u) {
+        return '<option value="'+u.id+'" data-track="'+u.track+'">'+escapeHTML(u.name)+' ('+(TRACK_LABELS[u.track]||u.track)+(u.team?', '+u.team+'팀':'')+')</option>';
+      }).join('');
+    document.getElementById('extMissionSelect').innerHTML = '<option value="">학생 선택 시 로드됩니다</option>';
+    document.getElementById('extUntilInput').value = '';
+    document.getElementById('extReasonInput').value = '';
+    openModal('extModal');
+  }).catch(function(err) { showToast('error', err.message); });
+});
+
+document.getElementById('extCloseBtn').addEventListener('click', function() { closeModal('extModal'); });
+
+document.getElementById('extUserSelect').addEventListener('change', function(e) {
+  var opt = e.target.selectedOptions[0];
+  var track = opt && opt.dataset.track;
+  var msel = document.getElementById('extMissionSelect');
+  if (!track) { msel.innerHTML = '<option value="">학생 선택 시 로드됩니다</option>'; return; }
+  msel.innerHTML = '<option value="">로딩중...</option>';
+  // 트랙별 미션 목록 조회 — admin은 missions 라우터에서 track 파라미터 허용
+  fetchAPI('/missions?track=' + encodeURIComponent(track)).then(function(missions) {
+    msel.innerHTML = '<option value="">미션 선택</option>'
+      + missions.map(function(m) {
+        return '<option value="'+m.id+'">미션 '+m.number+' - '+escapeHTML(m.title)+(m.end_date?' (마감 '+new Date(m.end_date).toLocaleDateString('ko-KR')+')':'')+'</option>';
+      }).join('');
+  }).catch(function(err) {
+    msel.innerHTML = '<option value="">로드 실패</option>';
+    showToast('error', err.message);
+  });
+});
+
+document.getElementById('extSubmitBtn').addEventListener('click', function() {
+  var userId = parseInt(document.getElementById('extUserSelect').value);
+  var missionId = parseInt(document.getElementById('extMissionSelect').value);
+  var until = document.getElementById('extUntilInput').value;
+  var reason = document.getElementById('extReasonInput').value.trim();
+  if (!userId || !missionId) { showToast('error', '학생과 미션을 선택하세요'); return; }
+  if (!until) { showToast('error', '연장 마감 시각을 입력하세요'); return; }
+  // datetime-local은 timezone 없는 ISO. 브라우저 로컬시각으로 해석되도록 ISO 변환.
+  var localDate = new Date(until);
+  if (isNaN(localDate.getTime())) { showToast('error', '시각 형식이 올바르지 않습니다'); return; }
+  var payload = {
+    user_id: userId,
+    mission_id: missionId,
+    extended_until: localDate.toISOString(),
+    reason: reason || null,
+  };
+  fetchAPI('/admin/deadline-extensions', {
+    method: 'POST', body: JSON.stringify(payload),
+  }).then(function(res) {
+    showToast('success', res.message || '연장 부여 완료');
+    closeModal('extModal');
+    loadExtensions();
+  }).catch(function(err) { showToast('error', err.message); });
+});
+
+loadExtensions();
