@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session, joinedload
 from auth import get_current_user
 from config import MAX_SUBMISSIONS_PER_MISSION
 from database import get_db
-from models import User, Mission, Submission
+from models import User, Mission, Submission, MissionDeadlineExtension
 from utils import utcnow
 
 router = APIRouter(prefix="/api/missions", tags=["missions"])
@@ -33,15 +33,34 @@ def list_missions(track: str = None, db: Session = Depends(get_db), user: User =
         if s.mission_id not in sub_by_mission or s.attempt > sub_by_mission[s.mission_id].attempt:
             sub_by_mission[s.mission_id] = s
 
+    # 본인의 마감 연장도 한 번에 조회 (마감일 표시 시 연장값 반영)
+    ext_by_mission = {}
+    if mission_ids:
+        exts = (
+            db.query(MissionDeadlineExtension)
+            .filter(
+                MissionDeadlineExtension.user_id == user.id,
+                MissionDeadlineExtension.mission_id.in_(mission_ids),
+            )
+            .all()
+        )
+        ext_by_mission = {e.mission_id: e for e in exts}
+
+    now = utcnow()
     result = []
     for m in missions:
         sub = sub_by_mission.get(m.id)
-        now = utcnow()
+        ext = ext_by_mission.get(m.id)
+        # 효과적 마감일 = 연장이 있고 본 마감보다 이후이면 연장 마감
+        effective_end = m.end_date
+        if ext and (m.end_date is None or ext.extended_until > m.end_date):
+            effective_end = ext.extended_until
+
         if user.role in ("admin", "tester"):
             period_status = "open"
         elif m.start_date and now < m.start_date:
             period_status = "upcoming"
-        elif m.end_date and now > m.end_date:
+        elif effective_end and now > effective_end:
             period_status = "closed"
         else:
             period_status = "open"
@@ -57,6 +76,8 @@ def list_missions(track: str = None, db: Session = Depends(get_db), user: User =
             "pbl_link": m.pbl_link,
             "start_date": m.start_date.isoformat() if m.start_date else None,
             "end_date": m.end_date.isoformat() if m.end_date else None,
+            "extended_until": ext.extended_until.isoformat() if ext else None,
+            "extension_reason": ext.reason if ext else None,
             "period_status": period_status,
             "my_status": sub.status if sub else None,
             "my_attempt": sub.attempt if sub else 0,

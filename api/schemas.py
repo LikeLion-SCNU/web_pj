@@ -72,3 +72,10 @@ class SetRoleRequest(BaseModel):
         if v not in allowed:
             raise ValueError(f"역할은 {', '.join(allowed)} 중 하나여야 합니다")
         return v
+
+
+class DeadlineExtensionCreate(BaseModel):
+    user_id: int
+    mission_id: int
+    extended_until: datetime
+    reason: Optional[str] = Field(default=None, max_length=500)
