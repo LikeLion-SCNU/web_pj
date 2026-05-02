@@ -195,8 +195,17 @@ def build_submission_context(submission: Submission, mission: Mission, user_name
             fetch_status["figma_file_name"] = file_name_raw or ""
             parts.append(f"파일명: {_sanitize_figma_text(file_name_raw)}")
             parts.append(f"최종 수정일: {_sanitize_figma_text(figma_data.get('last_modified', '?'))}")
-            parts.append(f"페이지 수: {figma_data.get('page_count', 0)}개")
-            parts.append(f"총 프레임: {figma_data.get('total_frames', 0)}개")
+            # 용어 명확화: Figma의 'Page'(=Canvas)와 학생/체크리스트 용어 '화면(페이지)'(=Frame)가
+            # 자주 혼동됨. AI가 page_count(보통 1)만 보고 "10페이지 미만"이라 잘못 판정하는 사례가 있어
+            # 라벨을 분리하고 어느 값을 기준으로 평가해야 하는지 명시한다.
+            parts.append(f"Figma 캔버스(파일 내 Page/Canvas) 수: {figma_data.get('page_count', 0)}개")
+            parts.append(f"화면(스크린/Frame) 수: {figma_data.get('total_frames', 0)}개")
+            parts.append(
+                "(중요: 체크리스트에서 '화면 수' / '페이지 수' / '스크린 수'를 평가할 때는 위의 "
+                "**화면(스크린/Frame) 수**를 기준으로 하세요. Figma의 'Page'(Canvas)는 파일 내부 분할 "
+                "단위일 뿐이고, 학생이 만든 개별 화면은 모두 Frame입니다. Canvas 1개 안에 Frame이 14개면 "
+                "'화면 수 = 14개'입니다.)"
+            )
             parts.append(f"텍스트 레이어: {figma_data.get('text_layers', 0)}개")
             parts.append(f"컴포넌트: {figma_data.get('total_components', 0)}개")
             parts.append(f"컴포넌트 세트(Variants): {figma_data.get('total_component_sets', 0)}개")
@@ -222,6 +231,11 @@ def build_submission_context(submission: Submission, mission: Mission, user_name
             sampled = figma_data.get("sampled_frames", [])
             if sampled:
                 parts.append(f"\n### 주요 프레임 샘플 (상위 {min(len(sampled), 15)}개)")
+                parts.append(
+                    "(체크리스트에서 특정 종류의 화면(예: 로그인/회원가입/설정/오류/알림/마이페이지/검색 등) "
+                    "포함 여부를 평가할 때는 아래 프레임 이름 목록을 근거로 판단하세요. 이름에 해당 키워드가 "
+                    "있으면 포함된 것으로 간주합니다.)"
+                )
                 for fr in sampled[:15]:
                     fr_name = _sanitize_figma_text(fr.get("name", ""))
                     parts.append(
