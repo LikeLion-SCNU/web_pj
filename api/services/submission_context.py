@@ -134,6 +134,11 @@ def build_submission_context(submission: Submission, mission: Mission, user_name
         parts.append(f"\n### GitHub 레포지토리\nURL: {_sanitize_student_input(submission.github_url)}")
         repo_data = fetch_repo_code(submission.github_url, mission.track)
         if repo_data and "error" not in repo_data:
+            # 평가 대상 브랜치 표기 — 학생이 /tree/{branch} URL을 제출했을 때 어느 브랜치의 코드를
+            # 봤는지 AI가 인식할 수 있게 한다.
+            used_branch = repo_data.get("branch")
+            if used_branch:
+                parts.append(f"평가 대상 브랜치: {used_branch}")
             parts.append(f"총 파일 수: {repo_data['total_files']}개")
             parts.append(f"총 커밋 수: {repo_data.get('total_commits', '?')}개")
 

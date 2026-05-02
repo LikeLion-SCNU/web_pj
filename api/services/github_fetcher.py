@@ -44,8 +44,16 @@ TRACK_FILE_PATTERNS = {
 }
 
 
-def parse_github_url(url: str) -> tuple[str, str] | None:
-    """GitHub URL에서 owner/repo를 추출 (SSRF 방어 포함)"""
+def parse_github_url(url: str) -> tuple[str, str, str | None] | None:
+    """GitHub URL에서 (owner, repo, branch) 추출 (SSRF 방어 포함).
+
+    지원 형식:
+      - https://github.com/{owner}/{repo}
+      - https://github.com/{owner}/{repo}.git
+      - https://github.com/{owner}/{repo}/tree/{branch}
+      - https://github.com/{owner}/{repo}/tree/{branch}/...path
+    branch가 명시되지 않으면 None 반환 — 호출자가 main/master를 시도.
+    """
     if not url:
         return None
     try:
@@ -58,7 +66,14 @@ def parse_github_url(url: str) -> tuple[str, str] | None:
         owner, repo = parts[0], parts[1].split("?")[0].split("#")[0]
         if not _VALID_GITHUB_NAME.match(owner) or not _VALID_GITHUB_NAME.match(repo):
             return None
-        return owner, repo
+        branch = None
+        # /tree/{branch} 또는 /tree/{branch}/path 형식 인식
+        if len(parts) >= 4 and parts[2] == "tree":
+            branch_candidate = parts[3].split("?")[0].split("#")[0]
+            # 브랜치 이름 검증 — slash 허용(feature/x), 그러나 일단 단순 패턴만
+            if _VALID_GITHUB_NAME.match(branch_candidate):
+                branch = branch_candidate
+        return owner, repo, branch
     except Exception:
         return None
 
@@ -70,33 +85,39 @@ def _get_headers():
     return headers
 
 
-def fetch_repo_tree(owner: str, repo: str) -> list[str] | None:
-    """레포지토리 파일 트리를 가져옴 (동기)"""
+def fetch_repo_tree(owner: str, repo: str, branch: str | None = None) -> tuple[list[str] | None, str | None]:
+    """레포지토리 파일 트리를 가져옴 (동기). 성공 시 사용한 브랜치도 함께 반환.
+
+    branch가 지정되면 그 브랜치만 시도. 없으면 main → master 순서로 시도.
+    """
     headers = _get_headers()
+    candidates = [branch] if branch else ["main", "master"]
     with httpx.Client(timeout=10) as client:
-        for branch in ["main", "master"]:
+        for b in candidates:
             try:
                 resp = client.get(
-                    f"https://api.github.com/repos/{owner}/{repo}/git/trees/{branch}?recursive=1",
+                    f"https://api.github.com/repos/{owner}/{repo}/git/trees/{b}?recursive=1",
                     headers=headers,
                 )
                 if resp.status_code == 200:
                     tree = resp.json().get("tree", [])
-                    return [item["path"] for item in tree if item["type"] == "blob"]
+                    return [item["path"] for item in tree if item["type"] == "blob"], b
             except Exception:
                 continue
-    return None
+    return None, None
 
 
-def fetch_file_content(owner: str, repo: str, path: str, max_chars: int = 5000) -> str | None:
-    """특정 파일 내용을 가져옴 (동기)"""
+def fetch_file_content(owner: str, repo: str, path: str, max_chars: int = 5000, branch: str | None = None) -> str | None:
+    """특정 파일 내용을 가져옴 (동기). branch가 지정되면 해당 브랜치의 파일을 가져옴."""
     headers = _get_headers()
     headers["Accept"] = "application/vnd.github.v3.raw"
+    params = {"ref": branch} if branch else None
     with httpx.Client(timeout=10) as client:
         try:
             resp = client.get(
                 f"https://api.github.com/repos/{owner}/{repo}/contents/{path}",
                 headers=headers,
+                params=params,
             )
             if resp.status_code == 200:
                 text = resp.text
@@ -193,18 +214,23 @@ def fetch_repo_metadata(owner: str, repo: str) -> dict:
     return metadata
 
 
-def _fetch_repo_code_once(owner: str, repo: str, track: str) -> dict:
-    """GitHub에서 코드를 한 번 시도하여 가져옴"""
-    tree = fetch_repo_tree(owner, repo)
+def _fetch_repo_code_once(owner: str, repo: str, track: str, branch: str | None = None) -> dict:
+    """GitHub에서 코드를 한 번 시도하여 가져옴.
+
+    branch가 명시되면 그 브랜치만, 없으면 main → master 순서로 fetch.
+    학생이 /tree/{branch} URL을 제출하면 해당 브랜치의 코드가 평가 대상이 된다.
+    """
+    tree, used_branch = fetch_repo_tree(owner, repo, branch=branch)
     if not tree:
-        return {"error": f"레포지토리를 가져올 수 없습니다: {owner}/{repo}"}
+        suffix = f" (브랜치: {branch})" if branch else ""
+        return {"error": f"레포지토리를 가져올 수 없습니다: {owner}/{repo}{suffix}"}
 
     config = TRACK_FILE_PATTERNS.get(track, TRACK_FILE_PATTERNS["frontend"])
     key_files = select_key_files(tree, track)
 
     files = {}
     for path in key_files:
-        content = fetch_file_content(owner, repo, path, max_chars=config["max_file_size"])
+        content = fetch_file_content(owner, repo, path, max_chars=config["max_file_size"], branch=used_branch)
         if content:
             files[path] = content
 
@@ -214,6 +240,7 @@ def _fetch_repo_code_once(owner: str, repo: str, track: str) -> dict:
     return {
         "owner": owner,
         "repo": repo,
+        "branch": used_branch,
         "total_files": len(tree),
         "file_tree": tree[:50],
         "code_files": files,
@@ -225,12 +252,15 @@ def _fetch_repo_code_once(owner: str, repo: str, track: str) -> dict:
 
 
 def fetch_repo_code(github_url: str, track: str, max_retries: int = 2) -> dict | None:
-    """GitHub URL에서 트랙에 맞는 핵심 코드를 가져옴 (실패 시 재시도)"""
+    """GitHub URL에서 트랙에 맞는 핵심 코드를 가져옴 (실패 시 재시도).
+
+    URL이 /tree/{branch} 형식이면 해당 브랜치를 평가 대상으로 사용.
+    """
     parsed = parse_github_url(github_url)
     if not parsed:
         return None
 
-    owner, repo = parsed
+    owner, repo, branch = parsed
 
     # .git 접미사 제거
     if repo.endswith(".git"):
@@ -238,7 +268,7 @@ def fetch_repo_code(github_url: str, track: str, max_retries: int = 2) -> dict |
 
     last_result = None
     for attempt in range(max_retries):
-        result = _fetch_repo_code_once(owner, repo, track)
+        result = _fetch_repo_code_once(owner, repo, track, branch=branch)
         if "error" not in result:
             return result
         last_result = result
