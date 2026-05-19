@@ -213,7 +213,12 @@ def run_ai_review(submission_id: int):
         if content.startswith("```"):
             content = content.split("\n", 1)[1].rsplit("```", 1)[0].strip()
 
-        result = json.loads(content)
+        try:
+            result = json.loads(content)
+        except json.JSONDecodeError as e:
+            finish_reason = getattr(response.choices[0], "finish_reason", "unknown")
+            print(f"[AI Review] Submission #{submission_id}: JSON 파싱 실패 (finish={finish_reason}) — 응답 끝부분: ...{content[-300:]!r}")
+            raise
 
         # 작성자 검증 체크리스트 결과를 우리 substring 검사로 강제 override.
         # AI가 파일명/README에 *어떤 이름이라도* 있으면 통과로 게으르게 판정하는 사례 있음 —
