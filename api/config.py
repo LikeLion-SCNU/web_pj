@@ -6,7 +6,7 @@ if not SECRET_KEY:
 DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL 환경변수가 설정되지 않았습니다. .env 파일을 확인하세요.")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
 FIGMA_TOKEN = os.getenv("FIGMA_TOKEN", "")
 
@@ -33,8 +33,9 @@ UPLOAD_DIR = "/app/uploads"
 MAX_UPLOAD_SIZE = 5 * 1024 * 1024       # 5MB (사용자 업로드)
 MAX_SCREENSHOT_SIZE = 10 * 1024 * 1024  # 10MB (AI 비전 분석용)
 
-# AI 리뷰 설정
-AI_MODEL = "gpt-4o-mini"
+# AI 리뷰 설정 — Google Gemini를 OpenAI 호환 엔드포인트로 호출 (SDK는 openai 유지)
+AI_MODEL = "gemini-2.5-flash"
+AI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 AI_MAX_TOKENS = 2500
 AI_TEMPERATURE = 0.1
 MAX_HTML_FETCH_SIZE = 30_000  # 배포 URL HTML 최대 문자 수

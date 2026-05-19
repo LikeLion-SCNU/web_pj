@@ -5,7 +5,7 @@ import traceback
 from openai import OpenAI
 from sqlalchemy.orm import Session
 
-from config import OPENAI_API_KEY, AI_MODEL, AI_MAX_TOKENS, AI_TEMPERATURE
+from config import GEMINI_API_KEY, AI_MODEL, AI_BASE_URL, AI_MAX_TOKENS, AI_TEMPERATURE
 from database import SessionLocal
 from models import Submission, Mission, Review, User
 from services.authorship_verifier import (
@@ -91,7 +91,7 @@ def run_ai_review(submission_id: int):
         if existing:
             return
 
-        if not OPENAI_API_KEY:
+        if not GEMINI_API_KEY:
             review = Review(
                 submission_id=submission_id,
                 ai_score=None,
@@ -199,8 +199,8 @@ def run_ai_review(submission_id: int):
             {"role": "user", "content": user_content_parts},
         ]
 
-        # OpenAI API 호출
-        client = OpenAI(api_key=OPENAI_API_KEY)
+        # Gemini API 호출 (OpenAI 호환 엔드포인트 경유)
+        client = OpenAI(api_key=GEMINI_API_KEY, base_url=AI_BASE_URL)
         response = client.chat.completions.create(
             model=AI_MODEL,
             messages=messages,
