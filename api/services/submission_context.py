@@ -139,6 +139,14 @@ def build_submission_context(submission: Submission, mission: Mission, user_name
             used_branch = repo_data.get("branch")
             if used_branch:
                 parts.append(f"평가 대상 브랜치: {used_branch}")
+            # 평가 대상 서브 디렉토리 — 학생이 모노레포(미션별 폴더)를 제출한 경우
+            used_subpath = repo_data.get("subpath")
+            if used_subpath:
+                parts.append(f"평가 대상 서브 디렉토리: {used_subpath}")
+                parts.append(
+                    "(이 미션의 평가 대상은 위 디렉토리입니다. 다른 폴더의 파일이 보이지 않는다고 "
+                    "감점하지 마세요. 단, 작성자 검증용 루트 README는 별도 첨부될 수 있습니다.)"
+                )
             parts.append(f"총 파일 수: {repo_data['total_files']}개")
             parts.append(f"총 커밋 수: {repo_data.get('total_commits', '?')}개")
 

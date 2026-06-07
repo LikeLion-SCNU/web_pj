@@ -44,15 +44,16 @@ TRACK_FILE_PATTERNS = {
 }
 
 
-def parse_github_url(url: str) -> tuple[str, str, str | None] | None:
-    """GitHub URL에서 (owner, repo, branch) 추출 (SSRF 방어 포함).
+def parse_github_url(url: str) -> tuple[str, str, str | None, str] | None:
+    """GitHub URL에서 (owner, repo, branch, subpath) 추출 (SSRF 방어 포함).
 
     지원 형식:
       - https://github.com/{owner}/{repo}
       - https://github.com/{owner}/{repo}.git
       - https://github.com/{owner}/{repo}/tree/{branch}
-      - https://github.com/{owner}/{repo}/tree/{branch}/...path
+      - https://github.com/{owner}/{repo}/tree/{branch}/{path/to/subdir}
     branch가 명시되지 않으면 None 반환 — 호출자가 main/master를 시도.
+    subpath는 평가 대상 서브 디렉토리(예: 'likelion_pbl/Mission7'). 없으면 빈 문자열.
     """
     if not url:
         return None
@@ -67,13 +68,20 @@ def parse_github_url(url: str) -> tuple[str, str, str | None] | None:
         if not _VALID_GITHUB_NAME.match(owner) or not _VALID_GITHUB_NAME.match(repo):
             return None
         branch = None
+        subpath = ""
         # /tree/{branch} 또는 /tree/{branch}/path 형식 인식
         if len(parts) >= 4 and parts[2] == "tree":
             branch_candidate = parts[3].split("?")[0].split("#")[0]
             # 브랜치 이름 검증 — slash 허용(feature/x), 그러나 일단 단순 패턴만
             if _VALID_GITHUB_NAME.match(branch_candidate):
                 branch = branch_candidate
-        return owner, repo, branch
+            # /tree/{branch}/x/y/z 형식이면 x/y/z를 서브 디렉토리로 사용
+            if len(parts) >= 5:
+                subpath_raw = "/".join(parts[4:]).split("?")[0].split("#")[0]
+                # 경로 정규화 — 상위 디렉토리 탈출(../) 방어
+                if subpath_raw and ".." not in subpath_raw.split("/"):
+                    subpath = subpath_raw.strip("/")
+        return owner, repo, branch, subpath
     except Exception:
         return None
 
@@ -214,19 +222,36 @@ def fetch_repo_metadata(owner: str, repo: str) -> dict:
     return metadata
 
 
-def _fetch_repo_code_once(owner: str, repo: str, track: str, branch: str | None = None) -> dict:
+def _fetch_repo_code_once(owner: str, repo: str, track: str, branch: str | None = None, subpath: str = "") -> dict:
     """GitHub에서 코드를 한 번 시도하여 가져옴.
 
     branch가 명시되면 그 브랜치만, 없으면 main → master 순서로 fetch.
     학생이 /tree/{branch} URL을 제출하면 해당 브랜치의 코드가 평가 대상이 된다.
+    subpath가 지정되면 (예: 학생이 모노레포의 특정 미션 폴더를 가리키는 경우) 해당
+    디렉토리 내부 파일만 평가 대상. 단, 작성자 검증용 루트 README는 별도로 보존.
     """
     tree, used_branch = fetch_repo_tree(owner, repo, branch=branch)
     if not tree:
         suffix = f" (브랜치: {branch})" if branch else ""
         return {"error": f"레포지토리를 가져올 수 없습니다: {owner}/{repo}{suffix}"}
 
+    # subpath 필터링 — 학생이 /tree/{branch}/path/to/dir 형태로 서브 디렉토리를 제출한 경우
+    if subpath:
+        prefix = subpath.rstrip("/") + "/"
+        scoped_tree = [p for p in tree if p.startswith(prefix)]
+        # 루트 README는 작성자 검증 fallback으로 항상 포함 (모노레포에서 본인 이름이
+        # 루트 README에만 있고 서브 디렉토리 README에는 없는 케이스가 흔함)
+        root_readmes = [p for p in tree if "/" not in p and p.split(".")[0].lower() == "readme"]
+        for r in root_readmes:
+            if r not in scoped_tree:
+                scoped_tree.append(r)
+        if not scoped_tree:
+            return {"error": f"서브 디렉토리에 평가 대상 파일이 없습니다: {subpath}"}
+    else:
+        scoped_tree = tree
+
     config = TRACK_FILE_PATTERNS.get(track, TRACK_FILE_PATTERNS["frontend"])
-    key_files = select_key_files(tree, track)
+    key_files = select_key_files(scoped_tree, track)
 
     files = {}
     for path in key_files:
@@ -241,8 +266,9 @@ def _fetch_repo_code_once(owner: str, repo: str, track: str, branch: str | None 
         "owner": owner,
         "repo": repo,
         "branch": used_branch,
-        "total_files": len(tree),
-        "file_tree": tree[:50],
+        "subpath": subpath,
+        "total_files": len(scoped_tree),
+        "file_tree": scoped_tree[:50],
         "code_files": files,
         "total_commits": metadata["total_commits"],
         "recent_commits": metadata.get("recent_commits", []),
@@ -260,7 +286,7 @@ def fetch_repo_code(github_url: str, track: str, max_retries: int = 2) -> dict |
     if not parsed:
         return None
 
-    owner, repo, branch = parsed
+    owner, repo, branch, subpath = parsed
 
     # .git 접미사 제거
     if repo.endswith(".git"):
@@ -268,7 +294,7 @@ def fetch_repo_code(github_url: str, track: str, max_retries: int = 2) -> dict |
 
     last_result = None
     for attempt in range(max_retries):
-        result = _fetch_repo_code_once(owner, repo, track, branch=branch)
+        result = _fetch_repo_code_once(owner, repo, track, branch=branch, subpath=subpath)
         if "error" not in result:
             return result
         last_result = result
