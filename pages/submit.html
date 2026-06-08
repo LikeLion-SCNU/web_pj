@@ -93,15 +93,21 @@
 
         const startDate = mission.start_date ? new Date(mission.start_date) : null;
         const endDate = mission.end_date ? new Date(mission.end_date) : null;
-        const now = new Date();
+        const extendedUntil = mission.extended_until ? new Date(mission.extended_until) : null;
+        // 학생에게 보여줄 effective 마감 — 연장이 있고 본 마감보다 이후면 연장 사용
+        const displayEnd = extendedUntil && (!endDate || extendedUntil > endDate) ? extendedUntil : endDate;
         const isAdmin = user && user.role === 'admin';
         const isTester = user && user.role === 'tester';
         const bypassDate = isAdmin || isTester;
-        const isOpen = bypassDate || ((!startDate || now >= startDate) && (!endDate || now <= endDate));
-        const isClosed = !bypassDate && endDate && now > endDate;
-        const isUpcoming = !bypassDate && startDate && now < startDate;
-        const dateStr = startDate && endDate
-          ? `${startDate.getMonth()+1}/${startDate.getDate()}(${['일','월','화','수','목','금','토'][startDate.getDay()]}) ~ ${endDate.getMonth()+1}/${endDate.getDate()}(${['일','월','화','수','목','금','토'][endDate.getDay()]})`
+        // 백엔드 권위 period_status 우선 사용 — admin/tester는 무시
+        const ps = mission.period_status || 'open';
+        const isOpen = bypassDate || ps === 'open';
+        const isClosed = !bypassDate && ps === 'closed';
+        const isUpcoming = !bypassDate && ps === 'upcoming';
+        const dow = ['일','월','화','수','목','금','토'];
+        const fmt = (d) => `${d.getMonth()+1}/${d.getDate()}(${dow[d.getDay()]})`;
+        const dateStr = startDate && displayEnd
+          ? `${fmt(startDate)} ~ ${fmt(displayEnd)}${extendedUntil ? ' · 운영진 연장' : ''}`
           : '';
 
         document.getElementById('missionDetail').innerHTML = `
@@ -123,6 +129,17 @@
                 ${isClosed ? '마감됨' : isUpcoming ? '예정' : '진행중'}
               </span>
               <span style="font-size:.85rem;color:#888;margin-left:12px;">${dateStr}</span>
+            </div>
+          ` : ''}
+          ${extendedUntil ? `
+            <div style="margin-top:8px;padding:12px 16px;background:#2a1a05;border-radius:8px;border-left:3px solid #FF7710;">
+              <span style="font-size:.85rem;color:#FF7710;font-weight:600;">
+                <i class="fa-solid fa-clock"></i> 운영진 부여 마감 연장
+              </span>
+              <div style="font-size:.85rem;color:#ccc;margin-top:4px;">
+                연장 마감: ${extendedUntil.getFullYear()}/${extendedUntil.getMonth()+1}/${extendedUntil.getDate()} ${String(extendedUntil.getHours()).padStart(2,'0')}:${String(extendedUntil.getMinutes()).padStart(2,'0')}
+                ${mission.extension_reason ? `<br><span style="color:#888;">사유: ${escapeHTML(mission.extension_reason)}</span>` : ''}
+              </div>
             </div>
           ` : ''}
 

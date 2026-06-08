@@ -9,7 +9,7 @@ from database import get_db
 from models import User, Mission, Submission, Review, MissionDeadlineExtension
 from schemas import AdminReviewUpdate, SetRoleRequest, DeadlineExtensionCreate
 from services.email_service import send_approval_notification, send_review_notification
-from utils import utcnow
+from utils import utcnow, iso_utc
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
@@ -335,7 +335,7 @@ def list_deadline_extensions(db: Session = Depends(get_db), admin: User = Depend
             "mission_track": r.mission.track if r.mission else "",
             "mission_number": r.mission.number if r.mission else None,
             "mission_title": r.mission.title if r.mission else "",
-            "extended_until": r.extended_until.isoformat(),
+            "extended_until": iso_utc(r.extended_until),
             "reason": r.reason,
             "active": r.extended_until >= now,
             "created_at": r.created_at.isoformat() if r.created_at else None,

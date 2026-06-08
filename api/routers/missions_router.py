@@ -7,7 +7,7 @@ from auth import get_current_user
 from config import MAX_SUBMISSIONS_PER_MISSION
 from database import get_db
 from models import User, Mission, Submission, MissionDeadlineExtension
-from utils import utcnow
+from utils import utcnow, iso_utc
 
 router = APIRouter(prefix="/api/missions", tags=["missions"])
 
@@ -76,7 +76,7 @@ def list_missions(track: str = None, db: Session = Depends(get_db), user: User =
             "pbl_link": m.pbl_link,
             "start_date": m.start_date.isoformat() if m.start_date else None,
             "end_date": m.end_date.isoformat() if m.end_date else None,
-            "extended_until": ext.extended_until.isoformat() if ext else None,
+            "extended_until": iso_utc(ext.extended_until) if ext else None,
             "extension_reason": ext.reason if ext else None,
             "period_status": period_status,
             "my_status": sub.status if sub else None,
@@ -99,6 +99,31 @@ def get_mission(mission_id: int, db: Session = Depends(get_db), user: User = Dep
         .all()
     )
 
+    # 본인의 마감 연장 조회 (목록 엔드포인트와 동일한 로직)
+    ext = (
+        db.query(MissionDeadlineExtension)
+        .filter(
+            MissionDeadlineExtension.user_id == user.id,
+            MissionDeadlineExtension.mission_id == mission_id,
+        )
+        .first()
+    )
+    # 효과적 마감일 = 연장이 있고 본 마감보다 이후이면 연장 마감
+    effective_end = mission.end_date
+    if ext and (mission.end_date is None or ext.extended_until > mission.end_date):
+        effective_end = ext.extended_until
+
+    # period_status — 학생 측 제출 폼 노출 판정용 (목록과 일관)
+    now = utcnow()
+    if user.role in ("admin", "tester"):
+        period_status = "open"
+    elif mission.start_date and now < mission.start_date:
+        period_status = "upcoming"
+    elif effective_end and now > effective_end:
+        period_status = "closed"
+    else:
+        period_status = "open"
+
     return {
         "id": mission.id,
         "track": mission.track,
@@ -111,6 +136,9 @@ def get_mission(mission_id: int, db: Session = Depends(get_db), user: User = Dep
         "pbl_link": mission.pbl_link,
         "start_date": mission.start_date.isoformat() if mission.start_date else None,
         "end_date": mission.end_date.isoformat() if mission.end_date else None,
+        "extended_until": iso_utc(ext.extended_until) if ext else None,
+        "extension_reason": ext.reason if ext else None,
+        "period_status": period_status,
         "max_submissions": MAX_SUBMISSIONS_PER_MISSION,
         "submissions": [
             {
