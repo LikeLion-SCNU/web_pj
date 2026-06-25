@@ -178,12 +178,26 @@ def build_submission_context(submission: Submission, mission: Mission, user_name
                 for path, content in repo_data["code_files"].items():
                     parts.append(f"\n--- {path} ---")
                     parts.append(content)
-                # 작성자 검증용 — README 내용을 fetch_status에 노출 (대소문자 변형 키 모두 시도)
+                # 작성자 검증용 — README 내용을 fetch_status에 노출.
+                # 루트 README 우선(정확한 키), 없으면 경로 어디에 있든 README 파일명을
+                # 가진 가장 얕은 파일을 fallback으로 사용 (모노레포에서 본인 이름이
+                # 서브폴더 README에만 있는 케이스 대응).
                 code_files = repo_data["code_files"]
+                _readme_content = None
                 for k in ("README.md", "readme.md", "Readme.md", "README"):
                     if k in code_files:
-                        fetch_status["github_readme"] = code_files[k] or ""
+                        _readme_content = code_files[k] or ""
                         break
+                if _readme_content is None:
+                    readme_paths = [
+                        p for p in code_files
+                        if p.rsplit("/", 1)[-1].split(".")[0].lower() == "readme"
+                    ]
+                    readme_paths.sort(key=lambda p: p.count("/"))
+                    if readme_paths:
+                        _readme_content = code_files[readme_paths[0]] or ""
+                if _readme_content is not None:
+                    fetch_status["github_readme"] = _readme_content
         else:
             fetch_status["github_ok"] = False
             error_msg = repo_data["error"] if repo_data else "GitHub API 접근 실패"

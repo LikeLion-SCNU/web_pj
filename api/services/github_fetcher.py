@@ -253,6 +253,18 @@ def _fetch_repo_code_once(owner: str, repo: str, track: str, branch: str | None 
     config = TRACK_FILE_PATTERNS.get(track, TRACK_FILE_PATTERNS["frontend"])
     key_files = select_key_files(scoped_tree, track)
 
+    # 작성자 검증용 README는 항상 포함되도록 보장 (select_key_files의 max_files 제한과 무관).
+    # 서브폴더가 많은 레포(미션별 폴더 + node_modules 등)에서 priority 파일이 max_files를
+    # 채워버리면 루트 README가 잘려나가, 본인 이름이 README에 있어도 "README 비어있음"으로
+    # 작성자 검증이 잘못 실패하던 문제 방지. 루트 README 우선, 없으면 가장 얕은 README를 보존.
+    def _is_readme(p: str) -> bool:
+        return p.rsplit("/", 1)[-1].split(".")[0].lower() == "readme"
+    readme_candidates = [p for p in scoped_tree if _is_readme(p)]
+    # 경로 depth가 얕은 순으로 정렬 → 루트(depth 0) 우선
+    readme_candidates.sort(key=lambda p: p.count("/"))
+    if readme_candidates and readme_candidates[0] not in key_files:
+        key_files.append(readme_candidates[0])
+
     files = {}
     for path in key_files:
         content = fetch_file_content(owner, repo, path, max_chars=config["max_file_size"], branch=used_branch)
