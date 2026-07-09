@@ -1,7 +1,7 @@
 """GitHub 레포지토리에서 코드를 가져오는 서비스"""
 import re
 import time
-from urllib.parse import urlparse
+from urllib.parse import quote, urlparse
 
 import httpx
 
@@ -20,11 +20,14 @@ TRACK_FILE_PATTERNS = {
         "max_file_size": 5000,  # chars
     },
     "backend": {
-        "extensions": {".java", ".xml", ".properties", ".yml", ".yaml", ".gradle"},
+        # Mission 10 asks for frontend integration, so Spring static assets are part
+        # of the backend submission surface.
+        "extensions": {".java", ".xml", ".properties", ".yml", ".yaml", ".gradle",
+                       ".html", ".css", ".js", ".json"},
         "exclude": {".gradle", "build", "target", ".idea", ".git", "gradlew", "gradlew.bat"},
         "priority": ["Main.java", "Application.java", "build.gradle", "pom.xml",
                      "application.properties", "application.yml", "README.md"],
-        "max_files": 10,
+        "max_files": 24,
         "max_file_size": 5000,
     },
     "design": {
@@ -115,9 +118,35 @@ def fetch_repo_tree(owner: str, repo: str, branch: str | None = None) -> tuple[l
     return None, None
 
 
+def _truncate_content(text: str, max_chars: int) -> str:
+    if len(text) > max_chars:
+        return text[:max_chars] + f"\n... (truncated, {len(text)} chars total)"
+    return text
+
+
 def fetch_file_content(owner: str, repo: str, path: str, max_chars: int = 5000, branch: str | None = None) -> str | None:
     """특정 파일 내용을 가져옴 (동기). branch가 지정되면 해당 브랜치의 파일을 가져옴."""
     headers = _get_headers()
+
+    # Public repo 파일 본문은 raw.githubusercontent.com으로 먼저 가져온다.
+    # Contents API를 파일마다 호출하면 토큰이 없을 때 제출 몇 건만으로도 60회/h 한도에 도달한다.
+    if branch:
+        raw_headers = {}
+        if GITHUB_TOKEN:
+            raw_headers["Authorization"] = f"Bearer {GITHUB_TOKEN}"
+        try:
+            encoded_branch = quote(branch, safe="")
+            encoded_path = quote(path, safe="/")
+            with httpx.Client(timeout=10, follow_redirects=True) as client:
+                resp = client.get(
+                    f"https://raw.githubusercontent.com/{owner}/{repo}/{encoded_branch}/{encoded_path}",
+                    headers=raw_headers,
+                )
+                if resp.status_code == 200:
+                    return _truncate_content(resp.text, max_chars)
+        except Exception:
+            pass
+
     headers["Accept"] = "application/vnd.github.v3.raw"
     params = {"ref": branch} if branch else None
     with httpx.Client(timeout=10) as client:
@@ -128,10 +157,7 @@ def fetch_file_content(owner: str, repo: str, path: str, max_chars: int = 5000, 
                 params=params,
             )
             if resp.status_code == 200:
-                text = resp.text
-                if len(text) > max_chars:
-                    return text[:max_chars] + f"\n... (truncated, {len(text)} chars total)"
-                return text
+                return _truncate_content(resp.text, max_chars)
         except Exception:
             pass
     return None
@@ -158,6 +184,9 @@ def select_key_files(file_paths: list[str], track: str) -> list[str]:
             if ext in extensions or p.split("/")[-1] in priority_names:
                 filtered.append(p)
 
+    if track == "backend":
+        return _select_backend_key_files(filtered, priority_names, max_files)
+
     # 우선순위 파일 먼저
     priority = []
     others = []
@@ -169,6 +198,46 @@ def select_key_files(file_paths: list[str], track: str) -> list[str]:
             others.append(p)
 
     return (priority + others)[:max_files]
+
+
+def _select_backend_key_files(file_paths: list[str], priority_names: list[str], max_files: int) -> list[str]:
+    """백엔드 미션 평가에 필요한 Spring 계층 파일을 우선 선별.
+
+    단순 트리 순서로 자르면 controller/domain/dto에서 슬롯이 소진되어 Mission 10의
+    핵심인 exception, service, static frontend 코드가 AI 입력에서 빠질 수 있다.
+    """
+
+    def score(path: str) -> tuple[int, int, str]:
+        filename = path.rsplit("/", 1)[-1]
+        filename_lower = filename.lower()
+        parts = [part.lower() for part in path.split("/")]
+
+        if filename_lower.startswith("readme"):
+            rank = 0
+        elif filename in priority_names or filename_lower in {"settings.gradle"}:
+            rank = 10
+        elif filename_lower.endswith("application.java"):
+            rank = 20
+        elif "exception" in parts:
+            rank = 30
+        elif "service" in parts:
+            rank = 40
+        elif "controller" in parts:
+            rank = 50
+        elif "static" in parts:
+            rank = 60
+        elif "repository" in parts:
+            rank = 70
+        elif any(part in {"domain", "entity"} for part in parts):
+            rank = 80
+        elif "dto" in parts:
+            rank = 90
+        else:
+            rank = 100
+
+        return rank, path.count("/"), path
+
+    return sorted(file_paths, key=score)[:max_files]
 
 
 def fetch_repo_metadata(owner: str, repo: str) -> dict:
@@ -304,14 +373,32 @@ def fetch_repo_code(github_url: str, track: str, max_retries: int = 2) -> dict |
     if repo.endswith(".git"):
         repo = repo[:-4]
 
+    attempts = [(branch, subpath)]
+    if branch and subpath:
+        tree_ref = f"{branch}/{subpath}".strip("/")
+        parts = tree_ref.split("/")
+        # GitHub branch names may contain slashes. If the first-segment branch parse
+        # fails, retry longer branch prefixes: feat/x/src/Mission10 -> feat/x + src/Mission10.
+        for i in range(len(parts), 0, -1):
+            candidate = ("/".join(parts[:i]), "/".join(parts[i:]))
+            if candidate not in attempts:
+                attempts.append(candidate)
+
     last_result = None
-    for attempt in range(max_retries):
-        result = _fetch_repo_code_once(owner, repo, track, branch=branch, subpath=subpath)
-        if "error" not in result:
-            return result
-        last_result = result
-        if attempt < max_retries - 1:
-            time.sleep(2)
-            print(f"[GitHub] {owner}/{repo} fetch 재시도 ({attempt + 2}/{max_retries})")
+    for candidate_branch, candidate_subpath in attempts:
+        for attempt in range(max_retries):
+            result = _fetch_repo_code_once(
+                owner,
+                repo,
+                track,
+                branch=candidate_branch,
+                subpath=candidate_subpath,
+            )
+            if "error" not in result:
+                return result
+            last_result = result
+            if attempt < max_retries - 1:
+                time.sleep(2)
+                print(f"[GitHub] {owner}/{repo} fetch 재시도 ({attempt + 2}/{max_retries})")
 
     return last_result
