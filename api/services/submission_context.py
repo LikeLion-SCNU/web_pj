@@ -8,7 +8,7 @@ from config import UPLOAD_DIR, MAX_SCREENSHOT_SIZE
 from models import Submission, Mission
 from services.github_fetcher import fetch_repo_code
 from services.deploy_analyzer import fetch_deploy_preview
-from services.figma_fetcher import fetch_figma_file
+from services.figma_fetcher import extract_figma_file_name_from_url, fetch_figma_file
 
 
 def encode_screenshot(screenshot_path: str) -> dict | None:
@@ -125,6 +125,8 @@ def build_submission_context(submission: Submission, mission: Mission, user_name
         "github_ok": True,
         "figma_ok": True,
         "figma_images": [],
+        "figma_error": "",
+        "figma_error_system": False,
         # 작성자 검증용 surface (authorship_verifier에서 사용)
         "figma_file_name": "",
         "github_readme": "",
@@ -214,6 +216,7 @@ def build_submission_context(submission: Submission, mission: Mission, user_name
 
     if submission.figma_url:
         parts.append(f"\n### Figma URL\n{_sanitize_student_input(submission.figma_url)}")
+        figma_url_file_name = extract_figma_file_name_from_url(submission.figma_url)
         figma_data = fetch_figma_file(submission.figma_url)
         if figma_data and "error" not in figma_data:
             # 파일명은 _summarize_document에서 이미 200자로 제한됨
@@ -278,7 +281,16 @@ def build_submission_context(submission: Submission, mission: Mission, user_name
         else:
             fetch_status["figma_ok"] = False
             error_msg = figma_data["error"] if figma_data else "Figma URL 형식이 올바르지 않거나 파싱에 실패했습니다."
+            fetch_status["figma_error"] = error_msg
+            fetch_status["figma_error_system"] = bool(figma_data and figma_data.get("system_error"))
             parts.append(f"⚠️ {error_msg}")
+            if figma_url_file_name:
+                fetch_status["figma_file_name"] = figma_url_file_name
+                parts.append(f"URL상 Figma 파일명: {_sanitize_figma_text(figma_url_file_name)}")
+                parts.append(
+                    "(Figma API 구조 분석은 실패했지만, 파일명 본인 확인은 위 URL 파일명과 "
+                    "제출자 이름을 기준으로 판정하세요. 화면 구성 평가는 첨부 스크린샷을 근거로 하세요.)"
+                )
 
     screenshot_paths = [p for p in [submission.screenshot_path, submission.screenshot_path2, submission.screenshot_path3] if p]
     if screenshot_paths:

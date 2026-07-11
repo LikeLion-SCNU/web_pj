@@ -1,8 +1,9 @@
 """Figma REST API로 파일 구조와 썸네일을 가져오는 서비스"""
 import base64
+import json
 import re
 import time
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 
 import httpx
 
@@ -48,6 +49,24 @@ def parse_figma_url(url: str) -> str | None:
         return file_key
     except Exception:
         return None
+
+
+def extract_figma_file_name_from_url(url: str) -> str:
+    """Figma URL path의 파일명 slug를 fallback 파일명으로 추출.
+
+    Figma API 토큰/인프라 오류가 나도 URL에는 보통 파일명이 남아 있다.
+    예: /design/{key}/LIKELION-PBL---%ED%99%8D%EA%B8%B8%EB%8F%99
+    """
+    if not parse_figma_url(url):
+        return ""
+    try:
+        parsed = urlparse(url.strip())
+        parts = parsed.path.strip("/").split("/")
+        if len(parts) < 3:
+            return ""
+        return unquote(parts[2])[:200]
+    except Exception:
+        return ""
 
 
 def _get_headers() -> dict:
@@ -230,6 +249,16 @@ def _fetch_file_once(file_key: str) -> dict:
                         "error": "Figma API 일시 차단(인프라 측). 잠시 후 다시 시도하거나 운영진에게 문의해주세요.",
                         "retriable": True,
                     }
+                try:
+                    err = (resp.json().get("err") or "").lower()
+                except (json.JSONDecodeError, ValueError):
+                    err = ""
+                if "token expired" in err or "invalid token" in err:
+                    return {
+                        "error": "Figma API 토큰이 만료되어 구조 분석을 가져올 수 없습니다. 운영진에게 문의해주세요.",
+                        "retriable": False,
+                        "system_error": True,
+                    }
                 return {
                     "error": "Figma 파일 접근 권한이 없습니다. 공유 설정에서 '링크가 있는 모든 사람 - 볼 수 있음'으로 변경해주세요.",
                     "retriable": False,
@@ -248,6 +277,7 @@ def _fetch_file_once(file_key: str) -> dict:
                 return {
                     "error": f"Figma API 일시적 오류 (HTTP {resp.status_code})",
                     "retriable": True,
+                    "system_error": True,
                 }
             else:
                 return {
@@ -255,11 +285,12 @@ def _fetch_file_once(file_key: str) -> dict:
                     "retriable": False,
                 }
     except httpx.TimeoutException:
-        return {"error": "Figma API 응답 시간 초과", "retriable": True}
+        return {"error": "Figma API 응답 시간 초과", "retriable": True, "system_error": True}
     except Exception as e:
         return {
             "error": _sanitize_error_message(f"Figma API 호출 실패: {type(e).__name__}"),
             "retriable": True,
+            "system_error": True,
         }
 
 
@@ -383,8 +414,11 @@ def fetch_figma_file(figma_url: str, max_retries: int = 2) -> dict | None:
             time.sleep(1)  # 짧은 backoff
 
     if summary is None:
-        # retriable 플래그 제거 후 반환 (외부 호출자는 에러 메시지만 필요)
-        return {"error": result.get("error", "Figma API 호출 실패")}
+        # 내부 재시도 플래그는 제거하되, 시스템 오류 여부는 호출자가 fallback 판단에 사용한다.
+        return {
+            k: v for k, v in result.items()
+            if k != "retriable"
+        } or {"error": "Figma API 호출 실패"}
 
     summary["file_key"] = file_key
 

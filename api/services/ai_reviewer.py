@@ -130,10 +130,19 @@ def run_ai_review(submission_id: int):
             return
 
         # Figma 제출인데 API로 가져오지 못한 경우
-        # - submission_type="figma": 하드 에러 (Figma가 제출물의 전부)
-        # - submission_type="mixed": 경고만 (GitHub/스크린샷으로 보완 평가 가능)
+        # - 학생 권한/URL 문제: 하드 에러
+        # - 운영 토큰 만료/인프라 문제: 스크린샷이 있으면 시각 분석으로 계속 평가
         needs_figma_strict = mission.submission_type == "figma" and submission.figma_url
-        if needs_figma_strict and not fetch_status["figma_ok"]:
+        has_screenshot = any([
+            submission.screenshot_path,
+            submission.screenshot_path2,
+            submission.screenshot_path3,
+        ])
+        can_fallback_figma = (
+            bool(fetch_status.get("figma_error_system"))
+            and has_screenshot
+        )
+        if needs_figma_strict and not fetch_status["figma_ok"] and not can_fallback_figma:
             review = Review(
                 submission_id=submission_id,
                 ai_score=None,
@@ -147,14 +156,19 @@ def run_ai_review(submission_id: int):
             db.commit()
             print(f"[AI Review] Submission #{submission_id}: Figma fetch 실패 → error 처리")
             return
+        if needs_figma_strict and not fetch_status["figma_ok"] and can_fallback_figma:
+            print(
+                f"[AI Review] Submission #{submission_id}: "
+                f"Figma API 시스템 오류({fetch_status.get('figma_error')}) → 스크린샷 fallback 평가"
+            )
 
         # 작성자 검증 — 본인 작업물인지 Figma 파일명/GitHub README에 학생 이름 포함 여부 확인.
         # admin/tester는 우회. fetch 실패한 채널은 위에서 이미 처리됐으므로 여기선 fetch 성공한
         # 채널만 검증 가능. 실패 시 status="error" + attempt 미차감.
         if user and user.role not in ("admin", "tester"):
             auth_msg = None
-            # Figma 파일명 검증 — figma URL이 있고 fetch 성공한 경우만
-            if submission.figma_url and fetch_status.get("figma_ok"):
+            # Figma 파일명 검증 — API 성공 파일명 또는 URL 파일명 fallback이 있으면 결정적으로 검사
+            if submission.figma_url and fetch_status.get("figma_file_name"):
                 ok, msg = verify_figma_authorship(
                     fetch_status.get("figma_file_name", ""), user.name
                 )
